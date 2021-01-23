@@ -57,10 +57,8 @@ class Logger:
             'critical': self.logger.critical
         }
         f = LV.get(level, self.debug)
-        print(f)
-        f(message)
-        # message = "[{}.{}:{}] {}".format(*self.__get_call_info(), message)
-        # f(message, *args)
+        message = "[{}.{}:{}] {}".format(*self.__get_call_info(), message)
+        f(message, *args)
 
     def debug(self, message):
         self.console('debug', message)

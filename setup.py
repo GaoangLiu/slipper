@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
   name="slipper",
-  version="0.0.4",
+  version="0.0.4.dev0123",
   author="Gaogle",
   author_email="byteleap@gmail.com",
   description="A personal package for faster Python programming",
