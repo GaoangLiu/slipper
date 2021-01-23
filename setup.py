@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="xiu",
-    version="0.0.1a1",
+    version="0.0.1a2",
     author="Gaogle",
     author_email="byteleap@gmail.com",
     description="A personal package for faster Python programming",
@@ -15,12 +15,9 @@ setuptools.setup(
     package_dir={'': 'src'},
     py_modules=['xiu', 'logger'],
     # packages=setuptools.find_packages(),
-    install_requires=[
-        'colorlog>=4.6.1',
-        'tqdm>=4.56.0'
-    ],
-    entry_points = {
-        'console_scripts': ['xiu=xiu:main'],
+    install_requires=['colorlog>=4.6.1', 'tqdm>=4.56.0'],
+    entry_points={
+        'console_scripts': ['sli=xiu:main'],
     },
     classifiers=[
         "Programming Language :: Python :: 3",
