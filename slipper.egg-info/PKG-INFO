@@ -1,19 +1,23 @@
 Metadata-Version: 2.1
 Name: slipper
-Version: 0.0.3
-Summary: A small personal package
-Home-page: https://github.com/GaoangLiu/work
+Version: 0.0.4
+Summary: A personal package for faster Python programming
+Home-page: https://github.com/GaoangLiu/slipper
 Author: Gaogle
 Author-email: byteleap@gmail.com
 License: UNKNOWN
-Description: # Example Package
+Description: A package for faster Python programming. 
         
-        This is a simple example package. You can use
+        ## Usage
+        ```python
+        from slipper import slipper as ss
         
-        [Github-flavored Markdown](https://guides.github.com/features/mastering-markdown/)
+        js = ss.jsonread('ajsonfile.json')
+        ss.pp(js) # == pprint.pprint(js)
+        ```
         
-        to write your content.
-        
+        ## Install
+        python3 -m pip install -i https://test.pypi.org/simple/ slipper==0.0.3
         
 Platform: UNKNOWN
 Classifier: Programming Language :: Python :: 3

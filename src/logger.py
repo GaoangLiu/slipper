@@ -23,6 +23,9 @@ class Logger:
             '%(log_color)s[%(asctime)s] [%(levelname)s]- %(message)s',
             log_colors=log_colors_config)
 
+        if self.logger.hasHandlers(): # To above duplicated lines
+            return
+
         # 创建一个 FileHandler，写到本地
         fh = logging.handlers.TimedRotatingFileHandler(self.logname,
                                                        when='MIDNIGHT',
@@ -54,8 +57,10 @@ class Logger:
             'critical': self.logger.critical
         }
         f = LV.get(level, self.debug)
-        message = "[{}.{}:{}] {}".format(*self.__get_call_info(), message)
-        f(message, *args)
+        print(f)
+        f(message)
+        # message = "[{}.{}:{}] {}".format(*self.__get_call_info(), message)
+        # f(message, *args)
 
     def debug(self, message):
         self.console('debug', message)
@@ -76,11 +81,11 @@ class Logger:
 def test():
     frames = inspect.stack()
     print(frames)
-    Log().info("Line 6666")
+    Logger().info("Line 6666")
 
 
 if __name__ == "__main__":
-    log = Log()
+    log = Logger()
     log.info("测试1")
     log.debug("测试2")
     log.warning("warning")

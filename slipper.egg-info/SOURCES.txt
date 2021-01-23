@@ -1,9 +1,10 @@
 README.md
 setup.py
-slipper/__init__.py
-slipper/logger.py
-slipper/slipper.py
 slipper.egg-info/PKG-INFO
 slipper.egg-info/SOURCES.txt
 slipper.egg-info/dependency_links.txt
+slipper.egg-info/requires.txt
 slipper.egg-info/top_level.txt
+src/__init__.py
+src/logger.py
+src/slipper.py
