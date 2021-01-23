@@ -4,11 +4,11 @@ import sys
 import json
 import time
 import signal
-import inspect
 from typing import List
 from pprint import pprint
 from logger import Logger
-
+from tqdm import tqdm
+import argparse
 
 # =========================================================== display
 def p(s):
@@ -24,6 +24,8 @@ def sleep(countdown: int):
 
 
 # =========================================================== IO
+logger = Logger()
+
 def jsonread(file_name: str) -> dict:
     res = {}
     with open(file_name, 'r') as f:
@@ -35,8 +37,13 @@ def jsonwrite(d: dict, file_name: str):
     json.dump(d, open(file_name, 'w'), ensure_ascii=False, indent=2)
 
 
-logger = Logger()
+def create_random_file(size: int = 100):  # Default 100M
+    open('sample.txt', 'w').write("")
+    print(f">> Create sample.txt of size {size} MB")
 
+    with open('sample.txt', 'ab') as fout:
+        for _ in tqdm(range(size)):
+            fout.write(os.urandom(1024 * 1024))
 
 # =========================================================== Decorator
 def set_timeout(countdown: int, callback=print):
@@ -58,3 +65,14 @@ def set_timeout(countdown: int, callback=print):
         return wrapper
 
     return decorator
+
+
+# =========================================================== entry_point
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-d", "--ddfile", help="Create a file with os.urandom")
+    args = parser.parse_args()
+    if args.ddfile:
+        create_random_file(int(args.ddfile))
+    
+

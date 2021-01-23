@@ -16,8 +16,12 @@ setuptools.setup(
     py_modules=['xiu', 'logger'],
     # packages=setuptools.find_packages(),
     install_requires=[
-        'colorlog>=4.6.1'
+        'colorlog>=4.6.1',
+        'tqdm>=4.56.0'
     ],
+    entry_points = {
+        'console_scripts': ['xiu=xiu:main'],
+    },
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",

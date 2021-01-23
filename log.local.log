@@ -1,3 +1,0 @@
-[32m[2021-01-23 17:12:24,401] [INFO]- [tests/main.py.<module>:4] Hello[0m
-[32m[2021-01-23 17:12:54,596] [INFO]- [tests/main.py.<module>:4] Hello[0m
-[31m[2021-01-23 17:12:54,597] [ERROR]- [tests/main.py.<module>:5] Error message[0m
