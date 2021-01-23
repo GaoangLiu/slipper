@@ -1,8 +1,8 @@
 import xiu 
-import logger
 
 xiu.p("Yes. SUCCESS.")
-logger.Logger().info("Hello")
+xiu.logger.info("Hello")
+xiu.logger.error("Error message")
 
 # p("Hello world!")
 

@@ -1,7 +1,3 @@
-[32m[2021-01-23 12:00:53,780] [INFO]- [tests/main.py.<module>:5] Hello[0m
-[32m[2021-01-23 12:01:07,029] [INFO]- [tests/main.py.<module>:5] Hello[0m
-[32m[2021-01-23 12:01:15,404] [INFO]- [tests/main.py.<module>:5] Hello[0m
-[32m[2021-01-23 12:15:59,968] [INFO]- [tests/main.py.<module>:5] Hello[0m
-[32m[2021-01-23 13:42:30,623] [INFO]- [tests/main.py.<module>:5] Hello[0m
-[32m[2021-01-23 14:35:31,468] [INFO]- [tests/main.py.<module>:5] Hello[0m
-[32m[2021-01-23 14:36:56,355] [INFO]- [tests/main.py.<module>:5] Hello[0m
+[32m[2021-01-23 17:12:24,401] [INFO]- [tests/main.py.<module>:4] Hello[0m
+[32m[2021-01-23 17:12:54,596] [INFO]- [tests/main.py.<module>:4] Hello[0m
+[31m[2021-01-23 17:12:54,597] [ERROR]- [tests/main.py.<module>:5] Error message[0m

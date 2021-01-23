@@ -1,1 +1,5 @@
 pack_and_upload.sh.sh
+dev/*
+log.local.log
+src/__pycache__/*
+test/*

@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="xiu",
-    version="0.0.1",
+    version="0.0.1a1",
     author="Gaogle",
     author_email="byteleap@gmail.com",
     description="A personal package for faster Python programming",

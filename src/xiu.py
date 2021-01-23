@@ -1,10 +1,13 @@
+# coding:utf-8
 import os
 import sys
 import json
 import time
 import signal
+import inspect
 from typing import List
 from pprint import pprint
+from logger import Logger
 
 
 # =========================================================== display
@@ -15,9 +18,11 @@ def p(s):
 def pp(d: dict):
     pprint(d)
 
-def sleep(countdown:int):
+
+def sleep(countdown: int):
     time.sleep(countdown)
-    
+
+
 # =========================================================== IO
 def jsonread(file_name: str) -> dict:
     res = {}
@@ -28,6 +33,9 @@ def jsonread(file_name: str) -> dict:
 
 def jsonwrite(d: dict, file_name: str):
     json.dump(d, open(file_name, 'w'), ensure_ascii=False, indent=2)
+
+
+logger = Logger()
 
 
 # =========================================================== Decorator
