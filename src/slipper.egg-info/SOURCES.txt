@@ -1,0 +1,9 @@
+README.md
+setup.py
+src/logger.py
+src/slipper.py
+src/slipper.egg-info/PKG-INFO
+src/slipper.egg-info/SOURCES.txt
+src/slipper.egg-info/dependency_links.txt
+src/slipper.egg-info/requires.txt
+src/slipper.egg-info/top_level.txt

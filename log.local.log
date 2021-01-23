@@ -1,35 +1,7 @@
-[32m[2021-01-23 10:39:00,125] [INFO]- Transcript pending[0m
-[32m[2021-01-23 10:39:02,129] [INFO]- Transcript pending[0m
-[32m[2021-01-23 10:39:04,134] [INFO]- Transcript pending[0m
-[32m[2021-01-23 10:39:06,138] [INFO]- Transcript pending[0m
-[32m[2021-01-23 10:39:08,144] [INFO]- Transcript pending[0m
-[32m[2021-01-23 10:40:16,378] [INFO]- [tests/test_logger.py.<module>:7] Transcript pending[0m
-[32m[2021-01-23 10:40:18,383] [INFO]- [tests/test_logger.py.<module>:7] Transcript pending[0m
-[32m[2021-01-23 10:40:20,389] [INFO]- [tests/test_logger.py.<module>:7] Transcript pending[0m
-[32m[2021-01-23 10:40:22,392] [INFO]- [tests/test_logger.py.<module>:7] Transcript pending[0m
-[32m[2021-01-23 10:40:24,398] [INFO]- [tests/test_logger.py.<module>:7] Transcript pending[0m
-[32m[2021-01-23 10:40:49,274] [INFO]- [tests/test_logger.py.<module>:6] Transcript pending[0m
-[32m[2021-01-23 10:40:51,281] [INFO]- [tests/test_logger.py.<module>:6] Transcript pending[0m
-[32m[2021-01-23 10:40:51,281] [INFO]- [tests/test_logger.py.<module>:6] Transcript pending[0m
-[32m[2021-01-23 10:40:53,287] [INFO]- [tests/test_logger.py.<module>:6] Transcript pending[0m
-[32m[2021-01-23 10:40:53,287] [INFO]- [tests/test_logger.py.<module>:6] Transcript pending[0m
-[32m[2021-01-23 10:40:53,287] [INFO]- [tests/test_logger.py.<module>:6] Transcript pending[0m
-[32m[2021-01-23 10:40:55,294] [INFO]- [tests/test_logger.py.<module>:6] Transcript pending[0m
-[32m[2021-01-23 10:40:55,294] [INFO]- [tests/test_logger.py.<module>:6] Transcript pending[0m
-[32m[2021-01-23 10:40:55,294] [INFO]- [tests/test_logger.py.<module>:6] Transcript pending[0m
-[32m[2021-01-23 10:40:55,294] [INFO]- [tests/test_logger.py.<module>:6] Transcript pending[0m
-[32m[2021-01-23 10:40:57,296] [INFO]- [tests/test_logger.py.<module>:6] Transcript pending[0m
-[32m[2021-01-23 10:40:57,296] [INFO]- [tests/test_logger.py.<module>:6] Transcript pending[0m
-[32m[2021-01-23 10:40:57,296] [INFO]- [tests/test_logger.py.<module>:6] Transcript pending[0m
-[32m[2021-01-23 10:40:57,296] [INFO]- [tests/test_logger.py.<module>:6] Transcript pending[0m
-[32m[2021-01-23 10:40:57,296] [INFO]- [tests/test_logger.py.<module>:6] Transcript pending[0m
-[32m[2021-01-23 10:42:36,395] [INFO]- [test_logger.py.<module>:6] Transcript pending[0m
-[32m[2021-01-23 10:42:38,399] [INFO]- [test_logger.py.<module>:6] Transcript pending[0m
-[32m[2021-01-23 10:42:40,400] [INFO]- [test_logger.py.<module>:6] Transcript pending[0m
-[32m[2021-01-23 10:42:42,407] [INFO]- [test_logger.py.<module>:6] Transcript pending[0m
-[32m[2021-01-23 10:42:44,413] [INFO]- [test_logger.py.<module>:6] Transcript pending[0m
-[32m[2021-01-23 10:51:56,003] [INFO]- [tests/test_logger.py.<module>:6] Transcript pending[0m
-[32m[2021-01-23 10:51:58,010] [INFO]- [tests/test_logger.py.<module>:6] Transcript pending[0m
-[32m[2021-01-23 10:52:00,014] [INFO]- [tests/test_logger.py.<module>:6] Transcript pending[0m
-[32m[2021-01-23 10:52:02,018] [INFO]- [tests/test_logger.py.<module>:6] Transcript pending[0m
-[32m[2021-01-23 10:52:04,024] [INFO]- [tests/test_logger.py.<module>:6] Transcript pending[0m
+[32m[2021-01-23 12:00:53,780] [INFO]- [tests/main.py.<module>:5] Hello[0m
+[32m[2021-01-23 12:01:07,029] [INFO]- [tests/main.py.<module>:5] Hello[0m
+[32m[2021-01-23 12:01:15,404] [INFO]- [tests/main.py.<module>:5] Hello[0m
+[32m[2021-01-23 12:15:59,968] [INFO]- [tests/main.py.<module>:5] Hello[0m
+[32m[2021-01-23 13:42:30,623] [INFO]- [tests/main.py.<module>:5] Hello[0m
+[32m[2021-01-23 14:35:31,468] [INFO]- [tests/main.py.<module>:5] Hello[0m
+[32m[2021-01-23 14:36:56,355] [INFO]- [tests/main.py.<module>:5] Hello[0m

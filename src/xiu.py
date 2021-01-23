@@ -27,7 +27,7 @@ def jsonread(file_name: str) -> dict:
 
 
 def jsonwrite(d: dict, file_name: str):
-    json.dump(d, open(file_name, 'w'), indent=2)
+    json.dump(d, open(file_name, 'w'), ensure_ascii=False, indent=2)
 
 
 # =========================================================== Decorator
