@@ -14,4 +14,4 @@ log.info("Some info messages.")
 ```
 
 ## Install
-python3 -m pip install -i https://test.pypi.org/simple/ slipper=="0.0.4a1"
+python3 -m pip install -i https://test.pypi.org/simple/ xiu=="0.0.1a1"

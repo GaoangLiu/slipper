@@ -23,7 +23,7 @@ class Logger:
             '%(log_color)s[%(asctime)s] [%(levelname)s]- %(message)s',
             log_colors=log_colors_config)
 
-        if self.logger.hasHandlers(): # To above duplicated lines
+        if self.logger.hasHandlers():  # To above duplicated lines
             return
 
         # 创建一个 FileHandler，写到本地
@@ -46,6 +46,7 @@ class Logger:
         stack = inspect.stack()
         cur = stack[3]
         fn, ln, func = cur[1:4]
+        fn = "..." + fn[-10:]  # Restrict file path length
         return fn, func, ln
 
     def console(self, level: str, message: str, *args):

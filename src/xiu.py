@@ -5,6 +5,7 @@ import json
 import time
 import signal
 import argparse
+import requests
 from typing import List
 from pprint import pprint
 from logger import Logger
@@ -25,7 +26,7 @@ def sleep(countdown: int):
 
 
 # =========================================================== IO
-logger = Logger()
+logger = Logger('/tmp/log.sli.log')
 
 
 def jsonread(file_name: str) -> dict:
@@ -71,6 +72,24 @@ def set_timeout(countdown: int, callback=print):
     return decorator
 
 
+# =========================================================== media
+def smms_upload(file_path: str) -> dict:
+    """Upload image to image server sm.ms"""
+    url = "https://sm.ms/api/v2/upload"
+    data = {'smfile': open(file_path, 'rb')}
+    res = requests.Session().post(
+        url, files=data, headers=jsonread('/usr/local/info/smms.json'))
+    j = json.loads(res.text)
+    try:
+        logger.info(j['data']['url'])
+    except Exception as e:
+        logger.info("This image was uploaded already.")
+        logger.info(j['images'])  # Already uploaded
+        raise Exception(str(e))
+    finally:
+        return j
+
+
 # =========================================================== entry_point
 def main():
     parser = argparse.ArgumentParser()
@@ -78,6 +97,12 @@ def main():
                         "--ddfile",
                         type=int,
                         help="Create a file with os.urandom.")
+    parser.add_argument("-sm",
+                        "--smms",
+                        type=str,
+                        help="Upload image to sm.ms")
     args = parser.parse_args()
     if args.ddfile:
         create_random_file(int(args.ddfile))
+    elif args.smms:
+        smms_upload(args.smms)
