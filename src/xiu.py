@@ -6,6 +6,7 @@ import time
 import signal
 import argparse
 import requests
+import subprocess
 from typing import List
 from pprint import pprint
 from logger import Logger
@@ -27,6 +28,11 @@ def sleep(countdown: int):
 
 # =========================================================== IO
 logger = Logger('/tmp/log.sli.log')
+
+
+def shell(cmd: str) -> str:
+    return subprocess.check_output(cmd, stderr=subprocess.STDOUT,
+                                   shell=True).decode('utf8')
 
 
 def jsonread(file_name: str) -> dict:
@@ -83,7 +89,7 @@ def smms_upload(file_path: str) -> dict:
     try:
         logger.info(j['data']['url'])
     except Exception as e:
-        logger.info("This image was uploaded already.")
+        logger.error(f"Exception {j}")
         logger.info(j['images'])  # Already uploaded
         raise Exception(str(e))
     finally:
