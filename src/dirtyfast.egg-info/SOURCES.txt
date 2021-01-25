@@ -1,0 +1,10 @@
+README.md
+setup.py
+src/dirtyfast.py
+src/logger.py
+src/dirtyfast.egg-info/PKG-INFO
+src/dirtyfast.egg-info/SOURCES.txt
+src/dirtyfast.egg-info/dependency_links.txt
+src/dirtyfast.egg-info/entry_points.txt
+src/dirtyfast.egg-info/requires.txt
+src/dirtyfast.egg-info/top_level.txt

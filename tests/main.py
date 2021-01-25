@@ -1,4 +1,4 @@
-import xiu
+import dirtyfast as xiu
 
 xiu.p("Yes. SUCCESS.")
 xiu.logger.info("Hello")
