@@ -16,8 +16,7 @@ from tqdm import tqdm
 # =========================================================== display
 def p(*s):
     for i in s:
-        print(s)
-
+        print(i)
 
 def pp(d: dict):
     pprint(d)
@@ -56,6 +55,9 @@ def create_random_file(size: int = 100):  # Default 100M
         for _ in tqdm(range(size)):
             fout.write(os.urandom(1024 * 1024))
 
+def install_package(package_name:str):
+    # Install a package via subprocess
+    subprocess.check_call([sys.executable, "-m", "pip", "install", package_name])
 
 # =========================================================== Decorator
 def set_timeout(countdown: int, callback=print):

@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="dirtyfast",
-    version="0.0.1b1",
+    version="0.0.1b2",
     author="Gaogle",
     author_email="byteleap@gmail.com",
     description="A package for dirty faster Python programming",

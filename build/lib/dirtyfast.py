@@ -14,9 +14,9 @@ from tqdm import tqdm
 
 
 # =========================================================== display
-def p(s):
-    print(s)
-
+def p(*s):
+    for i in s:
+        print(i)
 
 def pp(d: dict):
     pprint(d)
