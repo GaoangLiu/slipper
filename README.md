@@ -2,16 +2,15 @@ A package for faster Python programming.
 
 ## Usage
 ```python
-import slipper as sp
-from logger import Logger
+import dirtyfast as df
 
-js = sp.jsonread('json_file.json')
-sp.pp(js) # == pprint.pprint(js)
-
-
-log = Logger()
-log.info("Some info messages.")
+js = df.jsonread('json_file.json')
+sp.df(js) # == pprint.pprint(js)
 ```
 
 ## Install
-python3 -m pip install -i https://test.pypi.org/simple/ xiu=="0.0.1a1"
+`python3 -m pip install dirtyfast`
+
+Or, update to latest version with:
+
+`python3 -m pip install dirtyfast --upgrade`

@@ -11,12 +11,14 @@ from typing import List
 from pprint import pprint
 from logger import Logger
 from tqdm import tqdm
+from PIL import Image, ImageDraw
 
 
 # =========================================================== display
 def p(*s):
     for i in s:
         print(i)
+
 
 def pp(d: dict):
     pprint(d)
@@ -54,6 +56,29 @@ def create_random_file(size: int = 100):  # Default 100M
     with open(_file, 'ab') as fout:
         for _ in tqdm(range(size)):
             fout.write(os.urandom(1024 * 1024))
+
+
+def pip_install(package_name: str):
+    # Install a package via subprocess
+    subprocess.check_call(
+        [sys.executable, "-m", "pip", "install", package_name])
+
+
+def rounded_corners(image_name: str, rad: int = 20):
+    """Add rounded_corners to images"""
+    im = Image.open(image_name)
+    circle = Image.new('L', (rad * 2, rad * 2), 0)
+    draw = ImageDraw.Draw(circle)
+    draw.ellipse((0, 0, rad * 2, rad * 2), fill=255)
+    alpha = Image.new('L', im.size, "white")
+    w, h = im.size
+    alpha.paste(circle.crop((0, 0, rad, rad)), (0, 0))
+    alpha.paste(circle.crop((0, rad, rad, rad * 2)), (0, h - rad))
+    alpha.paste(circle.crop((rad, 0, rad * 2, rad)), (w - rad, 0))
+    alpha.paste(circle.crop((rad, rad, rad * 2, rad * 2)), (w - rad, h - rad))
+    im.putalpha(alpha)
+    im.save("out.png")
+    return im
 
 
 # =========================================================== Decorator
@@ -95,20 +120,3 @@ def smms_upload(file_path: str) -> dict:
     finally:
         return j
 
-
-# =========================================================== entry_point
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-d",
-                        "--ddfile",
-                        type=int,
-                        help="Create a file with os.urandom.")
-    parser.add_argument("-sm",
-                        "--smms",
-                        type=str,
-                        help="Upload image to sm.ms")
-    args = parser.parse_args()
-    if args.ddfile:
-        create_random_file(int(args.ddfile))
-    elif args.smms:
-        smms_upload(args.smms)

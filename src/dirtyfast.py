@@ -120,3 +120,7 @@ def smms_upload(file_path: str) -> dict:
     finally:
         return j
 
+
+# =========================================================== Network
+class Request:
+    client = requests.Session()

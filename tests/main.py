@@ -1,8 +1,8 @@
-import dirtyfast as xiu
+import dirtyfast as df
 
-xiu.p("Yes. SUCCESS.")
-xiu.logger.info("Hello")
-xiu.logger.error("Error message")
+df.p("Yes. SUCCESS.")
+df.logger.info("Hello")
+df.logger.error("Error message")
 
 # p("Hello world!")
 
@@ -14,6 +14,6 @@ def shell(cmd: str) -> str:
                                    shell=True).decode('utf8')
 
 
-res = xiu.shell("tree")
-print(res)
-    
+client = df.Request.client
+cipcc= df.shell('curl -s cip.cc')
+df.p(cipcc)
