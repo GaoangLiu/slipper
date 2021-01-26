@@ -3,3 +3,6 @@ dev/*
 log.local.log
 src/__pycache__/*
 test/*
+dist/*
+build/*
+__pycache__/*

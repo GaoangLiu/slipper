@@ -7,6 +7,9 @@ import signal
 import argparse
 import requests
 import subprocess
+import base64
+from github import Github
+from github import InputGitTreeElement
 from typing import List
 from pprint import pprint
 from logger import Logger
@@ -29,9 +32,6 @@ def sleep(countdown: int):
 
 
 # =========================================================== IO
-logger = Logger('/tmp/log.sli.log')
-
-
 def shell(cmd: str) -> str:
     return subprocess.check_output(cmd, stderr=subprocess.STDOUT,
                                    shell=True).decode('utf8')
@@ -124,3 +124,37 @@ def smms_upload(file_path: str) -> dict:
 # =========================================================== Network
 class Request:
     client = requests.Session()
+
+
+def git_io_shorten(
+    url='https://raw.githubusercontent.com/drocat/stuff/master/2021/medicine2.png'
+):
+    res = requests.Session().post('https://git.io/create', data={'url': url})
+    return f'http://git.io/{res.text}'
+
+
+def githup_upload(file_name: str):
+    _token = "3654301e73ef4c5ccaffcd724af73c6bfc805048"
+    g = Github(_token, timeout=300)
+    repo = g.get_user().get_repo('stuff')
+    data = base64.b64encode(open(file_name, "rb").read())
+    blob = repo.create_git_blob(data.decode("utf-8"), "base64")
+    path = f'2021/{file_name}'
+    element = InputGitTreeElement(path=path,
+                                  mode='100644',
+                                  type='blob',
+                                  sha=blob.sha)
+    element_list = list()
+    element_list.append(element)
+
+    master_ref = repo.get_git_ref('heads/master')
+    master_sha = master_ref.object.sha
+    base_tree = repo.get_git_tree(master_sha)
+    tree = repo.create_git_tree(element_list, base_tree)
+    parent = repo.get_git_commit(master_sha)
+    commit = repo.create_git_commit(f"Uploading {file_name }", tree, [parent])
+    master_ref.edit(commit.sha)
+
+    long = f"https://raw.githubusercontent.com/drocat/stuff/master/{path}"
+    p("Long url", long)
+    p("Short url", git_io_shorten(long))

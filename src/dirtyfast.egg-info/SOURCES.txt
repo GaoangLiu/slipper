@@ -1,5 +1,6 @@
 README.md
 setup.py
+src/argparse_helper.py
 src/dirtyfast.py
 src/logger.py
 src/dirtyfast.egg-info/PKG-INFO
