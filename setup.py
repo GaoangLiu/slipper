@@ -17,7 +17,7 @@ setuptools.setup(
     # packages=setuptools.find_packages(),
     install_requires=['colorlog>=4.6.1', 'tqdm>=4.56.0'],
     entry_points={
-        'console_scripts': ['sli=dirtyfast:main'],
+        'console_scripts': ['sli=argparse_helper:parse_arguments'],
     },
     classifiers=[
         "Programming Language :: Python :: 3",
