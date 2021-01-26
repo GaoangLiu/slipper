@@ -55,7 +55,7 @@ def create_random_file(size: int = 100):  # Default 100M
         for _ in tqdm(range(size)):
             fout.write(os.urandom(1024 * 1024))
 
-def install_package(package_name:str):
+def pip_install(package_name:str):
     # Install a package via subprocess
     subprocess.check_call([sys.executable, "-m", "pip", "install", package_name])
 

@@ -6,7 +6,7 @@ from logging.handlers import RotatingFileHandler
 import colorlog  # 控制台日志输入颜色
 
 log_colors_config = {
-    'DEBUG': 'cyan',
+    'DEBUG': 'white',
     'INFO': 'green',
     'WARNING': 'yellow',
     'ERROR': 'red',
