@@ -103,6 +103,11 @@ def set_timeout(countdown: int, callback=print):
     return decorator
 
 
+# =========================================================== Global var
+logger = Logger()
+client = requests.Session()
+
+
 # =========================================================== media
 def smms_upload(file_path: str) -> dict:
     """Upload image to image server sm.ms"""
@@ -122,14 +127,10 @@ def smms_upload(file_path: str) -> dict:
 
 
 # =========================================================== Network
-class Request:
-    client = requests.Session()
-
-
 def git_io_shorten(
     url='https://raw.githubusercontent.com/drocat/stuff/master/2021/medicine2.png'
 ):
-    res = requests.Session().post('https://git.io/create', data={'url': url})
+    res = client.post('https://git.io/create', data={'url': url})
     return f'http://git.io/{res.text}'
 
 

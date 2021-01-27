@@ -1,3 +1,0 @@
-[console_scripts]
-sli = argparse_helper:parse_arguments
-

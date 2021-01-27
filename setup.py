@@ -15,7 +15,7 @@ setuptools.setup(
     package_dir={'': 'src'},
     py_modules=['dirtyfast', 'logger', 'argparse_helper'],
     # packages=setuptools.find_packages(),
-    install_requires=['colorlog>=4.6.1', 'tqdm>=4.56.0'],
+    install_requires=['colorlog>=4.6.1', 'tqdm>=4.56.0', 'PyGithub>=1.54.1'],
     entry_points={
         'console_scripts': ['sli=argparse_helper:parse_arguments'],
     },
