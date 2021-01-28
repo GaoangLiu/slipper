@@ -32,6 +32,26 @@ def sleep(countdown: int):
 
 
 # =========================================================== IO
+def info(msg):
+    Logger().info(msg)
+
+
+def debug(msg):
+    Logger().debug(msg)
+
+
+def warning(msg):
+    Logger().warning(msg)
+
+
+def error(msg):
+    Logger().error(msg)
+
+
+def critical(msg):
+    Logger().critical(msg)
+
+
 def shell(cmd: str) -> str:
     return subprocess.check_output(cmd, stderr=subprocess.STDOUT,
                                    shell=True).decode('utf8')
@@ -42,6 +62,9 @@ def jsonread(file_name: str) -> dict:
     with open(file_name, 'r') as f:
         res = json.loads(f.read())
     return res
+
+def textread(file_name:str)->List:
+    return [l.strip() for l in open(file_name, 'r').readlines()]
 
 
 def jsonwrite(d: dict, file_name: str):
@@ -104,7 +127,6 @@ def set_timeout(countdown: int, callback=print):
 
 
 # =========================================================== Global var
-logger = Logger()
 client = requests.Session()
 
 

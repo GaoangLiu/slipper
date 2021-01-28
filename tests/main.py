@@ -1,8 +1,8 @@
 import dirtyfast as df
 
 df.p("Yes. SUCCESS.")
-df.logger.info("Hello")
-df.logger.error("Error message")
+df.info("Hello")
+df.warning("Worning message")
 
 # p("Hello world!")
 
@@ -14,6 +14,5 @@ def shell(cmd: str) -> str:
                                    shell=True).decode('utf8')
 
 
-client = df.Request.client
 cipcc= df.shell('curl -s cip.cc')
 df.p(cipcc)

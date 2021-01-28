@@ -15,7 +15,7 @@ log_colors_config = {
 
 
 class Logger:
-    def __init__(self, logname: str = 'log.local.log'):
+    def __init__(self, logname: str = '/tmp/log.local.log'):
         self.logname = logname
         self.logger = logging.getLogger()
         self.logger.setLevel(logging.DEBUG)
@@ -54,6 +54,7 @@ class Logger:
             'debug': self.logger.debug,
             'info': self.logger.info,
             'warn': self.logger.warning,
+            'warning': self.logger.warning,
             'error': self.logger.error,
             'critical': self.logger.critical
         }

@@ -1,5 +1,5 @@
 import argparse
-import dirtyfast as df
+import dofast as df
 
 
 def parse_arguments():
