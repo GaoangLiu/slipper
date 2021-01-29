@@ -63,8 +63,14 @@ def jsonread(file_name: str) -> dict:
         res = json.loads(f.read())
     return res
 
-def textread(file_name:str)->List:
+
+def textread(file_name: str) -> List:
     return [l.strip() for l in open(file_name, 'r').readlines()]
+
+
+def textwrite(cons: str, file_name: str) -> List:
+    with open(file_name, 'w') as f:
+        f.write(cons)
 
 
 def jsonwrite(d: dict, file_name: str):
@@ -156,7 +162,7 @@ def git_io_shorten(
     return f'http://git.io/{res.text}'
 
 
-def githup_upload(file_name: str):
+def githup_upload(file_name: str, shorten=True):
     _token = "3654301e73ef4c5ccaffcd724af73c6bfc805048"
     g = Github(_token, timeout=300)
     repo = g.get_user().get_repo('stuff')
@@ -178,6 +184,27 @@ def githup_upload(file_name: str):
     commit = repo.create_git_commit(f"Uploading {file_name }", tree, [parent])
     master_ref.edit(commit.sha)
 
-    long = f"https://raw.githubusercontent.com/drocat/stuff/master/{path}"
-    p("Long url", long)
-    p("Short url", git_io_shorten(long))
+    if shorten:
+        long = f"https://raw.githubusercontent.com/drocat/stuff/master/{path}"
+        p("Long url", long)
+        p("Short url", git_io_shorten(long))
+
+
+def update_pac(url: str):
+    import smart_open
+    s = f".{url}"
+    while s != url:
+        s = url
+        url = url.strip('*').strip('.')
+
+    with smart_open.open('http://git.io/JtlbY') as f:
+        cons = [l.strip() for l in f.readlines()]
+        cons = [l for l in cons if l]
+        item = f"  \"||{url}\","
+        if item not in cons:
+            cons.insert(33, item)
+
+    textwrite('\n'.join(cons), 'p.pac')
+    githup_upload('p.pac', shorten=False)
+    shell('rm p.pac')
+    p("PAC file updated.")

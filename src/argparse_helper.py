@@ -22,6 +22,11 @@ def parse_arguments():
                         "--githupupload",
                         help="Upload files to Github/drocat/stuff")
 
+    parser.add_argument("-pac",
+                        "--updatepac",
+                        help="Update github pac file.")
+
+    
     args = parser.parse_args()
     if args.ddfile:
         df.create_random_file(int(args.ddfile))
@@ -35,3 +40,6 @@ def parse_arguments():
         df.rounded_corners(image_path, radius)
     elif args.ip:
         df.p(df.shell("curl -s cip.cc"))
+    elif args.updatepac:
+        df.update_pac(args.updatepac)
+
