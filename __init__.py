@@ -1,7 +1,2 @@
 
-
-
-def ppap():
-    print("Helele")
-
     

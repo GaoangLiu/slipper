@@ -1,0 +1,46 @@
+import sys
+import requests
+from operator import itemgetter
+from typing import List
+from tqdm import tqdm
+
+
+class SimpleParser:
+    """A simple argument parser"""
+    help_msg = None
+
+    def __init__(self):
+        self.dict = {}
+
+    def has_attribute(self, arg_names: List):
+        """ Decide if any argument is present in the dict
+        Example: self.has_attribute(['-gu', '--githubupload']) 
+        """
+        return any(map(lambda an: an in self.dict, arg_names))
+
+    def parse_args(self) -> dict:
+        args = sys.argv[1:]
+        arg_name = None
+        for a in args:
+            if a.startswith('-'):
+                self.dict[a] = []
+                arg_name = a
+            else:
+                self.dict[arg_name].append(a)
+        return self.dict
+
+    def read_arg_value(self, arg_names: List, default_value=None) -> str:
+        """Return correspomding argument values. 
+        By now, we assume each key corresponds to only one value. 
+        We may need multiple values in the future.
+        """
+        for key in arg_names:
+            if key in self.dict and len(self.dict[key]):
+                return self.dict[key][0]
+        return default_value
+
+    def set_default(self, arg_name: str, value: str):
+        """Set a default value for arg_name if arg_name is specified.
+        """
+        if arg_name in self.dict:
+            self.dict[arg_name].append(value)

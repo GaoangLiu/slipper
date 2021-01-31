@@ -1,45 +1,42 @@
 import argparse
 import dofast as df
+from simple_parser import SimpleParser
+
+msg = """A simple yet powerful terminal client. 😏
+
+-dw, --download -p, --proxy -r, --rename ::: Download file.
+-d, --ddfile[size] ::: Create random file.
+-ip ::: Curl cip.cc
+-rc, --roundcorner ::: Add rounded corner to images.
+-gu, --githubupload ::: Upload files to GitHub.
+-sm, --smms ::: Upload image to sm.ms image server.
+
+"""
 
 
 def parse_arguments():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-d",
-                        "--ddfile",
-                        type=int,
-                        help="Create a file with os.urandom.")
-    parser.add_argument("-sm",
-                        "--smms",
-                        type=str,
-                        help="Upload image to sm.ms")
-    parser.add_argument("-rc",
-                        "--roundcorner",
-                        nargs='*',
-                        metavar=('test.png', 20),
-                        help="Add rounded corners to images.")
-    parser.add_argument("-ip", "--ip", action='store_true', help="Curl cip.cc")
-    parser.add_argument("-gu",
-                        "--githupupload",
-                        help="Upload files to Github/drocat/stuff")
+    sp = SimpleParser()
+    sp.parse_args()
 
-    parser.add_argument("-pac",
-                        "--updatepac",
-                        help="Update github pac file.")
-
-    
-    args = parser.parse_args()
-    if args.ddfile:
-        df.create_random_file(int(args.ddfile))
-    elif args.smms:
-        df.smms_upload(args.smms)
-    elif args.githupupload:
-        df.githup_upload(args.githupupload)
-    elif args.roundcorner:
-        image_path = args.roundcorner[0]
-        radius = 20 if len(args.roundcorner) == 1 else int(args.roundcorner[1])
-        df.rounded_corners(image_path, radius)
-    elif args.ip:
+    if sp.has_attribute(['-dw', '--download']):
+        df.download(sp)
+    elif sp.has_attribute(['-d', '--ddfile']):
+        size = sp.read_arg_value(['-d', '--ddfile'], 100)
+        df.create_random_file(int(size))
+    elif sp.has_attribute(['-ip']):
         df.p(df.shell("curl -s cip.cc"))
-    elif args.updatepac:
-        df.update_pac(args.updatepac)
-
+    elif sp.has_attribute(['-rc', '--roundcorner']):
+        image_path = sp.read_arg_value(['-rc'])
+        radius = int(sp.read_arg_value(['--radius'], 10))
+        df.rounded_corners(image_path, radius)
+    elif sp.has_attribute(['-gu', '--githupupload']):
+        df.githup_upload(sp.dict['-gu'].pop())
+    elif sp.has_attribute(['-sm', '--smms']):
+        df.smms_upload(sp.read_arg_value(['-sm', '--smms']))
+    elif sp.has_attribute(['-pac', '--updatepac']):
+        url = sp.read_arg_value(['-pac', '--updatepac'])
+        df.update_pac(url)
+    else:
+        for l in msg.split("\n"):
+            c, e = (l + " ::: ").split(':::')[:2]
+            print("{:<50} {:<20}".format(c, e))

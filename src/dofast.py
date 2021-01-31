@@ -8,6 +8,7 @@ import argparse
 import requests
 import subprocess
 import base64
+import smart_open
 from github import Github
 from github import InputGitTreeElement
 from typing import List
@@ -15,6 +16,7 @@ from pprint import pprint
 from logger import Logger
 from tqdm import tqdm
 from PIL import Image, ImageDraw
+from simple_parser import SimpleParser
 
 
 # =========================================================== display
@@ -32,6 +34,11 @@ def sleep(countdown: int):
 
 
 # =========================================================== IO
+def smartopen(file_path: str):
+    with smart_open.open(file_path) as f:
+        return f.readlines()
+
+
 def info(msg):
     Logger().info(msg)
 
@@ -109,6 +116,26 @@ def rounded_corners(image_name: str, rad: int = 20):
     im.save("out.png")
     return im
 
+def download(sp: SimpleParser):
+    sp.set_default('-p', 'http://cn.140714.xyz:51170')
+    url = sp.read_arg_value(['-dw'])
+    proxy = sp.read_arg_value(['-p', '--proxy'])
+    name = sp.read_arg_value(['-r', '--rename'])
+    if not name: 
+        name = url.split('/')[0]
+    if proxy:
+        proxy = {'http': proxy}
+    print(name, url, proxy)
+    response = requests.get(url, stream=True, proxies=proxy)
+    total_size_in_bytes = int(response.headers.get('content-length', 0))
+    block_size = 1024  # 8 Kibibyte
+    progress_bar = tqdm(total=total_size_in_bytes, unit='iB', unit_scale=True)
+
+    with open(name, 'wb') as f:
+        for chunk in response.iter_content(block_size):
+            progress_bar.update(len(chunk))
+            f.write(chunk)
+    progress_bar.close()
 
 # =========================================================== Decorator
 def set_timeout(countdown: int, callback=print):
@@ -145,10 +172,10 @@ def smms_upload(file_path: str) -> dict:
         url, files=data, headers=jsonread('/usr/local/info/smms.json'))
     j = json.loads(res.text)
     try:
-        logger.info(j['data']['url'])
+        info(j['data']['url'])
     except Exception as e:
-        logger.error(f"Exception {j}")
-        logger.info(j['images'])  # Already uploaded
+        error(f"Exception {j}")
+        info(j['images'])  # Already uploaded
         raise Exception(str(e))
     finally:
         return j
@@ -191,7 +218,6 @@ def githup_upload(file_name: str, shorten=True):
 
 
 def update_pac(url: str):
-    import smart_open
     s = f".{url}"
     while s != url:
         s = url
@@ -205,6 +231,9 @@ def update_pac(url: str):
             cons.insert(33, item)
 
     textwrite('\n'.join(cons), 'p.pac')
-    githup_upload('p.pac', shorten=False)
+    try:
+        githup_upload('p.pac', shorten=False)
+    except Exception as e:
+        error(f"Githup upload pac failed {e}.")
     shell('rm p.pac')
-    p("PAC file updated.")
+    info("PAC file updated.")

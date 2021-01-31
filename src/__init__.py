@@ -1,2 +1,4 @@
 
-__all__ = ['slipper', 'logger']
+__all__ = ['dofast', 'logger', 'simple_parser']
+
+
