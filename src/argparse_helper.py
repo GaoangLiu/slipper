@@ -2,7 +2,7 @@ import argparse
 import dofast as df
 from simple_parser import SimpleParser
 
-msg = """A simple yet powerful terminal client. 😏
+msg = """A Simple yet powerful terminal CLient. 😏
 
 -dw, --download -p, --proxy -r, --rename ::: Download file.
 -d, --ddfile[size] ::: Create random file.
@@ -19,7 +19,11 @@ def parse_arguments():
     sp.parse_args()
 
     if sp.has_attribute(['-dw', '--download']):
-        df.download(sp)
+        sp.set_default('-p', 'http://cn.ddot.cc:51172')
+        url = sp.read_arg_value(['-dw'])
+        proxy = sp.read_arg_value(['-p', '--proxy'])
+        name = sp.read_arg_value(['-r', '--rename'])
+        df.download(url, proxy, name)
     elif sp.has_attribute(['-d', '--ddfile']):
         size = sp.read_arg_value(['-d', '--ddfile'], 100)
         df.create_random_file(int(size))

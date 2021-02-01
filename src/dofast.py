@@ -116,16 +116,11 @@ def rounded_corners(image_name: str, rad: int = 20):
     im.save("out.png")
     return im
 
-def download(sp: SimpleParser):
-    sp.set_default('-p', 'http://cn.140714.xyz:51170')
-    url = sp.read_arg_value(['-dw'])
-    proxy = sp.read_arg_value(['-p', '--proxy'])
-    name = sp.read_arg_value(['-r', '--rename'])
+def download(url: str, proxy=None, name=None):
     if not name: 
-        name = url.split('/')[0]
+        name = url.split('/').pop()
     if proxy:
         proxy = {'http': proxy}
-    print(name, url, proxy)
     response = requests.get(url, stream=True, proxies=proxy)
     total_size_in_bytes = int(response.headers.get('content-length', 0))
     block_size = 1024  # 8 Kibibyte
