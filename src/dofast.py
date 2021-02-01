@@ -1,14 +1,17 @@
 # coding:utf-8
-import os
-import sys
-import json
-import time
-import signal
 import argparse
-import requests
-import subprocess
 import base64
+import bs4
+import json
+import os
+import re
+import requests
 import smart_open
+import signal
+import subprocess
+import string
+import sys
+import time
 from github import Github
 from github import InputGitTreeElement
 from typing import List
@@ -116,8 +119,9 @@ def rounded_corners(image_name: str, rad: int = 20):
     im.save("out.png")
     return im
 
+
 def download(url: str, proxy=None, name=None):
-    if not name: 
+    if not name:
         name = url.split('/').pop()
     if proxy:
         proxy = {'http': proxy}
@@ -131,6 +135,7 @@ def download(url: str, proxy=None, name=None):
             progress_bar.update(len(chunk))
             f.write(chunk)
     progress_bar.close()
+
 
 # =========================================================== Decorator
 def set_timeout(countdown: int, callback=print):
@@ -232,3 +237,49 @@ def update_pac(url: str):
         error(f"Githup upload pac failed {e}.")
     shell('rm p.pac')
     info("PAC file updated.")
+
+
+class YouDao():
+    def _get_header(self):
+        headers = {}
+        headers[
+            "User-Agent"] = "Mozilla/5.0 (iPhone; CPU iPhone OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 unicom{version:iphone_c@6.002}"
+        headers[
+            "Content-Type"] = "application/x-www-form-urlencoded; charset=UTF-8"
+        return headers
+
+    def search_word(self, kw='novice'):
+        s = requests.Session()
+        url = 'http://dict.youdao.com/w/{}'.format('%20'.join(kw.split()))
+        res = s.get(url, headers=self._get_header())
+        soup = bs4.BeautifulSoup(res.text, 'lxml')
+
+        trans = soup.findAll('div', class_='trans-container')
+
+        if len(trans) == 0:
+            print("**Sorry, but no translation was found.**")
+            return
+        """ Chinese to English """
+        for span in soup.findAll('span', class_='contentTitle'):
+            if kw[0] in string.ascii_lowercase:  # Only print this for Chinese word
+                continue
+
+            trans = span.text.replace(";", '').strip()
+            if trans[-1] in string.ascii_lowercase:
+                print(trans)
+        """ English to Chinese """
+        ul = soup.findAll('ul')[1]
+        for li in ul.findAll('li'):
+            print('\t{}'.format(li.text))
+
+        for div in soup.findAll('div',
+                                {'class': {'examples', 'collinsMajorTrans'}}):
+            # print(div.text)
+            con = re.sub(r'(\s+)', ' ', div.text.strip())
+            print('\t{}'.format(con))
+            if div.attrs['class'][0] == 'examples':
+                print('')
+
+
+def youdao_dict(word: str):
+    YouDao().search_word(word)

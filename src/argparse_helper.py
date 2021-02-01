@@ -10,7 +10,7 @@ msg = """A Simple yet powerful terminal CLient. 😏
 -rc, --roundcorner ::: Add rounded corner to images.
 -gu, --githubupload ::: Upload files to GitHub.
 -sm, --smms ::: Upload image to sm.ms image server.
-
+-yd, --youdao ::: Youdao dict translation.
 """
 
 
@@ -40,6 +40,8 @@ def parse_arguments():
     elif sp.has_attribute(['-pac', '--updatepac']):
         url = sp.read_arg_value(['-pac', '--updatepac'])
         df.update_pac(url)
+    elif sp.has_attribute(['-yd', '--youdao']):
+        df.youdao_dict(sp.read_arg_value(['-yd', '--youdao'], 'Abandon'))
     else:
         for l in msg.split("\n"):
             c, e = (l + " ::: ").split(':::')[:2]
