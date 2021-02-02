@@ -1,4 +1,15 @@
 import dofast as df
+#!/usr/bin/env python3.3
+import os,sys
+
+
+def findfile(prefix:str, dir:str="."):
+    for relpath, dirs, files in os.walk(dir):
+        for f in files:
+            if prefix in f:
+                full_path = os.path.join(dir, relpath, f)
+                print(os.path.normpath(os.path.abspath(full_path)))
+
 
 # df.p("Yes. SUCCESS.")
 # df.info("Hello")
@@ -9,7 +20,7 @@ import dofast as df
 import subprocess, sys
 
 cipcc= df.shell('curl -s cip.cc')
-df.p(cipcc)
+# df.p(cipcc)
 
 
 # f = df.smartopen('https://raw.githubusercontent.com/drocat/stuff/master/2021/p.pac')
@@ -22,4 +33,5 @@ def countdown(n):
         n-=1
         df.sleep(1)
 
-countdown(3)
+# countdown(3)
+findfile(sys.argv[1])

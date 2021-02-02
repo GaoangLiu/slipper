@@ -322,3 +322,12 @@ class YouDao():
 
 def youdao_dict(word: str):
     YouDao().search_word(word)
+
+
+# =========================================================== Search
+def findfile(prefix: str, dir: str = "."):
+    for relpath, dirs, files in os.walk(dir):
+        for f in files:
+            if prefix in f:
+                full_path = os.path.join(dir, relpath, f)
+                print(os.path.normpath(os.path.abspath(full_path)))

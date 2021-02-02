@@ -11,6 +11,7 @@ msg = """A Simple yet powerful terminal CLient. 😏
 -gu, --githubupload ::: Upload files to GitHub.
 -sm, --smms ::: Upload image to sm.ms image server.
 -yd, --youdao ::: Youdao dict translation.
+-fd, --find [-dir, --dir] ::: Find files from dir.
 """
 
 
@@ -42,6 +43,10 @@ def parse_arguments():
         df.update_pac(url)
     elif sp.has_attribute(['-yd', '--youdao']):
         df.youdao_dict(sp.read_arg_value(['-yd', '--youdao'], 'Abandon'))
+    elif sp.has_attribute(['-fd', '--find']):
+        dir_ = sp.read_arg_value(['-dir', '--dir'], ".")
+        fname = sp.read_arg_value(['-fd', '--find'])
+        df.findfile(fname, dir_)
     else:
         for l in msg.split("\n"):
             c, e = (l + " ::: ").split(':::')[:2]
