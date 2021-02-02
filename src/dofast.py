@@ -12,6 +12,7 @@ import subprocess
 import string
 import sys
 import time
+from functools import wraps
 from github import Github
 from github import InputGitTreeElement
 from typing import List
@@ -157,6 +158,44 @@ def set_timeout(countdown: int, callback=print):
         return wrapper
 
     return decorator
+
+
+def timethis(func):
+    '''
+    Decorator that reports the execution time.
+    '''
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        result = func(*args, **kwargs)
+        end = time.time()
+        print(func.__name__, end - start)
+        return result
+
+    return wrapper
+
+
+def logged(logger_func, name=None, message=None):
+    """
+    Add logging to a function. name is the logger name, and message is the
+    log message. If name and message aren't specified,
+    they default to the function's module and name.
+    """
+    import logging
+
+    def decorate(func):
+        logname = name if name else func.__module__
+        log = logging.getLogger(logname)
+        logmsg = message if message else func.__name__
+
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            logger_func(logmsg)
+            return func(*args, **kwargs)
+
+        return wrapper
+
+    return decorate
 
 
 # =========================================================== Global var
