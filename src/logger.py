@@ -18,7 +18,7 @@ class Logger:
     def __init__(self, logname: str = '/tmp/log.local.log'):
         self.logname = logname
         self.logger = logging.getLogger()
-        self.logger.setLevel(logging.DEBUG)
+        self.logger.setLevel(logging.INFO)
         self.formatter = colorlog.ColoredFormatter(
             '%(log_color)s[%(asctime)s] [%(levelname)s]- %(message)s',
             log_colors=log_colors_config)

@@ -38,6 +38,10 @@ def sleep(countdown: int):
 
 
 # =========================================================== IO
+def show_func_name():
+    p(f"\n--------------- {sys._getframe(1).f_code.co_name} ---------------")
+
+
 def smartopen(file_path: str):
     with smart_open.open(file_path) as f:
         return f.readlines()
