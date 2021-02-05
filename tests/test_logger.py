@@ -1,9 +1,3 @@
-from slipper import logger
-import time
+from src.simple_parser import SimpleParser as sp
 
-cnt = 1
-while cnt < 10:
-    logger.Logger().info("Transcript pending")
-    cnt += 2
-    time.sleep(2)
 

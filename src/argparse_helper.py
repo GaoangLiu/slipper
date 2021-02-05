@@ -25,28 +25,42 @@ def parse_arguments():
         proxy = sp.read_arg_value(['-p', '--proxy'])
         name = sp.read_arg_value(['-r', '--rename'])
         df.download(url, proxy, name)
+    
     elif sp.has_attribute(['-d', '--ddfile']):
         size = sp.read_arg_value(['-d', '--ddfile'], 100)
         df.create_random_file(int(size))
+    
     elif sp.has_attribute(['-ip']):
-        df.p(df.shell("curl -s cip.cc"))
+        if sp.has_attribute(['-port', '--port']):
+            ip = sp.read_arg_value(['-ip'], 'localhost')
+            port = sp.read_arg_value(['-port', '--port'], '80')
+            df.p(df.shell(f"curl -s --socks5 {ip}:{port} ipinfo.io"))
+        else:
+            df.p(df.shell("curl -s cip.cc"))
+
     elif sp.has_attribute(['-rc', '--roundcorner']):
         image_path = sp.read_arg_value(['-rc'])
         radius = int(sp.read_arg_value(['--radius'], 10))
         df.rounded_corners(image_path, radius)
+
     elif sp.has_attribute(['-gu', '--githupupload']):
         df.githup_upload(sp.dict['-gu'].pop())
+
     elif sp.has_attribute(['-sm', '--smms']):
         df.smms_upload(sp.read_arg_value(['-sm', '--smms']))
+
     elif sp.has_attribute(['-pac', '--updatepac']):
         url = sp.read_arg_value(['-pac', '--updatepac'])
         df.update_pac(url)
+
     elif sp.has_attribute(['-yd', '--youdao']):
         df.youdao_dict(sp.read_arg_value(['-yd', '--youdao'], 'Abandon'))
+
     elif sp.has_attribute(['-fd', '--find']):
         dir_ = sp.read_arg_value(['-dir', '--dir'], ".")
         fname = sp.read_arg_value(['-fd', '--find'])
         df.findfile(fname, dir_)
+
     else:
         for l in msg.split("\n"):
             c, e = (l + " ::: ").split(':::')[:2]
