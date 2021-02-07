@@ -1,17 +1,19 @@
 import argparse
 import dofast as df
 from simple_parser import SimpleParser
+from oss import Bucket
 
 msg = """A Simple yet powerful terminal CLient. 😏
 
 -dw, --download -p, --proxy -r, --rename ::: Download file.
 -d, --ddfile[size] ::: Create random file.
--ip ::: Curl cip.cc
+-ip, -port::: Curl cip.cc
 -rc, --roundcorner ::: Add rounded corner to images.
 -gu, --githubupload ::: Upload files to GitHub.
 -sm, --smms ::: Upload image to sm.ms image server.
 -yd, --youdao ::: Youdao dict translation.
 -fd, --find [-dir, --dir] ::: Find files from dir.
+-oss [-u, --upload | -d, --download] ::: Aliyun OSS upload and download files.
 """
 
 
@@ -19,21 +21,21 @@ def parse_arguments():
     sp = SimpleParser()
     sp.parse_args()
 
-    if sp.has_attribute(['-dw', '--download']):
+    if sp.has_attribute(['-dw', '--download'], excludes=['-oss']):
         sp.set_default('-p', 'http://cn.ddot.cc:51172')
         url = sp.read_arg_value(['-dw'])
         proxy = sp.read_arg_value(['-p', '--proxy'])
         name = sp.read_arg_value(['-r', '--rename'])
         df.download(url, proxy, name)
     
-    elif sp.has_attribute(['-d', '--ddfile']):
+    elif sp.has_attribute(['-d', '--ddfile'], excludes=['-oss']):
         size = sp.read_arg_value(['-d', '--ddfile'], 100)
         df.create_random_file(int(size))
     
     elif sp.has_attribute(['-ip']):
-        if sp.has_attribute(['-port', '--port']):
+        if sp.has_attribute(['-p', '-port', '--port']):
             ip = sp.read_arg_value(['-ip'], 'localhost')
-            port = sp.read_arg_value(['-port', '--port'], '80')
+            port = sp.read_arg_value(['-p', '-port', '--port'], '80')
             df.p(df.shell(f"curl -s --socks5 {ip}:{port} ipinfo.io"))
         else:
             df.p(df.shell("curl -s cip.cc"))
@@ -60,6 +62,13 @@ def parse_arguments():
         dir_ = sp.read_arg_value(['-dir', '--dir'], ".")
         fname = sp.read_arg_value(['-fd', '--find'])
         df.findfile(fname, dir_)
+
+    elif sp.has_attribute(['-oss', '--oss']):
+        if sp.has_attribute(['-u', '--upload']):
+            Bucket().upload(sp.read_arg_value(['-u', '--upload']))
+        elif sp.has_attribute(['-d', '--download']):
+            url = Bucket().url_prefix + sp.read_arg_value(['-d', '--download'])
+            df.download(url)
 
     else:
         for l in msg.split("\n"):

@@ -12,11 +12,13 @@ class SimpleParser:
     def __init__(self):
         self.dict = {}
 
-    def has_attribute(self, arg_names: List):
+    def has_attribute(self, arg_names: List, excludes:List[str]=[])->bool:
         """ Decide if any argument is present in the dict
         Example: self.has_attribute(['-gu', '--githubupload']) 
+        :params excludes: list, exclusive arguments
         """
-        return any(map(lambda an: an in self.dict, arg_names))
+        b = any(e in self.dict for e in excludes)
+        return not b and any(map(lambda an: an in self.dict, arg_names))
 
     def parse_args(self) -> dict:
         args = sys.argv[1:]
