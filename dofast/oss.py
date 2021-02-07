@@ -1,6 +1,6 @@
 import oss2
 from getpass import getpass
-from config import ALIYUN_ACCESS_KEY_ID, ALIYUN_ACCESS_KEY_SECRET, ALIYUN_BUCKET, ALIYUN_REGION
+from dofast.config import ALIYUN_ACCESS_KEY_ID, ALIYUN_ACCESS_KEY_SECRET, ALIYUN_BUCKET, ALIYUN_REGION
 from tqdm import tqdm
 
 import os, sys
@@ -71,7 +71,7 @@ class Bucket:
         self.bucket.get_object_to_file(f"transfer/{file_name}", file_name.split('/')[-1])
         print(f"✅ {file_name} Downloaded.")
 
-    def delete_file(self, file_name: str) -> None:
+    def delete(self, file_name: str) -> None:
         """Delete a file from transfer/"""
         self.bucket.delete_object(f"transfer/{file_name}")
         print(f"✅ {file_name} deleted from transfer/")

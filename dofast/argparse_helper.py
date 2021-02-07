@@ -1,19 +1,19 @@
 import argparse
-import dofast as df
-from simple_parser import SimpleParser
-from oss import Bucket
+import dofast.dofast as df
+from dofast.simple_parser import SimpleParser
+from dofast.oss import Bucket
 
 msg = """A Simple yet powerful terminal CLient. 😏
 
 -dw, --download -p, --proxy -r, --rename ::: Download file.
 -d, --ddfile[size] ::: Create random file.
--ip, -port::: Curl cip.cc
+-ip [-p, --port]::: Curl cip.cc
 -rc, --roundcorner ::: Add rounded corner to images.
 -gu, --githubupload ::: Upload files to GitHub.
 -sm, --smms ::: Upload image to sm.ms image server.
 -yd, --youdao ::: Youdao dict translation.
 -fd, --find [-dir, --dir] ::: Find files from dir.
--oss [-u, --upload | -d, --download] ::: Aliyun OSS upload and download files.
+-oss [-u, --upload | -d, --download | -del, --delete] ::: Aliyun OSS upload and download files.
 """
 
 
@@ -69,7 +69,8 @@ def parse_arguments():
         elif sp.has_attribute(['-d', '--download']):
             url = Bucket().url_prefix + sp.read_arg_value(['-d', '--download'])
             df.download(url)
-
+        elif sp.has_attribute(['-del', '--delete']):
+            Bucket().delete(sp.read_arg_value(['-del', '--delete']))
     else:
         for l in msg.split("\n"):
             c, e = (l + " ::: ").split(':::')[:2]
