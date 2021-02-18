@@ -76,3 +76,8 @@ class Bucket:
         self.bucket.delete_object(f"transfer/{file_name}")
         print(f"✅ {file_name} deleted from transfer/")
 
+    def list_files(self, prefix="transfer/")->None:
+        for obj in oss2.ObjectIterator(self.bucket, prefix=prefix):
+            print(obj.key)
+
+    

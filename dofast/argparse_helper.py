@@ -27,11 +27,11 @@ def parse_arguments():
         proxy = sp.read_arg_value(['-p', '--proxy'])
         name = sp.read_arg_value(['-r', '--rename'])
         df.download(url, proxy, name)
-    
+
     elif sp.has_attribute(['-d', '--ddfile'], excludes=['-oss']):
         size = sp.read_arg_value(['-d', '--ddfile'], 100)
         df.create_random_file(int(size))
-    
+
     elif sp.has_attribute(['-ip']):
         if sp.has_attribute(['-p', '-port', '--port']):
             ip = sp.read_arg_value(['-ip'], 'localhost')
@@ -71,7 +71,9 @@ def parse_arguments():
             df.download(url)
         elif sp.has_attribute(['-del', '--delete']):
             Bucket().delete(sp.read_arg_value(['-del', '--delete']))
+        elif sp.has_attribute(['-l', '--list']):
+            Bucket().list_files()
     else:
         for l in msg.split("\n"):
             c, e = (l + " ::: ").split(':::')[:2]
-            print("{:<50} {:<20}".format(c, e))
+            print("{:<70} {:<20}".format(c, e))
