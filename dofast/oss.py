@@ -1,10 +1,13 @@
 import oss2
 from getpass import getpass
-from dofast.config import ALIYUN_ACCESS_KEY_ID, ALIYUN_ACCESS_KEY_SECRET, ALIYUN_BUCKET, ALIYUN_REGION
+from dofast.config import ALIYUN_ACCESS_KEY_ID, ALIYUN_ACCESS_KEY_SECRET, ALIYUN_BUCKET, ALIYUN_REGION, PHRASE
+from dofast.dofast import shell, textwrite, textread
 from tqdm import tqdm
 
 import os, sys
+import json
 import base64
+import tempfile
 from Crypto.Cipher import AES
 
 
@@ -30,8 +33,9 @@ def decode(msg_text: str, passphrase: str) -> str:
 
 
 class Bucket:
-    def __init__(self):
-        _passphrase = getpass("Type in your passphrase: ")
+    def __init__(self, phrase: str = None):
+        _passphrase = phrase if phrase else getpass(
+            "Type in your passphrase: ")
         _id = decode(ALIYUN_ACCESS_KEY_ID, _passphrase)
         _secret = decode(ALIYUN_ACCESS_KEY_SECRET, _passphrase)
         _region = decode(ALIYUN_REGION, _passphrase)
@@ -41,7 +45,6 @@ class Bucket:
         self.bucket = oss2.Bucket(_auth, _region, _bucket_name)
         _region = _region.lstrip('http://')
         self.url_prefix = f"https://{_bucket_name}.{_region}/transfer/"
-
 
     def upload(self, file_name) -> None:
         """Upload a file to transfer/"""
@@ -55,7 +58,7 @@ class Bucket:
             acc = args[0]
             ratio = lambda n: n * 100 // args[1]
             if ratio(acc + 8192) > ratio(acc):
-                sys.stdout.write(str(ratio(acc)//10))
+                sys.stdout.write(str(ratio(acc) // 10))
                 sys.stdout.flush()
 
         *_, object_name = file_name.split('/')
@@ -68,7 +71,8 @@ class Bucket:
 
     def download(self, file_name) -> None:
         """Download a file from transfer/"""
-        self.bucket.get_object_to_file(f"transfer/{file_name}", file_name.split('/')[-1])
+        self.bucket.get_object_to_file(f"transfer/{file_name}",
+                                       file_name.split('/')[-1])
         print(f"✅ {file_name} Downloaded.")
 
     def delete(self, file_name: str) -> None:
@@ -76,8 +80,33 @@ class Bucket:
         self.bucket.delete_object(f"transfer/{file_name}")
         print(f"✅ {file_name} deleted from transfer/")
 
-    def list_files(self, prefix="transfer/")->None:
+    def list_files(self, prefix="transfer/") -> None:
         for obj in oss2.ObjectIterator(self.bucket, prefix=prefix):
             print(obj.key)
 
-    
+
+class Message():
+    def __init__(self):
+        __keyfile='/tmp/slimsg.key'
+        _key = textread(__keyfile)[0] if os.path.exists(__keyfile) else getpass("\r")
+        self._passphrase = decode(PHRASE, _key)
+        self.bucket = Bucket(self._passphrase).bucket
+        self.file = 'transfer/msgbuffer.txt'
+        self._tmp = '/tmp/msgbuffer.txt'
+
+    def read(self) -> dict:
+        self.bucket.get_object_to_file(self.file, self._tmp)
+        conversations = textread(self._tmp)
+        for line in conversations[-10:]:
+            if not line: continue
+            name, content = line.strip().split('⎮')
+            sign = "🔥" if name == shell('whoami').strip() else "❄️ "
+            print('{} {}'.format(sign, content))
+
+    def write(self, msg_body: str):
+        contents = shell('whoami').strip() + "⎮" + msg_body
+        info = self.bucket.head_object(self.file)
+        loc = info.content_length
+        resp = self.bucket.append_object(self.file, loc, "\n" + contents)
+        if resp.status == 200:
+            print("msg WRITTEN.")

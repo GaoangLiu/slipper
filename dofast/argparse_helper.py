@@ -1,7 +1,7 @@
 import argparse
 import dofast.dofast as df
 from dofast.simple_parser import SimpleParser
-from dofast.oss import Bucket
+from dofast.oss import Bucket, Message
 
 msg = """A Simple yet powerful terminal CLient. 😏
 
@@ -14,6 +14,8 @@ msg = """A Simple yet powerful terminal CLient. 😏
 -yd, --youdao ::: Youdao dict translation.
 -fd, --find [-dir, --dir] ::: Find files from dir.
 -oss [-u, --upload | -d, --download | -del, --delete] ::: Aliyun OSS upload and download files.
+
+-m, --msg [-r, --write | -w, --write] ::: Messenger
 """
 
 
@@ -73,6 +75,15 @@ def parse_arguments():
             Bucket().delete(sp.read_arg_value(['-del', '--delete']))
         elif sp.has_attribute(['-l', '--list']):
             Bucket().list_files()
+        elif sp.has_attribute(['-pf', '--prefix']):
+            print(Bucket().url_prefix)
+    
+    elif sp.has_attribute(['-m', '--msg']):
+        if sp.has_attribute(['-r', '--read']):
+            Message().read()
+        elif sp.has_attribute(['-w', '--write']):
+            Message().write(sp.read_arg_value(['-w', '--write']))
+
     else:
         for l in msg.split("\n"):
             c, e = (l + " ::: ").split(':::')[:2]
