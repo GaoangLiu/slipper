@@ -1,5 +1,5 @@
 import argparse
-import dofast.dofast as df
+import dofast.utils as df
 from dofast.simple_parser import SimpleParser
 from dofast.oss import Bucket, Message
 
@@ -77,12 +77,12 @@ def parse_arguments():
             Bucket().list_files()
         elif sp.has_attribute(['-pf', '--prefix']):
             print(Bucket().url_prefix)
-    
+
     elif sp.has_attribute(['-m', '--msg']):
-        if sp.has_attribute(['-r', '--read']):
-            Message().read()
-        elif sp.has_attribute(['-w', '--write']):
+        if sp.has_attribute(['-w', '--write']):
             Message().write(sp.read_arg_value(['-w', '--write']))
+        else:
+            Message().read()
 
     else:
         for l in msg.split("\n"):
