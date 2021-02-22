@@ -109,4 +109,7 @@ class Message():
         loc = info.content_length
         resp = self.bucket.append_object(self.file, loc, "\n" + contents)
         if resp.status == 200:
-            print("msg WRITTEN.")
+            print("✔ Message Sent!")
+
+
+            

@@ -79,8 +79,13 @@ def parse_arguments():
             print(Bucket().url_prefix)
 
     elif sp.has_attribute(['-m', '--msg']):
+        vs = sp.read_arg_value(['-m', '--msg'])
         if sp.has_attribute(['-w', '--write']):
             Message().write(sp.read_arg_value(['-w', '--write']))
+        elif sp.has_attribute(['-r', '--read']):
+            Message().read()
+        elif vs: # i.e., sli -m 'Some message'
+            Message().write(vs)
         else:
             Message().read()
 
