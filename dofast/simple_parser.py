@@ -12,7 +12,7 @@ class SimpleParser:
     def __init__(self):
         self.dict = {}
 
-    def has_attribute(self, arg_names: List, excludes:List[str]=[])->bool:
+    def has_attribute(self, arg_names: List, excludes: List[str] = []) -> bool:
         """ Decide if any argument is present in the dict
         Example: self.has_attribute(['-gu', '--githubupload']) 
         :params excludes: list, exclusive arguments
@@ -31,7 +31,7 @@ class SimpleParser:
                 self.dict[arg_name].append(a)
         return self.dict
 
-    def read_arg_value(self, arg_names: List, default_value=None) -> str:
+    def fetch_value(self, arg_names: List, default_value=None) -> str:
         """Return correspomding argument values. 
         By now, we assume each key corresponds to only one value. 
         We may need multiple values in the future.
