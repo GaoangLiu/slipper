@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="dofast",
-    version="0.0.2a2",
+    version="0.0.2a5",
     author="Gaogle",
     author_email="byteleap@gmail.com",
     description="A package for dirty faster Python programming",
@@ -16,7 +16,7 @@ setuptools.setup(
     # py_modules=['dofast', 'argparse_helper', 'simple_parser', 'oss', 'config'],
     install_requires=[
         'colorlog>=4.6.1', 'tqdm', 'PyGithub', 'oss2',
-        'smart-open', 'pillow', 'bs4'
+        'smart-open', 'pillow', 'bs4', 'arrow', 'numpy'
     ],
     entry_points={
         'console_scripts': ['sli=dofast.argparse_helper:parse_arguments'],

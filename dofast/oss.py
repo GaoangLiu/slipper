@@ -34,7 +34,8 @@ def decode(msg_text: str, passphrase: str) -> str:
 
 class Bucket:
     def __init__(self, phrase: str = None):
-        _passphrase = phrase if phrase else getpass(
+        __keyfile='/tmp/bucket.key'
+        _passphrase = textread(__keyfile)[0] if os.path.exists(__keyfile) else getpass(
             "Type in your passphrase: ")
         _id = decode(ALIYUN_ACCESS_KEY_ID, _passphrase)
         _secret = decode(ALIYUN_ACCESS_KEY_SECRET, _passphrase)

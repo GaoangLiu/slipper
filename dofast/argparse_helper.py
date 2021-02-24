@@ -2,7 +2,7 @@ import argparse
 import dofast.utils as df
 from dofast.simple_parser import SimpleParser
 from dofast.oss import Bucket, Message
-from dofast.fund import invest_advice
+from dofast.fund import invest_advice, tgalert
 from dofast.stock import Stock
 
 msg = """A Simple yet powerful terminal CLient. 😏
@@ -94,7 +94,10 @@ def parse_arguments():
             Message().read()
 
     elif sp.has_attribute(['-fund', '--fund']):
-        invest_advice(sp.fetch_value(['-fund', '--fund'], None))
+        if sp.has_attribute(['-ba', '--buyalert']):
+            tgalert()
+        else:
+            invest_advice(sp.fetch_value(['-fund', '--fund'], None))
 
     elif sp.has_attribute(['-stock', '--stock']):
         code = sp.fetch_value(['-stock', '--stock'])

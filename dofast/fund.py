@@ -1,9 +1,17 @@
 import json
 import math
 import re
+import numpy as np
+import arrow
+import random
 import requests
 import time
+
 from bs4 import BeautifulSoup
+from utils.endecode import decode_with_keyfile
+from utils.telegram import bot_say
+from dofast.config import PLUTOSHARE, MESSALERT
+
 
 class bcolors:
     BLUE = '\033[94m'
@@ -86,6 +94,51 @@ class Fund():
 
         print("\n")
 
+    def buy_advice(self):
+        """ Automatic investment money ~ Normal(200, 30) if randint == 1.
+        When there are N candidate funds, the probability of conducting automatic investment
+        on at least one fund per day is pr = 1 - (1 - theta) ** N, where theta is the probability of do investment on a single fund.
+
+        Example 1, when N = 3, theta = 1 / 14 => pr = 0.19934. The expected investment per month is thus: 200 * 0.2 * 22 (22 workdays) = 880 CNY
+        Example 1, when N = 3, theta = 1 / 6 =>  pr = 0.4213. The expected investment per month is thus: 200 * 0.4213 * 22 (22 workdays) = 1853 CNY
+
+        P.S., automatic investment should be auxiliary of our main investment strategy, and should be less than 
+        1000 per month.
+        """
+        rti = self.get_real_price()  # real time info
+        estimated_profit_rate = 0
+        text = ""
+        randint = random.randint(1, 6)
+        base_investment = np.random.normal(200, 30,
+                                           1)[0] if randint == 1 else 0
+
+        if rti:
+            today = arrow.now().format("YYYY-MM-DD")
+            gztime = rti['gztime'].__str__().split(' ')[0]
+            if today != gztime:
+                return text
+
+            # Calculate investment account based on decrease ratio of pure value
+            # of fund.
+            e, p = float(rti['gsz']), float(rti['dwjz'])
+            r = (e - p) / p * 100
+            if e < p:
+                # Three sigma rule: 99.73% value will fall in range [\mu - 3 \sigma, \mu + 3 \sigma],
+                # or [105, 195] in our case.
+                s = np.random.normal(150, 15, 1)[0]
+                base_investment += max(1000 * math.exp(1 + 2 / r), s)
+
+            if base_investment == 0:  # No investment for today, then exit current method.
+                return ''
+            text += "基金: {}\n".format(rti['name'])
+            text += "代码: {}\n".format(rti['fundcode'])
+            text += "当前时间: {}\n".format(rti['gztime'])
+            text += "今日估值 {}\n昨日净值 {}\n".format(rti['gsz'], rti['dwjz'])
+            text += "补投: {} 元 ({:.2f})\n\n".format(int(base_investment) * 2, r)
+            # print(text)
+            return text
+        return ""
+
 
 def show_sz_index():
     ''' Show today's shanghai index 
@@ -104,13 +157,24 @@ def show_sz_index():
             '', value, colored_diff, ratio, name))
 
 
-def invest_advice(fund_code:str=None):
-    _personal_choices = [fund_code] if fund_code else ['162605', '110022', '161903', '570008']
+def invest_advice(fund_code: str = None):
+    _personal_choices = [fund_code] if fund_code else [
+        '162605', '110022', '161903', '570008'
+    ]
     for pc in _personal_choices:
         f = Fund(pc)
         f.printBasicInfo()
     show_sz_index()
 
 
+def tgalert():
+    """Send investment advice to Telegram Channel"""
+    msg = '\n'.join(
+        [Fund(code).buy_advice() for code in ['162605', '570008', '161903']])
+    _token = decode_with_keyfile('/tmp/telegram.key', PLUTOSHARE)
+    bot_say(_token, msg)
+
+
 if __name__ == '__main__':
-    invest_advice()
+    # invest_advice()
+    tgalert()
