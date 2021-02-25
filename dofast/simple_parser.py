@@ -19,6 +19,9 @@ class SimpleParser:
         """
         b = any(e in self.dict for e in excludes)
         return not b and any(map(lambda an: an in self.dict, arg_names))
+    
+    def has_attr(self, arg_names: List, excludes:List[str] = [])->bool:
+        return self.has_attribute(arg_names, excludes)
 
     def parse_args(self) -> dict:
         args = sys.argv[1:]

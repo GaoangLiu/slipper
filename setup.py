@@ -16,7 +16,7 @@ setuptools.setup(
     # py_modules=['dofast', 'argparse_helper', 'simple_parser', 'oss', 'config'],
     install_requires=[
         'colorlog>=4.6.1', 'tqdm', 'PyGithub', 'oss2',
-        'smart-open', 'pillow', 'bs4', 'arrow', 'numpy'
+        'smart-open', 'pillow', 'bs4', 'arrow', 'numpy', 'termcolor'
     ],
     entry_points={
         'console_scripts': ['sli=dofast.argparse_helper:parse_arguments'],
