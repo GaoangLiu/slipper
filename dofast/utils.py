@@ -133,7 +133,7 @@ def download(url: str, proxy=None, name=None):
         name = url.split('/').pop()
     if proxy:
         proxy = {'http': proxy}
-    response = requests.get(url, stream=True, proxies=proxy)
+    response = client.get(url, stream=True, proxies=proxy)
     total_size_in_bytes = int(response.headers.get('content-length', 0))
     block_size = 1024  # 8 Kibibyte
     progress_bar = tqdm(total=total_size_in_bytes, unit='iB', unit_scale=True)
