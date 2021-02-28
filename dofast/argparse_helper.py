@@ -42,7 +42,7 @@ def parse_arguments():
         if sp.has_attribute(['-p', '-port', '--port']):
             ip = sp.fetch_value(['-ip'], 'localhost')
             port = sp.fetch_value(['-p', '-port', '--port'], '80')
-            df.p(df.shell(f"curl -s --socks5 {ip}:{port} ipinfo.io"))
+            df.p(df.shell(f"curl -s --connect-timeout 3 --socks5 {ip}:{port} ipinfo.io"))
         else:
             df.p(df.shell("curl -s cip.cc"))
 

@@ -66,12 +66,18 @@ def critical(msg):
     Logger().critical(msg)
 
 
-def shell(cmd: str, print_str:bool=False) -> str:
-    ret_str = subprocess.check_output(cmd, stderr=subprocess.STDOUT,
-                                   shell=True).decode('utf8')
-    if print_str:
-        p(ret_str)
-    return ret_str                                
+def shell(cmd: str, print_str: bool = False) -> str:
+    ret_str = ''
+    try:
+        ret_str = subprocess.check_output(cmd,
+                                          stderr=subprocess.STDOUT,
+                                          shell=True).decode('utf8')
+    except Exception as e:
+        print(e)
+    finally:
+        if print_str:
+            p(ret_str)
+        return ret_str
 
 
 def jsonread(file_name: str) -> dict:
