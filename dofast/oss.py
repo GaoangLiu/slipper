@@ -1,7 +1,8 @@
 import oss2
 from getpass import getpass
 from dofast.config import ALIYUN_ACCESS_KEY_ID, ALIYUN_ACCESS_KEY_SECRET, ALIYUN_BUCKET, ALIYUN_REGION, PHRASE
-from dofast.dofast import shell, textwrite, textread
+from dofast.utils import shell, textwrite, textread
+from toolkits.file import load_password
 from tqdm import tqdm
 
 import os, sys
@@ -9,6 +10,7 @@ import json
 import base64
 import tempfile
 from Crypto.Cipher import AES
+
 
 
 def encode(msg_text: str, passphrase: str) -> str:
@@ -34,9 +36,7 @@ def decode(msg_text: str, passphrase: str) -> str:
 
 class Bucket:
     def __init__(self, phrase: str = None):
-        __keyfile='/tmp/bucket.key'
-        _passphrase = textread(__keyfile)[0] if os.path.exists(__keyfile) else getpass(
-            "Type in your passphrase: ")
+        _passphrase = load_password('/etc/bucket.key')
         _id = decode(ALIYUN_ACCESS_KEY_ID, _passphrase)
         _secret = decode(ALIYUN_ACCESS_KEY_SECRET, _passphrase)
         _region = decode(ALIYUN_REGION, _passphrase)
@@ -88,9 +88,7 @@ class Bucket:
 
 class Message():
     def __init__(self):
-        __keyfile='/tmp/slimsg.key'
-        _key = textread(__keyfile)[0] if os.path.exists(__keyfile) else getpass("\r")
-        self._passphrase = decode(PHRASE, _key)
+        self._passphrase = decode(PHRASE, load_password('/etc/slimsg.key'))
         self.bucket = Bucket(self._passphrase).bucket
         self.file = 'transfer/msgbuffer.txt'
         self._tmp = '/tmp/msgbuffer.txt'
@@ -111,6 +109,3 @@ class Message():
         resp = self.bucket.append_object(self.file, loc, "\n" + contents)
         if resp.status == 200:
             print("✔ Message Sent!")
-
-
-            

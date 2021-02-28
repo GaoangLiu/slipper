@@ -8,8 +8,9 @@ import requests
 import time
 
 from bs4 import BeautifulSoup
-from utils.endecode import decode_with_keyfile
-from utils.telegram import bot_say
+from toolkits.endecode import decode_with_keyfile
+from toolkits.telegram import bot_say
+from toolkits.file import load_password
 from dofast.config import PLUTOSHARE, MESSALERT
 
 
@@ -171,7 +172,7 @@ def tgalert():
     """Send investment advice to Telegram Channel"""
     msg = '\n'.join(
         [Fund(code).buy_advice() for code in ['162605', '570008', '161903']])
-    _token = decode_with_keyfile('/tmp/telegram.key', PLUTOSHARE)
+    _token = decode_with_keyfile('/etc/telegram.key', PLUTOSHARE)
     bot_say(_token, msg)
 
 

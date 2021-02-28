@@ -19,7 +19,6 @@ from typing import List
 from pprint import pprint
 from tqdm import tqdm
 from PIL import Image, ImageDraw
-from dofast.simple_parser import SimpleParser
 from dofast.logger import Logger
 
 

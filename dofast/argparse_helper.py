@@ -10,7 +10,7 @@ msg = """A Simple yet powerful terminal CLient. 😏
 -dw, --download -p, --proxy [-r|-o](--rename) ::: Download file.
 -d, --ddfile[size] ::: Create random file.
 -ip [-p, --port]::: Curl cip.cc
--rc, --roundcorner ::: Add rounded corner to images.
+-rc, --roundcorner [--radius] ::: Add rounded corner to images.
 -gu, --githubupload ::: Upload files to GitHub.
 -sm, --smms ::: Upload image to sm.ms image server.
 -yd, --youdao ::: Youdao dict translation.
