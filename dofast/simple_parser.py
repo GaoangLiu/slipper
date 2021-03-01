@@ -34,14 +34,14 @@ class SimpleParser:
                 self.dict[arg_name].append(a)
         return self.dict
 
-    def fetch_value(self, arg_names: List, default_value=None) -> str:
+    def fetch_value(self, arg_names: List, default_value=None, return_list:bool=False) -> str:
         """Return correspomding argument values. 
         By now, we assume each key corresponds to only one value. 
         We may need multiple values in the future.
         """
         for key in arg_names:
             if key in self.dict and len(self.dict[key]):
-                return self.dict[key][0]
+                return self.dict[key] if return_list else self.dict[key][0]
         return default_value
 
     def set_default(self, arg_name: str, value: str):
