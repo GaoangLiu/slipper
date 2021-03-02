@@ -62,8 +62,7 @@ class Bucket:
                 sys.stdout.write(str(ratio(acc) // 10))
                 sys.stdout.flush()
 
-        *_, object_name = file_name.split('/')
-        object_name = f"transfer/{object_name}"
+        object_name = 'transfer' + file_name.split('/')[-1]
         self.bucket.put_object_from_file(object_name,
                                          file_name,
                                          progress_callback=progress_bar)

@@ -2,6 +2,7 @@ import argparse
 import dofast.utils as df
 from dofast.simple_parser import SimpleParser
 from dofast.oss import Bucket, Message
+from dofast.cos import COS
 from dofast.fund import invest_advice, tgalert
 from dofast.stock import Stock
 
@@ -34,7 +35,7 @@ def parse_arguments():
         name = sp.fetch_value(['-r', '-o', '--rename'])
         df.download(url, proxy, name)
 
-    elif sp.has_attribute(['-d', '--ddfile'], excludes=['-oss']):
+    elif sp.has_attribute(['-d', '--ddfile'], excludes=['-oss', '-cos']):
         size = sp.fetch_value(['-d', '--ddfile'], 100)
         df.create_random_file(int(size))
 
@@ -78,9 +79,26 @@ def parse_arguments():
         elif sp.has_attribute(['-del', '--delete']):
             Bucket().delete(sp.fetch_value(['-del', '--delete']))
         elif sp.has_attribute(['-l', '--list']):
+            print(Bucket().url_prefix)            
             Bucket().list_files()
         elif sp.has_attribute(['-pf', '--prefix']):
             print(Bucket().url_prefix)
+
+    elif sp.has_attribute(['-cos', '--cos']):
+        coscli = COS()
+        if sp.has_attribute(['-u', '--upload']):
+            fname=sp.fetch_value(['-u', '--upload'])
+            print(f"Start uploading {fname} ...")
+            coscli.upload_file(fname, 'transfer/')
+        elif sp.has_attribute(['-d', '--download']):
+            fname = sp.fetch_value(['-d', '--download'])
+            print(f"Start downloading {fname} ...")
+            coscli.download_file(f'transfer/{fname}', fname)
+        elif sp.has_attribute(['-del', '--delete']):
+            coscli.delete_file('transfer/' + sp.fetch_value(['-del', '--delete']))
+        elif sp.has_attribute(['-l', '--list']):
+            print(coscli.prefix())            
+            coscli.list_files('transfer/')
 
     elif sp.has_attribute(['-m', '--msg']):
         vs = sp.fetch_value(['-m', '--msg'])
