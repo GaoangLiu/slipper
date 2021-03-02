@@ -16,7 +16,9 @@ msg = """A Simple yet powerful terminal CLient. 😏
 -sm, --smms ::: Upload image to sm.ms image server.
 -yd, --youdao ::: Youdao dict translation.
 -fd, --find [-dir, --dir] ::: Find files from dir.
--oss [-u, --upload | -d, --download | -del, --delete] ::: Aliyun OSS upload and download files.
+
+-oss [-u, --upload | -d, --download | -del, --delete] ::: Aliyun OSS manager
+-cos [-u, --upload | -d, --download | -del, --delete] ::: COS file manager.
 
 -m, --msg [-r, --write | -w, --write] ::: Messenger
 -fund, --fund [fund_code] ::: Fund investment.

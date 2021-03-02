@@ -6,15 +6,18 @@ from qcloud_cos import CosConfig
 from qcloud_cos import CosS3Client
 from tqdm import tqdm
 
-from .config import TENCENT_SECRET_ID, TENCENT_SECRET_KEY, AUTH, HTTP_PROXY, HTTPS_PROXY, BUCKET
 from toolkits.endecode import decode_with_keyfile as dkey
+from .config import TENCENT_SECRET_ID, TENCENT_SECRET_KEY, AUTH, HTTP_PROXY, HTTPS_PROXY, BUCKET
 
 
 class COS:
     def __init__(self):
         _id = dkey(AUTH, TENCENT_SECRET_ID)
         _key = dkey(AUTH, TENCENT_SECRET_KEY)
-        _proxies = {'http': dkey(AUTH, HTTP_PROXY)}
+        _proxies = {
+            'http': dkey(AUTH, HTTP_PROXY),
+            'https': dkey(AUTH, HTTP_PROXY)
+        }
         self.bucket = dkey(AUTH, BUCKET)
         _config = CosConfig(Region='ap-beijing',
                             SecretId=_id,
