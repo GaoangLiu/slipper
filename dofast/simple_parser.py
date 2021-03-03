@@ -19,8 +19,8 @@ class SimpleParser:
         """
         b = any(e in self.dict for e in excludes)
         return not b and any(map(lambda an: an in self.dict, arg_names))
-    
-    def has_attr(self, arg_names: List, excludes:List[str] = [])->bool:
+
+    def has_attr(self, arg_names: List, excludes: List[str] = []) -> bool:
         return self.has_attribute(arg_names, excludes)
 
     def parse_args(self) -> dict:
@@ -34,7 +34,10 @@ class SimpleParser:
                 self.dict[arg_name].append(a)
         return self.dict
 
-    def fetch_value(self, arg_names: List, default_value=None, return_list:bool=False) -> str:
+    def fetch_value(self,
+                    arg_names: List,
+                    default_value=None,
+                    return_list: bool = False) -> str:
         """Return correspomding argument values. 
         By now, we assume each key corresponds to only one value. 
         We may need multiple values in the future.

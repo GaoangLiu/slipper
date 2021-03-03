@@ -15,7 +15,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     # py_modules=['dofast', 'argparse_helper', 'simple_parser', 'oss', 'config'],
     install_requires=[
-        'colorlog>=4.6.1', 'tqdm', 'PyGithub', 'oss2', 'lxml',
+        'colorlog>=4.6.1', 'tqdm', 'PyGithub', 'oss2', 'lxml', 'cos-python-sdk-v5',
         'smart-open', 'pillow', 'bs4', 'arrow', 'numpy', 'termcolor'
     ],
     entry_points={

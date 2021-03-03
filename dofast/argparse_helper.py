@@ -6,6 +6,8 @@ from dofast.cos import COS
 from dofast.fund import invest_advice, tgalert
 from dofast.stock import Stock
 
+from .network import Network
+
 msg = """A Simple yet powerful terminal CLient. 😏
 
 -dw, --download -p, --proxy [-r|-o](--rename) ::: Download file.
@@ -45,7 +47,17 @@ def parse_arguments():
         if sp.has_attribute(['-p', '-port', '--port']):
             ip = sp.fetch_value(['-ip'], 'localhost')
             port = sp.fetch_value(['-p', '-port', '--port'], '80')
-            df.p(df.shell(f"curl -s --connect-timeout 3 --socks5 {ip}:{port} ipinfo.io"))
+            if Network.is_good_proxy(f'{ip}:{port}'):
+                curl_socks = f"curl -s --connect-timeout 3 --socks5 {ip}:{port} ipinfo.io"
+                curl_http = f"curl -s --connect-timeout 3 --proxy {ip}:{port} ipinfo.io"
+                res = df.shell(curl_socks)
+                if not res:
+                    df.p(df.shell(curl_http))
+                else:
+                    df.p("This proxy supports HTTP only.")
+                    df.p(res)
+            else:
+                print("Proxy invalid.")
         else:
             df.p(df.shell("curl -s cip.cc"))
 
@@ -81,7 +93,7 @@ def parse_arguments():
         elif sp.has_attribute(['-del', '--delete']):
             Bucket().delete(sp.fetch_value(['-del', '--delete']))
         elif sp.has_attribute(['-l', '--list']):
-            print(Bucket().url_prefix)            
+            print(Bucket().url_prefix)
             Bucket().list_files()
         elif sp.has_attribute(['-pf', '--prefix']):
             print(Bucket().url_prefix)
@@ -89,7 +101,7 @@ def parse_arguments():
     elif sp.has_attribute(['-cos', '--cos']):
         coscli = COS()
         if sp.has_attribute(['-u', '--upload']):
-            fname=sp.fetch_value(['-u', '--upload'])
+            fname = sp.fetch_value(['-u', '--upload'])
             print(f"Start uploading {fname} ...")
             coscli.upload_file(fname, 'transfer/')
         elif sp.has_attribute(['-d', '--download']):
@@ -97,9 +109,10 @@ def parse_arguments():
             print(f"Start downloading {fname} ...")
             coscli.download_file(f'transfer/{fname}', fname)
         elif sp.has_attribute(['-del', '--delete']):
-            coscli.delete_file('transfer/' + sp.fetch_value(['-del', '--delete']))
+            coscli.delete_file('transfer/' +
+                               sp.fetch_value(['-del', '--delete']))
         elif sp.has_attribute(['-l', '--list']):
-            print(coscli.prefix())            
+            print(coscli.prefix())
             coscli.list_files('transfer/')
 
     elif sp.has_attribute(['-m', '--msg']):

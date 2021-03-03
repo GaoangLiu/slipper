@@ -12,7 +12,6 @@ import tempfile
 from Crypto.Cipher import AES
 
 
-
 def encode(msg_text: str, passphrase: str) -> str:
     msg_text += '|' + msg_text * 100
     msg_text = msg_text[:1024]
