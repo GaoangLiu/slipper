@@ -5,6 +5,8 @@ from dofast.oss import Bucket, Message
 from dofast.cos import COS
 from dofast.fund import invest_advice, tgalert
 from dofast.stock import Stock
+from toolkits.endecode import short_decode, short_encode
+from toolkits.telegram import read_hema_bot
 
 from .network import Network
 
@@ -25,6 +27,8 @@ msg = """A Simple yet powerful terminal CLient. 😏
 -m, --msg [-r, --write | -w, --write] ::: Messenger
 -fund, --fund [fund_code] ::: Fund investment.
 -stock, --stock [stock_code] ::: Stock trend.
+-aes [-en | -de ] ::: AES encode/decode.
+-hema ::: Read hema bot update.
 """
 
 
@@ -138,6 +142,18 @@ def parse_arguments():
             Stock().trend(str(code))
         else:
             Stock().my_trend()
+
+    elif sp.has_attr(['-aes']):
+        _msg = sp.fetch_value(['-aes'])
+        if sp.has_attr(['-en']):
+            passphrase = sp.fetch_value(['-en'])
+            df.p(short_encode(_msg, passphrase))
+        elif sp.has_attr(['-de']):
+            passphrase = sp.fetch_value(['-de'])
+            df.p(short_decode(_msg, passphrase))
+
+    elif sp.has_attr(['-hema']):
+        read_hema_bot()
 
     else:
         for l in msg.split("\n"):

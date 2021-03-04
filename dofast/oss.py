@@ -42,9 +42,10 @@ class Bucket:
         _bucket_name = decode(ALIYUN_BUCKET, _passphrase)
         _auth = oss2.Auth(_id, _secret)
         _service = oss2.Service(_auth, _region)
+        _http_region = _region.lstrip('http://')
+
         self.bucket = oss2.Bucket(_auth, _region, _bucket_name)
-        _region = _region.lstrip('http://')
-        self.url_prefix = f"https://{_bucket_name}.{_region}/transfer/"
+        self.url_prefix = f"https://{_bucket_name}.{_http_region}/transfer/"
 
     def upload(self, file_name) -> None:
         """Upload a file to transfer/"""
