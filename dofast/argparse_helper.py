@@ -6,7 +6,7 @@ from dofast.cos import COS
 from dofast.fund import invest_advice, tgalert
 from dofast.stock import Stock
 from toolkits.endecode import short_decode, short_encode
-from toolkits.telegram import read_hema_bot
+from toolkits.telegram import read_hema_bot, download_file_by_id
 
 from .network import Network
 
@@ -28,7 +28,7 @@ msg = """A Simple yet powerful terminal CLient. 😏
 -fund, --fund [fund_code] ::: Fund investment.
 -stock, --stock [stock_code] ::: Stock trend.
 -aes [-en | -de ] ::: AES encode/decode.
--hema ::: Read hema bot update.
+-hema [-id id ] ::: Read hema bot update / Download file by id
 """
 
 
@@ -153,7 +153,10 @@ def parse_arguments():
             df.p(short_decode(_msg, passphrase))
 
     elif sp.has_attr(['-hema']):
-        read_hema_bot()
+        if sp.has_attr(['-id']):
+            download_file_by_id(sp.fetch_value(['-id']))
+        else:
+            read_hema_bot()
 
     else:
         for l in msg.split("\n"):
