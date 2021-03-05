@@ -11,7 +11,7 @@ from bs4 import BeautifulSoup
 from toolkits.endecode import decode_with_keyfile
 from toolkits.telegram import bot_say
 from toolkits.file import load_password
-from dofast.config import PLUTOSHARE, MESSALERT
+from app.config import PLUTOSHARE, MESSALERT
 
 
 class bcolors:

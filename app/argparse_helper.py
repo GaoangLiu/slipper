@@ -1,10 +1,10 @@
 import argparse
-import dofast.utils as df
-from dofast.simple_parser import SimpleParser
-from dofast.oss import Bucket, Message
-from dofast.cos import COS
-from dofast.fund import invest_advice, tgalert
-from dofast.stock import Stock
+import app.utils as df
+from app.simple_parser import SimpleParser
+from app.oss import Bucket, Message
+from app.cos import COS
+from app.fund import invest_advice, tgalert
+from app.stock import Stock
 from toolkits.endecode import short_decode, short_encode
 from toolkits.telegram import read_hema_bot, download_file_by_id
 

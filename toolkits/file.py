@@ -1,6 +1,6 @@
 import os
 import sys
-from dofast.utils import textwrite, textread
+from app.utils import textwrite, textread
 from getpass import getpass
 
 

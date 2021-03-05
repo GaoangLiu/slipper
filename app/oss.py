@@ -1,7 +1,7 @@
 import oss2
 from getpass import getpass
-from dofast.config import ALIYUN_ACCESS_KEY_ID, ALIYUN_ACCESS_KEY_SECRET, ALIYUN_BUCKET, ALIYUN_REGION, PHRASE
-from dofast.utils import shell, textwrite, textread
+from app.config import ALIYUN_ACCESS_KEY_ID, ALIYUN_ACCESS_KEY_SECRET, ALIYUN_BUCKET, ALIYUN_REGION, PHRASE
+from app.utils import shell, textwrite, textread
 from toolkits.file import load_password
 from tqdm import tqdm
 

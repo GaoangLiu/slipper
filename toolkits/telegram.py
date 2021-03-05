@@ -3,9 +3,9 @@ import os
 import json
 import requests
 
-import dofast.utils as du
-from dofast.utils import p, pp
-from dofast.config import HEMA_BOT, AUTH, HTTP_PROXY, TELEGRAM_KEY
+import app.utils as du
+from app.utils import p, pp
+from app.config import HEMA_BOT, AUTH, HTTP_PROXY, TELEGRAM_KEY
 from .endecode import short_decode, decode_with_keyfile as dkey
 
 proxies = {'http': dkey(AUTH, HTTP_PROXY)}
