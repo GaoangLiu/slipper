@@ -1,5 +1,5 @@
 import argparse
-import dofast.utils as df
+import dofast.utils as du
 from dofast.simple_parser import SimpleParser
 from dofast.oss import Bucket, Message
 from dofast.cos import COS
@@ -41,11 +41,11 @@ def parse_arguments():
         url = sp.fetch_value(['-dw'])
         proxy = sp.fetch_value(['-p', '--proxy'])
         name = sp.fetch_value(['-r', '-o', '--rename'])
-        df.download(url, proxy, name)
+        du.download(url, proxy, name)
 
-    elif sp.has_attribute(['-d', '--ddfile'], excludes=['-oss', '-cos']):
-        size = sp.fetch_value(['-d', '--ddfile'], 100)
-        df.create_random_file(int(size))
+    elif sp.has_attribute(['-d', '--dduile'], excludes=['-oss', '-cos']):
+        size = sp.fetch_value(['-d', '--dduile'], 100)
+        du.create_random_file(int(size))
 
     elif sp.has_attribute(['-ip']):
         if sp.has_attribute(['-p', '-port', '--port']):
@@ -54,46 +54,46 @@ def parse_arguments():
             if Network.is_good_proxy(f'{ip}:{port}'):
                 curl_socks = f"curl -s --connect-timeout 3 --socks5 {ip}:{port} ipinfo.io"
                 curl_http = f"curl -s --connect-timeout 3 --proxy {ip}:{port} ipinfo.io"
-                res = df.shell(curl_socks)
-                if not res:
-                    df.p(df.shell(curl_http))
+                res = du.shell(curl_socks)
+                if res != '':
+                    du.p(res)
                 else:
-                    df.p("This proxy supports HTTP only.")
-                    df.p(res)
+                    du.p('FAILED(socks5 proxy check)')
+                    du.p(du.shell(curl_http))
             else:
                 print("Proxy invalid.")
         else:
-            df.p(df.shell("curl -s cip.cc"))
+            du.p(du.shell("curl -s cip.cc"))
 
     elif sp.has_attribute(['-rc', '--roundcorner']):
         image_path = sp.fetch_value(['-rc'])
         radius = int(sp.fetch_value(['--radius'], 10))
-        df.rounded_corners(image_path, radius)
+        du.rounded_corners(image_path, radius)
 
     elif sp.has_attribute(['-gu', '--githupupload']):
-        df.githup_upload(sp.dict['-gu'].pop())
+        du.githup_upload(sp.dict['-gu'].pop())
 
     elif sp.has_attribute(['-sm', '--smms']):
-        df.smms_upload(sp.fetch_value(['-sm', '--smms']))
+        du.smms_upload(sp.fetch_value(['-sm', '--smms']))
 
     elif sp.has_attribute(['-pac', '--updatepac']):
         url = sp.fetch_value(['-pac', '--updatepac'])
-        df.update_pac(url)
+        du.update_pac(url)
 
     elif sp.has_attribute(['-yd', '--youdao']):
-        df.youdao_dict(sp.fetch_value(['-yd', '--youdao'], 'Abandon'))
+        du.youdao_dict(sp.fetch_value(['-yd', '--youdao'], 'Abandon'))
 
     elif sp.has_attribute(['-fd', '--find']):
         dir_ = sp.fetch_value(['-dir', '--dir'], ".")
         fname = sp.fetch_value(['-fd', '--find'])
-        df.findfile(fname, dir_)
+        du.finduile(fname, dir_)
 
     elif sp.has_attribute(['-oss', '--oss']):
         if sp.has_attribute(['-u', '--upload']):
             Bucket().upload(sp.fetch_value(['-u', '--upload']))
         elif sp.has_attribute(['-d', '--download']):
             url = Bucket().url_prefix + sp.fetch_value(['-d', '--download'])
-            df.download(url)
+            du.download(url)
         elif sp.has_attribute(['-del', '--delete']):
             Bucket().delete(sp.fetch_value(['-del', '--delete']))
         elif sp.has_attribute(['-l', '--list']):
@@ -147,10 +147,10 @@ def parse_arguments():
         _msg = sp.fetch_value(['-aes'])
         if sp.has_attr(['-en']):
             passphrase = sp.fetch_value(['-en'])
-            df.p(short_encode(_msg, passphrase))
+            du.p(short_encode(_msg, passphrase))
         elif sp.has_attr(['-de']):
             passphrase = sp.fetch_value(['-de'])
-            df.p(short_decode(_msg, passphrase))
+            du.p(short_decode(_msg, passphrase))
 
     elif sp.has_attr(['-hema']):
         if sp.has_attr(['-id']):

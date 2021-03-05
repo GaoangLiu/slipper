@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="dofast",
-    version="0.0.2b6",
+    version="0.0.2b7",
     author="SLP",
     author_email="byteleap@gmail.com",
     description="A package for dirty faster Python programming",
