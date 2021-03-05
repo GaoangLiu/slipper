@@ -5,9 +5,9 @@ from dofast.oss import Bucket, Message
 from dofast.cos import COS
 from dofast.fund import invest_advice, tgalert
 from dofast.stock import Stock
-from toolkits.endecode import short_decode, short_encode
-from toolkits.telegram import read_hema_bot, download_file_by_id
 
+from .toolkits.endecode import short_decode, short_encode
+from .toolkits.telegram import read_hema_bot, download_file_by_id
 from .network import Network
 
 msg = """A Simple yet powerful terminal CLient. 😏

@@ -12,14 +12,14 @@ import subprocess
 import string
 import sys
 import time
-from functools import wraps
+from functools import wraps 
 from github import Github
 from github import InputGitTreeElement
 from typing import List
 from pprint import pprint
 from tqdm import tqdm
 from PIL import Image, ImageDraw
-from dofast.logger import Logger
+from .logger import Logger
 
 
 # =========================================================== display

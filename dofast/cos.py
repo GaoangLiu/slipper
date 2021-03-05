@@ -6,7 +6,7 @@ from qcloud_cos import CosConfig
 from qcloud_cos import CosS3Client
 from tqdm import tqdm
 
-from toolkits.endecode import decode_with_keyfile as dkey
+from .toolkits.endecode import decode_with_keyfile as dkey
 from .config import TENCENT_SECRET_ID, TENCENT_SECRET_KEY, AUTH, HTTP_PROXY, HTTPS_PROXY, BUCKET
 
 

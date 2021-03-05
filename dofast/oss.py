@@ -1,16 +1,16 @@
-import oss2
-from getpass import getpass
-from dofast.config import ALIYUN_ACCESS_KEY_ID, ALIYUN_ACCESS_KEY_SECRET, ALIYUN_BUCKET, ALIYUN_REGION, PHRASE
-from dofast.utils import shell, textwrite, textread
-from toolkits.file import load_password
-from tqdm import tqdm
-
 import os, sys
 import json
 import base64
 import tempfile
 from Crypto.Cipher import AES
 
+import oss2
+from getpass import getpass
+from dofast.config import ALIYUN_ACCESS_KEY_ID, ALIYUN_ACCESS_KEY_SECRET, ALIYUN_BUCKET, ALIYUN_REGION, PHRASE
+from dofast.utils import shell, textwrite, textread
+from tqdm import tqdm
+
+from .toolkits.file import load_password
 
 def encode(msg_text: str, passphrase: str) -> str:
     msg_text += '|' + msg_text * 100
