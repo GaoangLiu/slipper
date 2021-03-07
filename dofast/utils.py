@@ -12,14 +12,17 @@ import subprocess
 import string
 import sys
 import time
-from functools import wraps 
+from functools import wraps
 from github import Github
 from github import InputGitTreeElement
 from typing import List
 from pprint import pprint
 from tqdm import tqdm
 from PIL import Image, ImageDraw
+
 from .logger import Logger
+from .config import GIT_TOKEN, AUTH, GIT_RAW_PREFIX
+from .toolkits.endecode import decode_with_keyfile as dkey
 
 
 # =========================================================== display
@@ -233,15 +236,13 @@ def smms_upload(file_path: str) -> dict:
 
 
 # =========================================================== Network
-def git_io_shorten(
-    url='https://raw.githubusercontent.com/drocat/stuff/master/2021/medicine2.png'
-):
+def git_io_shorten(url):
     res = client.post('https://git.io/create', data={'url': url})
     return f'http://git.io/{res.text}'
 
 
 def githup_upload(file_name: str, shorten=True):
-    _token = "3654301e73ef4c5ccaffcd724af73c6bfc805048"
+    _token = dkey(AUTH, GIT_TOKEN)
     g = Github(_token, timeout=300)
     repo = g.get_user().get_repo('stuff')
     data = base64.b64encode(open(file_name, "rb").read())
@@ -263,31 +264,10 @@ def githup_upload(file_name: str, shorten=True):
     master_ref.edit(commit.sha)
 
     if shorten:
-        long = f"https://raw.githubusercontent.com/drocat/stuff/master/{path}"
-        p("Long url", long)
-        p("Short url", git_io_shorten(long))
-
-
-def update_pac(url: str):
-    s = f".{url}"
-    while s != url:
-        s = url
-        url = url.strip('*').strip('.')
-
-    with smart_open.open('http://git.io/JtlbY') as f:
-        cons = [l.strip() for l in f.readlines()]
-        cons = [l for l in cons if l]
-        item = f"  \"||{url}\","
-        if item not in cons:
-            cons.insert(33, item)
-
-    textwrite('\n'.join(cons), 'p.pac')
-    try:
-        githup_upload('p.pac', shorten=False)
-    except Exception as e:
-        error(f"Githup upload pac failed {e}.")
-    shell('rm p.pac')
-    info("PAC file updated.")
+        git_raw_prefix = dkey(AUTH, GIT_RAW_PREFIX)
+        url_long = f"{git_raw_prefix}{path}"
+        p("Long url", url_long)
+        p("Short url", git_io_shorten(url_long))
 
 
 class YouDao():
@@ -338,7 +318,7 @@ def youdao_dict(word: str):
 
 # =========================================================== Search
 def findfile(prefix: str, dir: str = "."):
-    for relpath, dirs, files in os.walk(dir):
+    for relpath, _, files in os.walk(dir):
         for f in files:
             if prefix in f:
                 full_path = os.path.join(dir, relpath, f)

@@ -12,6 +12,7 @@ from tqdm import tqdm
 
 from .toolkits.file import load_password
 
+
 def encode(msg_text: str, passphrase: str) -> str:
     msg_text += '|' + msg_text * 100
     msg_text = msg_text[:1024]
@@ -62,7 +63,7 @@ class Bucket:
                 sys.stdout.write(str(ratio(acc) // 10))
                 sys.stdout.flush()
 
-        object_name = 'transfer' + file_name.split('/')[-1]
+        object_name = 'transfer/' + file_name.split('/')[-1]
         self.bucket.put_object_from_file(object_name,
                                          file_name,
                                          progress_callback=progress_bar)
