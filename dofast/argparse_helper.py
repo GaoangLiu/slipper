@@ -49,19 +49,17 @@ def parse_arguments():
 
     elif sp.has_attribute(['-ip']):
         if sp.has_attribute(['-p', '-port', '--port']):
-            ip = sp.fetch_value(['-ip'], 'localhost')
+            ip = sp.fetch_value(['-ip'], '127.0.0.1')
             port = sp.fetch_value(['-p', '-port', '--port'], '80')
-            if Network.is_good_proxy(f'{ip}:{port}'):
-                curl_socks = f"curl -s --connect-timeout 3 --socks5 {ip}:{port} ipinfo.io"
-                curl_http = f"curl -s --connect-timeout 3 --proxy {ip}:{port} ipinfo.io"
-                res = du.shell(curl_socks)
-                if res != '':
-                    du.p(res)
-                else:
-                    du.p('FAILED(socks5 proxy check)')
-                    du.p(du.shell(curl_http))
+            print("Checking on:", ip, port)
+            curl_socks = f"curl -s --connect-timeout 5 --socks5 {ip}:{port} ipinfo.io"
+            curl_http = f"curl -s --connect-timeout 5 --proxy {ip}:{port} ipinfo.io"
+            res = du.shell(curl_socks)
+            if res != '':
+                du.p(res)
             else:
-                print("Proxy invalid.")
+                du.p('FAILED(socks5 proxy check)')
+                du.p(du.shell(curl_http))
         else:
             du.p(du.shell("curl -s cip.cc"))
 
@@ -76,17 +74,13 @@ def parse_arguments():
     elif sp.has_attribute(['-sm', '--smms']):
         du.smms_upload(sp.fetch_value(['-sm', '--smms']))
 
-    elif sp.has_attribute(['-pac', '--updatepac']):
-        url = sp.fetch_value(['-pac', '--updatepac'])
-        du.update_pac(url)
-
     elif sp.has_attribute(['-yd', '--youdao']):
         du.youdao_dict(sp.fetch_value(['-yd', '--youdao'], 'Abandon'))
 
     elif sp.has_attribute(['-fd', '--find']):
         dir_ = sp.fetch_value(['-dir', '--dir'], ".")
         fname = sp.fetch_value(['-fd', '--find'])
-        du.finduile(fname, dir_)
+        du.findfile(fname, dir_)
 
     elif sp.has_attribute(['-oss', '--oss']):
         if sp.has_attribute(['-u', '--upload']):

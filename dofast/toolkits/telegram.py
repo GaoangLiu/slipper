@@ -5,10 +5,10 @@ import requests
 
 import dofast.utils as du
 from dofast.utils import p, pp
-from dofast.config import HEMA_BOT, AUTH, HTTP_PROXY, TELEGRAM_KEY
+from dofast.config import HEMA_BOT, AUTH, HTTPS_PROXY, TELEGRAM_KEY
 from .endecode import short_decode, decode_with_keyfile as dkey
 
-proxies = {'http': dkey(AUTH, HTTP_PROXY)}
+proxies = {'http': dkey(AUTH, HTTPS_PROXY)}
 
 
 def bot_say(api_token: str, text: str, bot_name: str = 'PlutoShare'):
@@ -32,4 +32,4 @@ def download_file_by_id(file_id: str) -> None:
 
     file_url = bot_updates.replace('getUpdates',
                                    file_name).replace('/bot', '/file/bot')
-    du.download(file_url, proxy=dkey(AUTH, HTTP_PROXY))
+    du.download(file_url, proxy=dkey(AUTH, HTTPS_PROXY))
