@@ -32,16 +32,19 @@ msg = """A Simple yet powerful terminal CLient. 😏
 """
 
 
-def parse_arguments():
+def main():
     sp = SimpleParser()
     sp.parse_args()
 
-    if sp.has_attribute(['-dw', '--download'], excludes=['-oss']):
+    # if sp.has_attribute(['-dw', '--download'], excludes=['-oss']):
+    if sp.downloads:
         sp.set_default('-p', 'http://cn.ddot.cc:51172')
-        url = sp.fetch_value(['-dw'])
-        proxy = sp.fetch_value(['-p', '--proxy'])
-        name = sp.fetch_value(['-r', '-o', '--rename'])
-        du.download(url, proxy, name)
+        url = sp.downloads[0]
+        # proxy = sp.fetch_value(['-p', '--proxy'])
+        # name = sp.fetch_value(['-r', '-o', '--rename'])
+        # du.download(url, proxy, name)
+        du.download(url)
+
 
     elif sp.has_attribute(['-d', '--dduile'], excludes=['-oss', '-cos']):
         size = sp.fetch_value(['-d', '--dduile'], 100)

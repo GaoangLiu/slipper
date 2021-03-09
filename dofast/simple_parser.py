@@ -1,8 +1,12 @@
 import sys
 import requests
+import collections
 from operator import itemgetter
 from typing import List
-from tqdm import tqdm
+
+
+def get_arg_name(arg_name: str) -> str:
+    return arg_name.replace('-', '')
 
 
 class SimpleParser:
@@ -10,7 +14,7 @@ class SimpleParser:
     help_msg = None
 
     def __init__(self):
-        self.dict = {}
+        self.__dict__ = collections.defaultdict(Attribute)
 
     def has_attribute(self, arg_names: List, excludes: List[str] = []) -> bool:
         """ Decide if any argument is present in the dict
@@ -23,16 +27,50 @@ class SimpleParser:
     def has_attr(self, arg_names: List, excludes: List[str] = []) -> bool:
         return self.has_attribute(arg_names, excludes)
 
-    def parse_args(self) -> dict:
-        args = sys.argv[1:]
-        arg_name = None
-        for a in args:
-            if a.startswith('-'):
-                self.dict[a] = []
-                arg_name = a
+    def add_argument(self,
+                     abbr: str = "",
+                     full_arg: str = "",
+                     default_value: str = "",
+                     sub_args: List = [],
+                     description: str = ""):
+        """ Add arguments to object.
+        :abbr: str, abbreviated argument, e.g., -dw could be an abbraviation of --download
+        :full_arg: str, complete argument name, e.g., --download
+        :default_value:, str, default value of argument
+        :description: str, description of what the argument will invoke
+        :sub_args:, dict, possible sub arguments.
+        """
+        assert full_arg != "", "Full argument name is prerequisite."
+        abbr, full = get_arg_name(abbr if not abbr else abbr), get_arg_name(
+            full_arg)
+
+        attr = Attribute(default_value)
+        self.__dict__[full] = attr
+        self.__dict__[abbr] = attr
+
+        for sub in sub_args:
+            sub.sort(key=len)
+            subattr = Attribute("")            
+            for sn in sub:
+                attr.__dict__[sn] = subattr
+
+    def parse_args(self) -> None:
+        main_arg, cur_arg, sub_attr = None, None, {}
+        sysargv = sys.argv[1:]
+        for ele in sysargv:
+            if ele.startswith('-'):
+                cur_arg = get_arg_name(ele)
+                if not main_arg:
+                    main_arg = cur_arg
+                sub_attr = self.__dict__[main_arg]
             else:
-                self.dict[arg_name].append(a)
-        return self.dict
+                sub_attr.__dict__[cur_arg].value = ele
+        
+        # Set sub argument values to string
+        for k, v in self.__dict__[main_arg].__dict__.items():
+            # self.__dict__[main_arg].__dict__[k] = v.value
+            if not isinstance(v, str):
+                self.__dict__[main_arg].__dict__[k]=v.value
 
     def fetch_value(self,
                     arg_names: List,
@@ -52,3 +90,10 @@ class SimpleParser:
         """
         if arg_name in self.dict:
             self.dict[arg_name].append(value)
+
+
+class Attribute:
+    """ Sub Attributes helper """
+    def __init__(self, default_value: str = ""):
+        self.__dict__ = collections.defaultdict()
+        self.__dict__['value'] = default_value

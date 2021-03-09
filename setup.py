@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="dofast",
-    version="0.0.2",
+    version="0.0.3a1",
     author="SLP",
     author_email="byteleap@gmail.com",
     description="A package for dirty faster Python programming",
@@ -19,7 +19,7 @@ setuptools.setup(
         'smart-open', 'pillow', 'bs4', 'arrow', 'numpy', 'termcolor'
     ],
     entry_points={
-        'console_scripts': ['sli=dofast.argparse_helper:parse_arguments'],
+        'console_scripts': ['sli=dofast.sli_entry:main'],
     },
     classifiers=[
         "Programming Language :: Python :: 3",
