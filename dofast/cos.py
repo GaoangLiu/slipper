@@ -38,8 +38,9 @@ class COS:
             size = int(fh['Size'])
             unit = 'MB' if size > 1024 * 1024 else 'KB'
             size = size // 1024 / 1024 if size > 1024 * 1024 else size // 1024
-            print("{:<50} {:<20} {:.2f} {}".format(fh['Key'], fh['LastModified'],
-                                               size, unit))
+            print("{:<50} {:<20} {:.2f} {}".format(fh['Key'],
+                                                   fh['LastModified'], size,
+                                                   unit))
 
     def write_content(self, content: str, remote_file: str) -> None:
         self.client.put_object(Bucket=self.bucket,

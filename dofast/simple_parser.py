@@ -16,17 +16,6 @@ class SimpleParser:
     def __init__(self):
         self.__dict__ = collections.defaultdict(Attribute)
 
-    def has_attribute(self, arg_names: List, excludes: List[str] = []) -> bool:
-        """ Decide if any argument is present in the dict
-        Example: self.has_attribute(['-gu', '--githubupload']) 
-        :params excludes: list, exclusive arguments
-        """
-        b = any(e in self.dict for e in excludes)
-        return not b and any(map(lambda an: an in self.dict, arg_names))
-
-    def has_attr(self, arg_names: List, excludes: List[str] = []) -> bool:
-        return self.has_attribute(arg_names, excludes)
-
     def add_argument(self,
                      abbr: str = "",
                      full_arg: str = "",
@@ -45,55 +34,53 @@ class SimpleParser:
             full_arg)
 
         attr = Attribute(default_value)
-        self.__dict__[full] = attr
-        self.__dict__[abbr] = attr
+        setattr(self, full, attr)
+        setattr(self, abbr, attr)
 
         for sub in sub_args:
             sub.sort(key=len)
-            subattr = Attribute("")            
+            subattr = Attribute("")
             for sn in sub:
-                attr.__dict__[sn] = subattr
+                setattr(attr, sn, subattr)
 
     def parse_args(self) -> None:
-        main_arg, cur_arg, sub_attr = None, None, {}
+        """ Parse arguments from sys.argv. Two types of arguments:
+        1. main argument, once decided, values of all other main argument is set to None
+        2. sub argument.
+        """
+        mainarg, subarg, _attribute = None, None, {}
         sysargv = sys.argv[1:]
         for ele in sysargv:
             if ele.startswith('-'):
-                cur_arg = get_arg_name(ele)
-                if not main_arg:
-                    main_arg = cur_arg
-                sub_attr = self.__dict__[main_arg]
+                subarg = get_arg_name(ele)
+                if not mainarg:
+                    mainarg = subarg
+                    _attribute = getattr(self, mainarg)
+                else:
+                    _attribute = getattr(_attribute, subarg)
+                # E.g., mainarg = 'cos', _attribute = Attribute(), then set _attribute['value'] = PLACEHOLDER
+                if not getattr(_attribute, 'value'):
+                    setattr(_attribute, 'value', "PLACEHOLDER")
             else:
-                sub_attr.__dict__[cur_arg].value = ele
-        
+                setattr(_attribute, 'value', ele)
+
+        # No argument is passed in
+        if mainarg is None:
+            mainarg = '[-<>-]'
+            setattr(self, mainarg, Attribute())
+
+        for k, v in self.__dict__.items():
+            if v != getattr(self, mainarg):
+                setattr(self, k, None)
+
         # Set sub argument values to string
-        for k, v in self.__dict__[main_arg].__dict__.items():
-            # self.__dict__[main_arg].__dict__[k] = v.value
+        for k, v in getattr(self, mainarg).__dict__.items():
             if not isinstance(v, str):
-                self.__dict__[main_arg].__dict__[k]=v.value
-
-    def fetch_value(self,
-                    arg_names: List,
-                    default_value=None,
-                    return_list: bool = False) -> str:
-        """Return correspomding argument values. 
-        By now, we assume each key corresponds to only one value. 
-        We may need multiple values in the future.
-        """
-        for key in arg_names:
-            if key in self.dict and len(self.dict[key]):
-                return self.dict[key] if return_list else self.dict[key][0]
-        return default_value
-
-    def set_default(self, arg_name: str, value: str):
-        """Set a default value for arg_name if arg_name is specified.
-        """
-        if arg_name in self.dict:
-            self.dict[arg_name].append(value)
+                setattr(getattr(self, mainarg), k, v.value)
 
 
 class Attribute:
     """ Sub Attributes helper """
     def __init__(self, default_value: str = ""):
         self.__dict__ = collections.defaultdict()
-        self.__dict__['value'] = default_value
+        setattr(self, 'value', default_value)

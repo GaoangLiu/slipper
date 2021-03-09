@@ -1,4 +1,3 @@
-import argparse
 import dofast.utils as du
 from dofast.simple_parser import SimpleParser
 from dofast.oss import Bucket, Message
@@ -6,156 +5,134 @@ from dofast.cos import COS
 from dofast.fund import invest_advice, tgalert
 from dofast.stock import Stock
 
-from .toolkits.endecode import short_decode, short_encode
-from .toolkits.telegram import read_hema_bot, download_file_by_id
-from .network import Network
-
-msg = """A Simple yet powerful terminal CLient. 😏
-
--dw, --download -p, --proxy [-r|-o](--rename) ::: Download file.
--d, --ddfile[size] ::: Create random file.
--ip [-p, --port]::: Curl cip.cc
--rc, --roundcorner [--radius] ::: Add rounded corner to images.
--gu, --githubupload ::: Upload files to GitHub.
--sm, --smms ::: Upload image to sm.ms image server.
--yd, --youdao ::: Youdao dict translation.
--fd, --find [-dir, --dir] ::: Find files from dir.
-
--oss [-u, --upload | -d, --download | -del, --delete] ::: Aliyun OSS manager
--cos [-u, --upload | -d, --download | -del, --delete] ::: COS file manager.
-
--m, --msg [-r, --write | -w, --write] ::: Messenger
--fund, --fund [fund_code] ::: Fund investment.
--stock, --stock [stock_code] ::: Stock trend.
--aes [-en | -de ] ::: AES encode/decode.
--hema [-id id ] ::: Read hema bot update / Download file by id
-"""
+from dofast.toolkits.endecode import short_decode, short_encode
+from dofast.toolkits.telegram import read_hema_bot, download_file_by_id
+from dofast.network import Network
+from dofast.data.msg import display_message
 
 
 def main():
     sp = SimpleParser()
+    sp.add_argument('-cos',
+                    '--cos',
+                    sub_args=[["u", "up", "upload"], ["download", "d", "dw"],
+                              ["l", "list"], ["del", "delete"]])
+    sp.add_argument('-oss',
+                    '--oss',
+                    sub_args=[["u", "up", "upload"], ["download", "d", "dw"],
+                              ["l", "list"], ["del", "delete"]])
+    sp.add_argument('-dw', '--download', sub_args=[])
+    sp.add_argument('-d', '--ddfile')
+    sp.add_argument('-ip',
+                    '--ip',
+                    sub_args=[['p', 'port']],
+                    default_value="localhost")
+    sp.add_argument('-rc', '--roundcorner', sub_args=[['r', 'radius']])
+    sp.add_argument('-gu', '--githubupload')
+    sp.add_argument('-sm', '--smms')
+    sp.add_argument('-yd', '--youdao')
+    sp.add_argument('-fd', '--find', sub_args=[['dir', 'directory']])
+    sp.add_argument('-m', '--msg', sub_args=[['r', 'read'], ['w', 'write']])
+    sp.add_argument('-fund', '--fund', sub_args=[['ba', 'buyalert']])
+    sp.add_argument('-stock', '--stock')
+    sp.add_argument('-aes',
+                    '--aes',
+                    sub_args=[['en', 'encode'], ['de', 'decode']])
+
     sp.parse_args()
 
-    # if sp.has_attribute(['-dw', '--download'], excludes=['-oss']):
-    if sp.downloads:
-        sp.set_default('-p', 'http://cn.ddot.cc:51172')
-        url = sp.downloads[0]
-        # proxy = sp.fetch_value(['-p', '--proxy'])
-        # name = sp.fetch_value(['-r', '-o', '--rename'])
-        # du.download(url, proxy, name)
-        du.download(url)
+    if sp.cos:
+        cli = COS()
+        if sp.cos.upload:
+            cli.upload_file(sp.cos.upload, "transfer/")
+        elif sp.cos.download:
+            _file = sp.cos.download
+            cli.download_file(f"transfer/{_file}", _file)
+        elif sp.cos.delete:
+            cli.delete_file(f"transfer/{sp.cos.delete}")
+        elif sp.cos.list:
+            print(cli.prefix())
+            cli.list_files("transfer/")
 
+    elif sp.oss:
+        cli = Bucket()
+        if sp.oss.upload:
+            cli.upload(sp.oss.upload)
+        elif sp.oss.download:
+            du.download(cli.url_prefix + sp.oss.download)
+        elif sp.oss.delete:
+            cli.delete(sp.oss.delete)
+        elif sp.oss.list:
+            print(cli.url_prefix)
+            cli.list_files()
 
-    elif sp.has_attribute(['-d', '--dduile'], excludes=['-oss', '-cos']):
-        size = sp.fetch_value(['-d', '--dduile'], 100)
-        du.create_random_file(int(size))
+    elif sp.download:
+        print(sp.download)
+        du.download(sp.download.value)
 
-    elif sp.has_attribute(['-ip']):
-        if sp.has_attribute(['-p', '-port', '--port']):
-            ip = sp.fetch_value(['-ip'], '127.0.0.1')
-            port = sp.fetch_value(['-p', '-port', '--port'], '80')
-            print("Checking on:", ip, port)
-            curl_socks = f"curl -s --connect-timeout 5 --socks5 {ip}:{port} ipinfo.io"
-            curl_http = f"curl -s --connect-timeout 5 --proxy {ip}:{port} ipinfo.io"
+    elif sp.ddfile:
+        du.create_random_file(int(sp.ddfile.value or 100))
+
+    elif sp.ip:
+        v_ip, v_port = sp.ip.value, sp.ip.port
+        if not sp.ip.port:
+            du.p(du.shell("curl -s cip.cc"))
+        else:
+            print("Checking on:", v_ip, v_port)
+            curl_socks = f"curl -s --connect-timeout 5 --socks5 {v_ip}:{v_port} ipinfo.io"
+            curl_http = f"curl -s --connect-timeout 5 --proxy {v_ip}:{v_port} ipinfo.io"
             res = du.shell(curl_socks)
             if res != '':
                 du.p(res)
             else:
                 du.p('FAILED(socks5 proxy check)')
                 du.p(du.shell(curl_http))
-        else:
-            du.p(du.shell("curl -s cip.cc"))
 
-    elif sp.has_attribute(['-rc', '--roundcorner']):
-        image_path = sp.fetch_value(['-rc'])
-        radius = int(sp.fetch_value(['--radius'], 10))
+    elif sp.roundcorner:
+        image_path = sp.roundcorner.value
+        radius = int(sp.roundcorner.radius or 10)
         du.rounded_corners(image_path, radius)
 
-    elif sp.has_attribute(['-gu', '--githupupload']):
-        du.githup_upload(sp.dict['-gu'].pop())
+    elif sp.githubupload:
+        du.githup_upload(sp.githubupload.value)
 
-    elif sp.has_attribute(['-sm', '--smms']):
-        du.smms_upload(sp.fetch_value(['-sm', '--smms']))
+    elif sp.smms:
+        du.smms_upload(sp.smms.value)
 
-    elif sp.has_attribute(['-yd', '--youdao']):
-        du.youdao_dict(sp.fetch_value(['-yd', '--youdao'], 'Abandon'))
+    elif sp.youdao:
+        du.youdao_dict(sp.youdao.value)
 
-    elif sp.has_attribute(['-fd', '--find']):
-        dir_ = sp.fetch_value(['-dir', '--dir'], ".")
-        fname = sp.fetch_value(['-fd', '--find'])
-        du.findfile(fname, dir_)
+    elif sp.find:
+        du.findfile(sp.find.value, sp.find.directory or '.')
 
-    elif sp.has_attribute(['-oss', '--oss']):
-        if sp.has_attribute(['-u', '--upload']):
-            Bucket().upload(sp.fetch_value(['-u', '--upload']))
-        elif sp.has_attribute(['-d', '--download']):
-            url = Bucket().url_prefix + sp.fetch_value(['-d', '--download'])
-            du.download(url)
-        elif sp.has_attribute(['-del', '--delete']):
-            Bucket().delete(sp.fetch_value(['-del', '--delete']))
-        elif sp.has_attribute(['-l', '--list']):
-            print(Bucket().url_prefix)
-            Bucket().list_files()
-        elif sp.has_attribute(['-pf', '--prefix']):
-            print(Bucket().url_prefix)
-
-    elif sp.has_attribute(['-cos', '--cos']):
-        coscli = COS()
-        if sp.has_attribute(['-u', '--upload']):
-            fname = sp.fetch_value(['-u', '--upload'])
-            print(f"Start uploading {fname} ...")
-            coscli.upload_file(fname, 'transfer/')
-        elif sp.has_attribute(['-d', '--download']):
-            fname = sp.fetch_value(['-d', '--download'])
-            print(f"Start downloading {fname} ...")
-            coscli.download_file(f'transfer/{fname}', fname)
-        elif sp.has_attribute(['-del', '--delete']):
-            coscli.delete_file('transfer/' +
-                               sp.fetch_value(['-del', '--delete']))
-        elif sp.has_attribute(['-l', '--list']):
-            print(coscli.prefix())
-            coscli.list_files('transfer/')
-
-    elif sp.has_attribute(['-m', '--msg']):
-        vs = sp.fetch_value(['-m', '--msg'])
-        if sp.has_attribute(['-w', '--write']):
-            Message().write(sp.fetch_value(['-w', '--write']))
-        elif sp.has_attribute(['-r', '--read']):
+    elif sp.msg:
+        if sp.msg.write:
+            Message().write(sp.msg.write)
+        elif sp.msg.read:
             Message().read()
-        elif vs:  # i.e., sli -m 'Some message'
-            Message().write(vs)
+        elif sp.msg.value != 'PLACEHOLDER':
+            Message().write(sp.msg.value)
         else:
             Message().read()
 
-    elif sp.has_attribute(['-fund', '--fund']):
-        if sp.has_attribute(['-ba', '--buyalert']):
-            tgalert()
+    elif sp.fund:
+        if sp.fund.buyalert: tgalert()
         else:
-            invest_advice(sp.fetch_value(['-fund', '--fund'], None))
+            invest_advice(None if sp.fund.value ==
+                          'PLACEHOLDER' else sp.fund.value)
 
-    elif sp.has_attribute(['-stock', '--stock']):
-        code = sp.fetch_value(['-stock', '--stock'])
-        if code:
-            Stock().trend(str(code))
-        else:
-            Stock().my_trend()
+    elif sp.stock:
+        if sp.stock.value != 'PLACEHOLDER': Stock().trend(sp.stock.value)
+        else: Stock().my_trend()
 
-    elif sp.has_attr(['-aes']):
-        _msg = sp.fetch_value(['-aes'])
-        if sp.has_attr(['-en']):
-            passphrase = sp.fetch_value(['-en'])
-            du.p(short_encode(_msg, passphrase))
-        elif sp.has_attr(['-de']):
-            passphrase = sp.fetch_value(['-de'])
-            du.p(short_decode(_msg, passphrase))
-
-    elif sp.has_attr(['-hema']):
-        if sp.has_attr(['-id']):
-            download_file_by_id(sp.fetch_value(['-id']))
-        else:
-            read_hema_bot()
+    elif sp.aes:
+        text = sp.aes.value
+        if sp.aes.encode: du.p(short_encode(text, sp.aes.encode))
+        elif sp.aes.decode: du.p(short_decode(text, sp.aes.decode))
 
     else:
-        for l in msg.split("\n"):
-            c, e = (l + " ::: ").split(':::')[:2]
-            print("{:<70} {:<20}".format(c, e))
+        display_message()
+
+
+if __name__ == '__main__':
+    main()
