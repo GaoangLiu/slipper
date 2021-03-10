@@ -168,12 +168,14 @@ def invest_advice(fund_code: str = None):
     show_sz_index()
 
 
-def tgalert():
-    """Send investment advice to Telegram Channel"""
+def tgalert(proxyoff:str=""):
+    """Send investment advice to Telegram Channel.
+    If any argument is passed in, then turn off proxy for Telegram.
+    """
     msg = '\n'.join(
         [Fund(code).buy_advice() for code in ['162605', '570008', '161903']])
     _token = decode_with_keyfile('/etc/telegram.key', PLUTOSHARE)
-    bot_say(_token, msg)
+    bot_say(_token, msg, use_proxy=False if proxyoff else True)
 
 
 if __name__ == '__main__':

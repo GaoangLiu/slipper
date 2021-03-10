@@ -11,9 +11,12 @@ from .endecode import short_decode, decode_with_keyfile as dkey
 proxies = {'http': dkey(AUTH, HTTPS_PROXY)}
 
 
-def bot_say(api_token: str, text: str, bot_name: str = 'PlutoShare'):
+def bot_say(api_token: str,
+            text: str,
+            bot_name: str = 'PlutoShare',
+            use_proxy: bool = True):
     url = f"https://api.telegram.org/bot{api_token}/sendMessage?chat_id=@{bot_name}&text={text}"
-    res = requests.get(url, proxies=proxies)
+    res = requests.get(url, proxies=proxies if use_proxy else None)
     p(res)
 
 

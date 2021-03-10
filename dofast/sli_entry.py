@@ -104,6 +104,7 @@ def main():
         du.youdao_dict(sp.youdao.value)
 
     elif sp.find:
+        print(sp.find.value, sp.find.directory or '.')
         du.findfile(sp.find.value, sp.find.directory or '.')
 
     elif sp.msg:
@@ -117,7 +118,7 @@ def main():
             Message().read()
 
     elif sp.fund:
-        if sp.fund.buyalert: tgalert()
+        if sp.fund.buyalert: tgalert(sp.fund.buyalert)
         else:
             invest_advice(None if sp.fund.value ==
                           PLACEHOLDER else sp.fund.value)
