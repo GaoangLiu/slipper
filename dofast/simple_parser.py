@@ -39,9 +39,10 @@ class SimpleParser:
         setattr(self, abbr, attr)
 
         for sub in sub_args:
+            assert isinstance(sub, list), "Sub args are list of list"
             subattr = Attribute()
             for sn in sorted(sub, key=len):
-                setattr(attr, sn, subattr)
+                setattr(attr, get_arg_name(sn), subattr)
 
     def parse_args(self) -> None:
         """ Parse arguments from sys.argv. Two types of arguments:

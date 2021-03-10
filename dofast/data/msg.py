@@ -19,7 +19,7 @@ msg = """A Simple yet powerful terminal CLient. 😏
 -aes [-en | -de ] ::: AES encode/decode.
 """
 
-def display_message():
-    for l in msg.split("\n"):
+def display_message(message:str=msg):
+    for l in message.split("\n"):
         c, e = (l + " ::: ").split(':::')[:2]
         print("{:<70} {:<20}".format(c, e))
