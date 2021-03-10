@@ -1,5 +1,5 @@
 import dofast.utils as du
-from dofast.simple_parser import SimpleParser
+from dofast.simple_parser import SimpleParser, PLACEHOLDER
 from dofast.oss import Bucket, Message
 from dofast.cos import COS
 from dofast.fund import invest_advice, tgalert
@@ -59,6 +59,7 @@ def main():
         if sp.oss.upload:
             cli.upload(sp.oss.upload)
         elif sp.oss.download:
+            # Note the download func here is: dofast.utils.download
             du.download(cli.url_prefix + sp.oss.download)
         elif sp.oss.delete:
             cli.delete(sp.oss.delete)
@@ -110,7 +111,7 @@ def main():
             Message().write(sp.msg.write)
         elif sp.msg.read:
             Message().read()
-        elif sp.msg.value != 'PLACEHOLDER':
+        elif sp.msg.value != PLACEHOLDER:
             Message().write(sp.msg.value)
         else:
             Message().read()
@@ -119,10 +120,10 @@ def main():
         if sp.fund.buyalert: tgalert()
         else:
             invest_advice(None if sp.fund.value ==
-                          'PLACEHOLDER' else sp.fund.value)
+                          PLACEHOLDER else sp.fund.value)
 
     elif sp.stock:
-        if sp.stock.value != 'PLACEHOLDER': Stock().trend(sp.stock.value)
+        if sp.stock.value != PLACEHOLDER: Stock().trend(sp.stock.value)
         else: Stock().my_trend()
 
     elif sp.aes:

@@ -4,6 +4,7 @@ import collections
 from operator import itemgetter
 from typing import List
 
+PLACEHOLDER = "PLACEHOLDER"
 
 def get_arg_name(arg_name: str) -> str:
     return arg_name.replace('-', '')
@@ -38,9 +39,8 @@ class SimpleParser:
         setattr(self, abbr, attr)
 
         for sub in sub_args:
-            sub.sort(key=len)
-            subattr = Attribute("")
-            for sn in sub:
+            subattr = Attribute()
+            for sn in sorted(sub, key=len):
                 setattr(attr, sn, subattr)
 
     def parse_args(self) -> None:
@@ -58,9 +58,8 @@ class SimpleParser:
                     _attribute = getattr(self, mainarg)
                 else:
                     _attribute = getattr(_attribute, subarg)
-                # E.g., mainarg = 'cos', _attribute = Attribute(), then set _attribute['value'] = PLACEHOLDER
-                if not getattr(_attribute, 'value'):
-                    setattr(_attribute, 'value', "PLACEHOLDER")
+                # E.g., mainarg = 'cos', _attribute = Attribute(), then set _attribute['value'] =PLACEHOLDER                if not getattr(_attribute, 'value'):
+                    setattr(_attribute, 'value', PLACEHOLDER)
             else:
                 setattr(_attribute, 'value', ele)
 
@@ -69,14 +68,14 @@ class SimpleParser:
             mainarg = '[-<>-]'
             setattr(self, mainarg, Attribute())
 
-        for k, v in self.__dict__.items():
+        for other_arg, v in self.__dict__.items():
             if v != getattr(self, mainarg):
-                setattr(self, k, None)
+                setattr(self, other_arg, None)
 
         # Set sub argument values to string
-        for k, v in getattr(self, mainarg).__dict__.items():
+        for sub_arg, v in getattr(self, mainarg).__dict__.items():
             if not isinstance(v, str):
-                setattr(getattr(self, mainarg), k, v.value)
+                setattr(getattr(self, mainarg), sub_arg, v.value)
 
 
 class Attribute:

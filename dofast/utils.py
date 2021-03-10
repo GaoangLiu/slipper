@@ -317,9 +317,9 @@ def youdao_dict(word: str):
 
 
 # =========================================================== Search
-def findfile(prefix: str, dir: str = "."):
+def findfile(regex: str, dir: str = "."):
     for relpath, _, files in os.walk(dir):
         for f in files:
-            if prefix in f:
+            if regex in f:
                 full_path = os.path.join(dir, relpath, f)
                 print(os.path.normpath(os.path.abspath(full_path)))
