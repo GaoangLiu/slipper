@@ -6,9 +6,6 @@ from typing import List
 
 PLACEHOLDER = "PLACEHOLDER"
 
-def get_arg_name(arg_name: str) -> str:
-    return arg_name.replace('-', '')
-
 
 class SimpleParser:
     """A simple argument parser"""
@@ -30,57 +27,64 @@ class SimpleParser:
         :description: str, description of what the argument will invoke
         :sub_args:, dict, possible sub arguments.
         """
-        assert full_arg != "", "Full argument name is prerequisite."
-        abbr, full = get_arg_name(abbr if not abbr else abbr), get_arg_name(
-            full_arg)
+        assert full_arg != "", "Full argument name is required."
+        full = full_arg.strip('-')
+        abbr = abbr.strip('-') if abbr else full
 
-        attr = Attribute(default_value)
-        setattr(self, full, attr)
-        setattr(self, abbr, attr)
+        attribute_holder = _AttributeHolder(default_value)
+        setattr(self, full, attribute_holder)
+        setattr(self, abbr, attribute_holder)
 
-        for sub in sub_args:
-            assert isinstance(sub, list), "Sub args are list of list"
-            subattr = Attribute()
-            for sn in sorted(sub, key=len):
-                setattr(attr, get_arg_name(sn), subattr)
+        for sub_arg_list in sub_args:
+            assert isinstance(sub_arg_list, list), "Sub args are list of list"
+
+            _attribute = Attribute()
+            for item in sorted(sub_arg_list, key=len):
+                setattr(_AttributeHolder, item.strip('-'), _attribute)
 
     def parse_args(self) -> None:
         """ Parse arguments from sys.argv. Two types of arguments:
         1. main argument, once decided, values of all other main argument is set to None
         2. sub argument.
         """
-        mainarg, subarg, _attribute = None, None, {}
-        sysargv = sys.argv[1:]
-        for ele in sysargv:
-            if ele.startswith('-'):
-                subarg = get_arg_name(ele)
-                if not mainarg:
-                    mainarg = subarg
-                    _attribute = getattr(self, mainarg)
+        _main, _sub = None, None
+        for item in sys.argv[1:]:
+            if item.startswith('-'):
+                _sub = item.strip('-')
+                if not _main:
+                    _main = _sub
+                    self.__dict__[
+                        _sub].value = PLACEHOLDER  # Assign default value.
                 else:
-                    _attribute = getattr(_attribute, subarg)
-                # E.g., mainarg = 'cos', _attribute = Attribute(), then set _attribute['value'] =PLACEHOLDER                if not getattr(_attribute, 'value'):
-                    setattr(_attribute, 'value', PLACEHOLDER)
+                    _AttributeHolder.__dict__[_sub].value = PLACEHOLDER
             else:
-                setattr(_attribute, 'value', ele)
+                if _main == _sub:
+                    self.__dict__[_main].value = item
+                else:
+                    _AttributeHolder.__dict__[_sub].value = item
 
-        # No argument is passed in
-        if mainarg is None:
-            mainarg = '[-<>-]'
-            setattr(self, mainarg, Attribute())
+        # When no argument is passed in, forge a main argument.
+        if not _main:
+            _main = PLACEHOLDER
+            setattr(self, _main, None)
 
-        for other_arg, v in self.__dict__.items():
-            if v != getattr(self, mainarg):
-                setattr(self, other_arg, None)
-
-        # Set sub argument values to string
-        for sub_arg, v in getattr(self, mainarg).__dict__.items():
-            if not isinstance(v, str):
-                setattr(getattr(self, mainarg), sub_arg, v.value)
+        for _other in self.__dict__.keys():  # set value of other arg to None
+            if getattr(self, _other) != getattr(self, _main):
+                setattr(self, _other, None)
 
 
 class Attribute:
-    """ Sub Attributes helper """
-    def __init__(self, default_value: str = ""):
-        self.__dict__ = collections.defaultdict()
-        setattr(self, 'value', default_value)
+    """Final node of argparse to get value directly with dot notation."""
+    def __init__(self, value: str = ""):
+        self.value = value
+
+    def __get__(self, instance, owner):
+        return self.value
+
+    def __set__(self, instance, value: str) -> None:
+        self.value = value
+
+
+class _AttributeHolder(object):
+    def __init__(self, value: str = ""):
+        self.value = value
