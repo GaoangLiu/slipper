@@ -23,23 +23,24 @@ class YahooMail:
         self.username = dkey(AUTH, YAHOO_USER_NAME)
         self.password = dkey(AUTH, YAHOO_USER_PASSWORD)
         self.email_from = self.username + "@yahoo.com"
+        mail = smtplib.SMTP(self.smtp_server, self.smtp_port)
+        mail.set_debuglevel(debuglevel=True)
+        mail.starttls()
+        mail.login(self.username, self.password)
+        self.mail = mail
 
     def send(self, receiver: str, subject: str, message: str) -> bool:
         msg = MIMEText(message.strip())
         msg['Subject'] = subject
         msg['From'] = self.email_from
         msg['To'] = receiver
-        debuglevel = True
-        mail = smtplib.SMTP(self.smtp_server, self.smtp_port)
-        mail.set_debuglevel(debuglevel)
-        mail.starttls()
+
         try:
-            mail.login(self.username, self.password)
             du.info("Yahoo mail login success")
-            mail.sendmail(self.email_from, receiver, msg.as_string())
+            self.mail.sendmail(self.email_from, receiver, msg.as_string())
             du.info(f'SUCCESS[YahooMail.send()]'
                     f'{Message(receiver, subject, message)}')
-            mail.quit()
+            # self.mail.quit()
             return True
         except Exception as e:
             du.error("Yahoo mail sent failed" + repr(e))
