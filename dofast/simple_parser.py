@@ -53,8 +53,9 @@ class SimpleParser:
                 _sub = item.strip('-')
                 if not _main:
                     _main = _sub
-                    self.__dict__[
-                        _sub].value = PLACEHOLDER  # Assign default value.
+                    if not self.__dict__[_sub].value:
+                        self.__dict__[
+                            _sub].value = PLACEHOLDER  # Assign default value.
                 else:
                     _AttributeHolder.__dict__[_sub].value = PLACEHOLDER
             else:
