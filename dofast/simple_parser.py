@@ -9,8 +9,6 @@ PLACEHOLDER = "PLACEHOLDER"
 
 class SimpleParser:
     """A simple argument parser"""
-    help_msg = None
-
     def __init__(self):
         self.__dict__ = collections.defaultdict(Attribute)
 

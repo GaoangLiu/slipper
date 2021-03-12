@@ -2,13 +2,59 @@
 import os
 import json
 import requests
+import smtplib
+
+from email.mime.text import MIMEText
+from email.utils import formataddr
+from email.header import Header
 
 import dofast.utils as du
 from dofast.utils import p, pp
-from dofast.config import HEMA_BOT, AUTH, HTTPS_PROXY, TELEGRAM_KEY
+from dofast.config import HEMA_BOT, AUTH, HTTPS_PROXY, TELEGRAM_KEY, YAHOO_USER_NAME, YAHOO_USER_PASSWORD
 from .endecode import short_decode, decode_with_keyfile as dkey
 
 proxies = {'http': dkey(AUTH, HTTPS_PROXY)}
+
+
+class YahooMail:
+    def __init__(self):
+        self.smtp_server = "smtp.mail.yahoo.com"
+        self.smtp_port = 587
+        self.username = dkey(AUTH, YAHOO_USER_NAME)
+        self.password = dkey(AUTH, YAHOO_USER_PASSWORD)
+        self.email_from = self.username + "@yahoo.com"
+
+    def send(self, receiver: str, subject: str, message: str) -> bool:
+        msg = MIMEText(message.strip())
+        msg['Subject'] = subject
+        msg['From'] = self.email_from
+        msg['To'] = receiver
+        debuglevel = True
+        mail = smtplib.SMTP(self.smtp_server, self.smtp_port)
+        mail.set_debuglevel(debuglevel)
+        mail.starttls()
+        try:
+            mail.login(self.username, self.password)
+            du.info("Yahoo mail login success")
+            mail.sendmail(self.email_from, receiver, msg.as_string())
+            du.info(f'SUCCESS[YahooMail.send()]'
+                    f'{Message(receiver, subject, message)}')
+            mail.quit()
+            return True
+        except Exception as e:
+            du.error("Yahoo mail sent failed" + repr(e))
+            return False
+
+
+class Message:
+    def __init__(self, receiver: str, subject: str, message: str):
+        self.r = receiver
+        self.s = subject
+        self.m = message
+
+    def __repr__(self) -> str:
+        return '\nReceiver: {}\nSubject : {}\nMessage : {}'.format(
+            self.r, self.s, self.m)
 
 
 def bot_say(api_token: str,
