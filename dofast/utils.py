@@ -12,6 +12,7 @@ import subprocess
 import string
 import sys
 import time
+import random
 from functools import wraps
 from github import Github
 from github import InputGitTreeElement
@@ -35,9 +36,14 @@ def pp(d: dict):
     pprint(d)
 
 
-def sleep(countdown: int):
+def sleep(countdown: int)->None:
     time.sleep(countdown)
 
+def random_sleep(lower_bound:int, upper_bound:int)->None:
+    """Randomly sleep for few seconds. Typical usage involving a crontab task
+    to prevent robot behavior detection.
+    """
+    time.sleep(random.randint(lower_bound, upper_bound))
 
 # =========================================================== IO
 def show_func_name():
