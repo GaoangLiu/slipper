@@ -9,9 +9,12 @@ import time
 
 from bs4 import BeautifulSoup
 from .toolkits.endecode import decode_with_keyfile
-from .toolkits.telegram import bot_say
+from .toolkits.telegram import bot_say, YahooMail
 from .toolkits.file import load_password
-from .config import PLUTOSHARE, MESSALERT
+from .config import PLUTOSHARE, MESSALERT, YAHOO_USER_NAME, YAHOO_USER_PASSWORD, AUTH, MailConfig
+from .logger import Logger
+
+bird = Logger('/var/log/fund.log')
 
 
 class bcolors:
@@ -168,14 +171,25 @@ def invest_advice(fund_code: str = None):
     show_sz_index()
 
 
-def tgalert(proxyoff:str=""):
+def tgalert(proxyoff: str = ""):
     """Send investment advice to Telegram Channel.
     If any argument is passed in, then turn off proxy for Telegram.
     """
-    msg = '\n'.join(
-        [Fund(code).buy_advice() for code in ['162605', '570008', '161903']])
-    _token = decode_with_keyfile('/etc/telegram.key', PLUTOSHARE)
-    bot_say(_token, msg, use_proxy=False if proxyoff else True)
+    try:
+        msg = '\n'.join([
+            Fund(code).buy_advice() for code in ['162605', '570008', '161903']
+        ])
+        _token = decode_with_keyfile('/etc/telegram.key', PLUTOSHARE)
+        bot_say(_token, msg, use_proxy=False if proxyoff else True)
+        bird.info('Telegram fund alert SUCCESS.')
+
+        postman = YahooMail()
+        postman.send(decode_with_keyfile(AUTH, MailConfig.FORMAIL_USERNAME),
+                     f'Fund Alert', msg)
+
+        bird.info('Message fund alert SUCCESS.')
+    except Exception as e:
+        bird.error('TGalert ERROR' + repr(e))
 
 
 if __name__ == '__main__':
