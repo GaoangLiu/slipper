@@ -40,6 +40,8 @@ def short_encode(msg_text: str, passphrase: str) -> str:
 
 
 def short_decode(msg_text: str, passphrase: str) -> str:
+    if '|' not in msg_text:
+        return decode(msg_text, passphrase)
     _text, _len = msg_text.split('|')
     bytes_text = _text.encode().ljust(int(_len))
     passphrase = passphrase.encode().ljust(32, b'*')
