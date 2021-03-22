@@ -35,14 +35,16 @@ def pp(d: dict):
     pprint(d)
 
 
-def sleep(countdown: int)->None:
+def sleep(countdown: int) -> None:
     time.sleep(countdown)
 
-def random_sleep(lower_bound:int, upper_bound:int)->None:
+
+def random_sleep(lower_bound: int, upper_bound: int) -> None:
     """Randomly sleep for few seconds. Typical usage involving a crontab task
     to prevent robot behavior detection.
     """
     time.sleep(random.randint(lower_bound, upper_bound))
+
 
 # =========================================================== IO
 def show_func_name():

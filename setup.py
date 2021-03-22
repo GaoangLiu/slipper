@@ -13,7 +13,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/GaoangLiu/slipper",
     packages=setuptools.find_packages(),
-    package_data={'dofast': ['decode']},
+    package_data={'dofast': ['decode', 'decode_darwin']},
     install_requires=[
         'colorlog>=4.6.1', 'tqdm', 'PyGithub', 'oss2', 'lxml', 'cos-python-sdk-v5',
         'smart-open', 'pillow', 'bs4', 'arrow', 'numpy', 'termcolor'

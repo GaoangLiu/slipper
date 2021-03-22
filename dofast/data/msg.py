@@ -1,4 +1,3 @@
-
 msg = """A Simple yet powerful terminal CLient. 😏
 
 -dw, --download -p, --proxy [-r|-o](--rename) ::: Download file.
@@ -19,7 +18,8 @@ msg = """A Simple yet powerful terminal CLient. 😏
 -aes [-en | -de ] ::: AES encode/decode.
 """
 
-def display_message(message:str=msg):
+
+def display_message(message: str = msg):
     for l in message.split("\n"):
         c, e = (l + " ::: ").split(':::')[:2]
         print("{:<70} {:<20}".format(c, e))

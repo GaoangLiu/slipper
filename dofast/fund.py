@@ -183,8 +183,7 @@ def tgalert(proxyoff: str = ""):
         bird.info('Telegram fund alert SUCCESS.')
 
         postman = YahooMail()
-        postman.send(FOXMAIL_USERNAME,
-                     f'Fund Alert', msg)
+        postman.send(FOXMAIL_USERNAME, f'Fund Alert', msg)
 
         bird.info('Message fund alert SUCCESS.')
     except Exception as e:

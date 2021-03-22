@@ -1,13 +1,18 @@
 import os
 import sys
 import subprocess
+import inspect
+import platform
 
-
-path = sys.path[-1]
+file_path = os.path.dirname(
+    os.path.realpath(inspect.getfile(inspect.currentframe())))
 
 
 def decode(keyword: str):
-    cmd = f"{path}/dofast/decode {keyword}"
+    system = platform.system()
+    _df = 'decode' if system == 'Linux' else 'decode_darwin' 
+    
+    cmd = f"{file_path}/{_df} {keyword}"
     return subprocess.check_output(cmd, stderr=subprocess.STDOUT,
                                    shell=True).decode('utf8').strip()
 
@@ -16,7 +21,6 @@ ALIYUN_ACCESS_KEY_ID = decode("ALIYUN_ACCESS_KEY_ID")
 ALIYUN_ACCESS_KEY_SECRET = decode("ALIYUN_ACCESS_KEY_SECRET")
 ALIYUN_BUCKET = decode("ALIYUN_BUCKET")
 ALIYUN_REGION = decode("ALIYUN_REGION")
-
 
 TENCENT_SECRET_ID = decode("TENCENT_SECRET_ID")
 TENCENT_SECRET_KEY = decode("TENCENT_SECRET_KEY")
@@ -36,6 +40,7 @@ GMAIL_USER_NAME = decode("gmail")
 FOXMAIL_USERNAME = decode("foxmail")
 
 HEMA_BOT = None
+
 # print(ALIYUN_ACCESS_KEY_ID,
 #       ALIYUN_ACCESS_KEY_SECRET,
 #       ALIYUN_BUCKET,

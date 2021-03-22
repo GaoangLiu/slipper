@@ -12,6 +12,7 @@ from tqdm import tqdm
 
 from .toolkits.file import load_password
 
+
 class Bucket:
     def __init__(self, phrase: str = None):
         _auth = oss2.Auth(ALIYUN_ACCESS_KEY_ID, ALIYUN_ACCESS_KEY_SECRET)
