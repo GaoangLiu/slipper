@@ -6,47 +6,20 @@ from Crypto.Cipher import AES
 
 import oss2
 from getpass import getpass
-from dofast.config import ALIYUN_ACCESS_KEY_ID, ALIYUN_ACCESS_KEY_SECRET, ALIYUN_BUCKET, ALIYUN_REGION, PHRASE
+from dofast.config import ALIYUN_ACCESS_KEY_ID, ALIYUN_ACCESS_KEY_SECRET, ALIYUN_BUCKET, ALIYUN_REGION
 from dofast.utils import shell, textwrite, textread
 from tqdm import tqdm
 
 from .toolkits.file import load_password
 
-
-def encode(msg_text: str, passphrase: str) -> str:
-    msg_text += '|' + msg_text * 100
-    msg_text = msg_text[:1024]
-    bytes_text = msg_text.encode().rjust(1024)  # in case this is a long text
-    passphrase = passphrase.encode().ljust(32, b'*')
-    cipher = AES.new(passphrase, AES.MODE_ECB)
-    return base64.b64encode(cipher.encrypt(bytes_text)).decode('ascii')
-
-
-def decode(msg_text: str, passphrase: str) -> str:
-    bytes_text = msg_text.encode().ljust(1024)
-    passphrase = passphrase.encode().ljust(32, b'*')
-    try:
-        cipher = AES.new(passphrase, AES.MODE_ECB)
-        return cipher.decrypt(
-            base64.b64decode(bytes_text)).decode().split('|')[0]
-    except Exception as e:
-        print(f"Maybe wrong password. {e}")
-        return ""
-
-
 class Bucket:
     def __init__(self, phrase: str = None):
-        _passphrase = load_password('/etc/bucket.key')
-        _id = decode(ALIYUN_ACCESS_KEY_ID, _passphrase)
-        _secret = decode(ALIYUN_ACCESS_KEY_SECRET, _passphrase)
-        _region = decode(ALIYUN_REGION, _passphrase)
-        _bucket_name = decode(ALIYUN_BUCKET, _passphrase)
-        _auth = oss2.Auth(_id, _secret)
-        _service = oss2.Service(_auth, _region)
-        _http_region = _region.lstrip('http://')
+        _auth = oss2.Auth(ALIYUN_ACCESS_KEY_ID, ALIYUN_ACCESS_KEY_SECRET)
+        _service = oss2.Service(_auth, ALIYUN_REGION)
+        _http_region = ALIYUN_REGION.lstrip('http://')
 
-        self.bucket = oss2.Bucket(_auth, _region, _bucket_name)
-        self.url_prefix = f"https://{_bucket_name}.{_http_region}/transfer/"
+        self.bucket = oss2.Bucket(_auth, ALIYUN_REGION, ALIYUN_BUCKET)
+        self.url_prefix = f"https://{ALIYUN_BUCKET}.{_http_region}/transfer/"
 
     def upload(self, file_name) -> None:
         """Upload a file to transfer/"""
@@ -88,8 +61,7 @@ class Bucket:
 
 class Message():
     def __init__(self):
-        self._passphrase = decode(PHRASE, load_password('/etc/slimsg.key'))
-        self.bucket = Bucket(self._passphrase).bucket
+        self.bucket = Bucket().bucket
         self.file = 'transfer/msgbuffer.txt'
         self._tmp = '/tmp/msgbuffer.txt'
 

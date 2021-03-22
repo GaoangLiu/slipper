@@ -10,18 +10,17 @@ from email.header import Header
 
 import dofast.utils as du
 from dofast.utils import p, pp
-from dofast.config import HEMA_BOT, AUTH, HTTPS_PROXY, TELEGRAM_KEY, YAHOO_USER_NAME, YAHOO_USER_PASSWORD
-from .endecode import short_decode, decode_with_keyfile as dkey
+from dofast.config import HEMA_BOT, HTTPS_PROXY, HTTP_PROXY, YAHOO_USER_NAME, YAHOO_USER_PASSWORD
 
-proxies = {'http': dkey(AUTH, HTTPS_PROXY)}
+proxies = {'http': HTTP_PROXY}
 
 
 class YahooMail:
     def __init__(self):
         self.smtp_server = "smtp.mail.yahoo.com"
         self.smtp_port = 587
-        self.username = dkey(AUTH, YAHOO_USER_NAME)
-        self.password = dkey(AUTH, YAHOO_USER_PASSWORD)
+        self.username = YAHOO_USER_NAME
+        self.password = YAHOO_USER_PASSWORD
         self.email_from = self.username + "@yahoo.com"
         mail = smtplib.SMTP(self.smtp_server, self.smtp_port)
         mail.set_debuglevel(debuglevel=True)
@@ -68,13 +67,13 @@ def bot_say(api_token: str,
 
 
 def read_hema_bot():
-    bot_updates = dkey(TELEGRAM_KEY, HEMA_BOT)
+    bot_updates = HEMA_BOT
     resp = du.client.get(bot_updates, proxies=proxies)
     pp(json.loads(resp.text))
 
 
 def download_file_by_id(file_id: str) -> None:
-    bot_updates = dkey(TELEGRAM_KEY, HEMA_BOT)
+    bot_updates = HEMA_BOT
     file_url = bot_updates.replace('getUpdates', f'getFile?file_id={file_id}')
     json_res = du.client.get(file_url, proxies=proxies).text
     file_name = json.loads(json_res)['result']['file_path']
@@ -82,4 +81,4 @@ def download_file_by_id(file_id: str) -> None:
 
     file_url = bot_updates.replace('getUpdates',
                                    file_name).replace('/bot', '/file/bot')
-    du.download(file_url, proxy=dkey(AUTH, HTTPS_PROXY))
+    du.download(file_url, proxy=HTTPS_PROXY)
