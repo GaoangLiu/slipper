@@ -40,7 +40,6 @@ def main():
                     sub_args=[['en', 'encode'], ['de', 'decode']])
 
     sp.parse_args()
-
     if sp.cos:
         cli = COS()
         if sp.cos.upload:

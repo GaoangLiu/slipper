@@ -7,11 +7,10 @@ import platform
 file_path = os.path.dirname(
     os.path.realpath(inspect.getfile(inspect.currentframe())))
 
+_df = 'decode' if platform.system() == 'Linux' else 'decode_darwin'
+
 
 def decode(keyword: str):
-    system = platform.system()
-    _df = 'decode' if system == 'Linux' else 'decode_darwin' 
-    
     cmd = f"{file_path}/{_df} {keyword}"
     return subprocess.check_output(cmd, stderr=subprocess.STDOUT,
                                    shell=True).decode('utf8').strip()
