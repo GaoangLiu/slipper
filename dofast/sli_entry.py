@@ -1,17 +1,5 @@
-import dofast.utils as du
-from dofast.simple_parser import SimpleParser, PLACEHOLDER
-from dofast.oss import Bucket, Message
-from dofast.cos import COS
-from dofast.fund import invest_advice, tgalert
-from dofast.stock import Stock
-
-from dofast.toolkits.endecode import short_decode, short_encode
-from dofast.toolkits.telegram import read_hema_bot, download_file_by_id
-from dofast.network import Network
-from dofast.data.msg import display_message
-
-
-def main():
+def _main():
+    from .simple_parser import SimpleParser, PLACEHOLDER
     sp = SimpleParser()
     sp.add_argument('-cos',
                     '--cos',
@@ -41,6 +29,7 @@ def main():
 
     sp.parse_args()
     if sp.cos:
+        from .cos import COS
         cli = COS()
         if sp.cos.upload:
             cli.upload_file(sp.cos.upload, "transfer/")
@@ -54,12 +43,14 @@ def main():
             cli.list_files("transfer/")
 
     elif sp.oss:
+        from .oss import Bucket, Message
+        from .utils import download
         cli = Bucket()
         if sp.oss.upload:
             cli.upload(sp.oss.upload)
         elif sp.oss.download:
-            # Note the download func here is: dofast.utils.download
-            du.download(cli.url_prefix + sp.oss.download)
+            # Note the download func here is: .utils.download
+            download(cli.url_prefix + sp.oss.download)
         elif sp.oss.delete:
             cli.delete(sp.oss.delete)
         elif sp.oss.list:
@@ -67,46 +58,55 @@ def main():
             cli.list_files()
 
     elif sp.download:
+        from .utils import download
         print(sp.download)
-        du.download(sp.download.value)
+        download(sp.download.value)
 
     elif sp.ddfile:
-        du.create_random_file(int(sp.ddfile.value or 100))
+        from .utils import create_random_file
+        create_random_file(int(sp.ddfile.value or 100))
 
     elif sp.ip:
         v_ip, v_port = sp.ip.value, sp.ip.port
+        from .utils import shell
         if not sp.ip.port:
-            du.p(du.shell("curl -s cip.cc"))
+            print(shell("curl -s cip.cc"))
         else:
             print("Checking on:", v_ip, v_port)
             curl_socks = f"curl -s --connect-timeout 5 --socks5 {v_ip}:{v_port} ipinfo.io"
             curl_http = f"curl -s --connect-timeout 5 --proxy {v_ip}:{v_port} ipinfo.io"
-            res = du.shell(curl_socks)
+            res = shell(curl_socks)
             if res != '':
-                du.p(res)
+                print(res)
             else:
-                du.p('FAILED(socks5 proxy check)')
-                du.p(du.shell(curl_http))
+                print('FAILED(socks5 proxy check)')
+                print(shell(curl_http))
 
     elif sp.roundcorner:
+        from .utils import rounded_corners
         image_path = sp.roundcorner.value
         radius = int(sp.roundcorner.radius or 10)
-        du.rounded_corners(image_path, radius)
+        rounded_corners(image_path, radius)
 
     elif sp.githubupload:
-        du.githup_upload(sp.githubupload.value)
+        from .utils import githup_upload
+        githup_upload(sp.githubupload.value)
 
     elif sp.smms:
-        du.smms_upload(sp.smms.value)
+        from .utils import smms_upload
+        smms_upload(sp.smms.value)
 
     elif sp.youdao:
-        du.youdao_dict(sp.youdao.value)
+        from .utils import youdao_dict
+        youdao_dict(sp.youdao.value)
 
     elif sp.find:
+        from .utils import findfile
         print(sp.find.value, sp.find.directory or '.')
-        du.findfile(sp.find.value, sp.find.directory or '.')
+        findfile(sp.find.value, sp.find.directory or '.')
 
     elif sp.msg:
+        from .oss import Message
         if sp.msg.write:
             Message().write(sp.msg.write)
         elif sp.msg.read:
@@ -117,23 +117,30 @@ def main():
             Message().read()
 
     elif sp.fund:
+        from .fund import invest_advice, tgalert
         if sp.fund.buyalert: tgalert(sp.fund.buyalert)
         else:
             invest_advice(None if sp.fund.value ==
                           PLACEHOLDER else sp.fund.value)
 
     elif sp.stock:
+        from .stock import Stock
         if sp.stock.value != PLACEHOLDER: Stock().trend(sp.stock.value)
         else: Stock().my_trend()
 
     elif sp.aes:
+        from .toolkits.endecode import short_decode, short_encode
+
         text = sp.aes.value
         if sp.aes.encode: du.p(short_encode(text, sp.aes.encode))
         elif sp.aes.decode: du.p(short_decode(text, sp.aes.decode))
 
     else:
+        from .data.msg import display_message
         display_message()
 
+
+main = _main
 
 if __name__ == '__main__':
     main()
