@@ -11,17 +11,16 @@ from email.header import Header
 import dofast.utils as du
 from dofast.utils import p, pp
 from dofast.config import decode
-HEMA_BOT, HTTPS_PROXY, HTTP_PROXY, YAHOO_USER_NAME, YAHOO_USER_PASSWORD
 
-proxies = {'http': HTTP_PROXY}
+proxies = {'http': decode('HTTP_PROXY')}
 
 
 class YahooMail:
     def __init__(self):
         self.smtp_server = "smtp.mail.yahoo.com"
         self.smtp_port = 587
-        self.username = YAHOO_USER_NAME
-        self.password = YAHOO_USER_PASSWORD
+        self.username = decode('YAHOO_USER_NAME')
+        self.password = decode('YAHOO_USER_PASSWORD')
         self.email_from = self.username + "@yahoo.com"
         mail = smtplib.SMTP(self.smtp_server, self.smtp_port)
         mail.set_debuglevel(debuglevel=True)

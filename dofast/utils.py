@@ -22,7 +22,7 @@ from tqdm import tqdm
 from PIL import Image, ImageDraw
 
 from .logger import Logger
-from .config import GIT_TOKEN, GIT_RAW_PREFIX
+from .config import decode
 
 
 # =========================================================== display
@@ -249,7 +249,7 @@ def git_io_shorten(url):
 
 
 def githup_upload(file_name: str, shorten=True):
-    g = Github(GIT_TOKEN, timeout=300)
+    g = Github(decode('GIT_TOKEN'), timeout=300)
     repo = g.get_user().get_repo('stuff')
     data = base64.b64encode(open(file_name, "rb").read())
     blob = repo.create_git_blob(data.decode("utf-8"), "base64")
@@ -270,7 +270,7 @@ def githup_upload(file_name: str, shorten=True):
     master_ref.edit(commit.sha)
 
     if shorten:
-        url_long = f"{GIT_RAW_PREFIX}{path}"
+        url_long = f"{decode('GIT_RAW_PREFIX')}{path}"
         p("Long url", url_long)
         p("Short url", git_io_shorten(url_long))
 
