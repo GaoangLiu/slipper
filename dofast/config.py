@@ -1,49 +1,46 @@
-import os
-import sys
-import subprocess
-import inspect
-import platform
-
-file_path = os.path.dirname(
-    os.path.realpath(inspect.getfile(inspect.currentframe())))
-
-_df = 'decode' if platform.system() == 'Linux' else 'decode_darwin'
+import json
+from pathlib import Path
 
 
-def decode(keyword: str):
-    cmd = f"{file_path}/{_df} {keyword}"
-    return subprocess.check_output(cmd, stderr=subprocess.STDOUT,
-                                   shell=True).decode('utf8').strip()
+def decode(keyword: str) -> str:
+    config_file = str(Path.home()) + '/.config/dofast.json'
+    js = json.load(open(config_file, 'r'))
+    return js[keyword.lower()]
 
 
-ALIYUN_ACCESS_KEY_ID = decode("ALIYUN_ACCESS_KEY_ID")
-ALIYUN_ACCESS_KEY_SECRET = decode("ALIYUN_ACCESS_KEY_SECRET")
-ALIYUN_BUCKET = decode("ALIYUN_BUCKET")
-ALIYUN_REGION = decode("ALIYUN_REGION")
+# def decode(keyword: str):
+#     cmd = f"{file_path}/{_df} {keyword}"
+#     return subprocess.check_output(cmd, stderr=subprocess.STDOUT,
+#                                    shell=True).decode('utf8').strip()
 
-TENCENT_SECRET_ID = decode("TENCENT_SECRET_ID")
-TENCENT_SECRET_KEY = decode("TENCENT_SECRET_KEY")
-TENCENT_BUCKET = decode("TENCENT_BUCKET")
+# ALIYUN_ACCESS_KEY_ID = decode("ALIYUN_ACCESS_KEY_ID")
+# ALIYUN_ACCESS_KEY_SECRET = decode("ALIYUN_ACCESS_KEY_SECRET")
+# ALIYUN_BUCKET = decode("ALIYUN_BUCKET")
+# ALIYUN_REGION = decode("ALIYUN_REGION")
 
-PLUTOSHARE = decode("pluto_share")
-MESSALERT = decode("mess_alert")
-HTTP_PROXY = decode("http_proxy")
-HTTPS_PROXY = decode("http_proxy")
+# TENCENT_SECRET_ID = decode("TENCENT_SECRET_ID")
+# TENCENT_SECRET_KEY = decode("TENCENT_SECRET_KEY")
+# TENCENT_BUCKET = decode("TENCENT_BUCKET")
 
-GIT_TOKEN = decode("GIT_TOKEN")
-GIT_RAW_PREFIX = decode("GIT_RAW_PREFIX")
+# PLUTOSHARE = decode("pluto_share")
+# MESSALERT = decode("mess_alert")
+# HTTP_PROXY = decode("http_proxy")
+# HTTPS_PROXY = decode("http_proxy")
 
-YAHOO_USER_NAME = decode("YAHOO_USER_NAME")
-YAHOO_USER_PASSWORD = decode("YAHOO_USER_PASSWORD")
-GMAIL_USER_NAME = decode("gmail")
-FOXMAIL_USERNAME = decode("foxmail")
+# GIT_TOKEN = decode("GIT_TOKEN")
+# GIT_RAW_PREFIX = decode("GIT_RAW_PREFIX")
 
-HEMA_BOT = None
+# YAHOO_USER_NAME = decode("YAHOO_USER_NAME")
+# YAHOO_USER_PASSWORD = decode("YAHOO_USER_PASSWORD")
+# GMAIL_USER_NAME = decode("gmail")
+# FOXMAIL_USERNAME = decode("foxmail")
 
-# print(ALIYUN_ACCESS_KEY_ID,
-#       ALIYUN_ACCESS_KEY_SECRET,
-#       ALIYUN_BUCKET,
-#       PLUTOSHARE,
-#       GMAIL_USER_NAME,
-#       FOXMAIL_USERNAME,
-#       sep="\n")
+# HEMA_BOT = None
+
+# # print(ALIYUN_ACCESS_KEY_ID,
+# #       ALIYUN_ACCESS_KEY_SECRET,
+# #       ALIYUN_BUCKET,
+# #       PLUTOSHARE,
+# #       GMAIL_USER_NAME,
+# #       FOXMAIL_USERNAME,
+# #       sep="\n")

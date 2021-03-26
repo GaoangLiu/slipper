@@ -10,7 +10,7 @@ import time
 from bs4 import BeautifulSoup
 from .toolkits.telegram import bot_say, YahooMail
 from .toolkits.file import load_password
-from .config import PLUTOSHARE, MESSALERT, YAHOO_USER_NAME, YAHOO_USER_PASSWORD, FOXMAIL_USERNAME
+from .config import decode
 from .logger import Logger
 
 bird = Logger('/var/log/fund.log')
@@ -178,12 +178,12 @@ def tgalert(proxyoff: str = ""):
         msg = '\n'.join([
             Fund(code).buy_advice() for code in ['162605', '570008', '161903']
         ])
-        _token = PLUTOSHARE
+        _token = decode('PLUTOSHARE')
         bot_say(_token, msg, use_proxy=False if proxyoff else True)
         bird.info('Telegram fund alert SUCCESS.')
 
         postman = YahooMail()
-        postman.send(FOXMAIL_USERNAME, f'Fund Alert', msg)
+        postman.send(decode('FOXMAIL'), f'Fund Alert', msg)
 
         bird.info('Message fund alert SUCCESS.')
     except Exception as e:

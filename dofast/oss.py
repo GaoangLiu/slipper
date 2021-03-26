@@ -6,7 +6,7 @@ from Crypto.Cipher import AES
 
 import oss2
 from getpass import getpass
-from dofast.config import ALIYUN_ACCESS_KEY_ID, ALIYUN_ACCESS_KEY_SECRET, ALIYUN_BUCKET, ALIYUN_REGION
+from dofast.config import decode
 from dofast.utils import shell, textwrite, textread
 from tqdm import tqdm
 
@@ -15,12 +15,16 @@ from .toolkits.file import load_password
 
 class Bucket:
     def __init__(self, phrase: str = None):
-        _auth = oss2.Auth(ALIYUN_ACCESS_KEY_ID, ALIYUN_ACCESS_KEY_SECRET)
-        _service = oss2.Service(_auth, ALIYUN_REGION)
-        _http_region = ALIYUN_REGION.lstrip('http://')
+        _id = decode("ALIYUN_ACCESS_KEY_ID")
+        _secret = decode("ALIYUN_ACCESS_KEY_SECRET")
+        _bucket =decode("ALIYUN_BUCKET")
+        _rigion = decode("ALIYUN_REGION")
+        _auth = oss2.Auth(_id, _secret)
+        _service = oss2.Service(_auth, _region)
+        _http_region = _region.lstrip('http://')
 
-        self.bucket = oss2.Bucket(_auth, ALIYUN_REGION, ALIYUN_BUCKET)
-        self.url_prefix = f"https://{ALIYUN_BUCKET}.{_http_region}/transfer/"
+        self.bucket = oss2.Bucket(_auth, _region, _bucket)
+        self.url_prefix = f"https://{_bucket}.{_http_region}/transfer/"
 
     def upload(self, file_name) -> None:
         """Upload a file to transfer/"""

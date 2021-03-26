@@ -6,15 +6,14 @@ from qcloud_cos import CosConfig
 from qcloud_cos import CosS3Client
 from tqdm import tqdm
 
-from .config import TENCENT_SECRET_ID, TENCENT_SECRET_KEY, TENCENT_BUCKET
-
+from .config import decode
 
 class COS:
     def __init__(self):
-        self.bucket = TENCENT_BUCKET
+        self.bucket = decode('TENCENT_BUCKET')
         _config = CosConfig(Region='ap-beijing',
-                            SecretId=TENCENT_SECRET_ID,
-                            SecretKey=TENCENT_SECRET_KEY)
+                            SecretId=decode('TENCENT_SECRET_ID'),
+                            SecretKey=decode('TENCENT_SECRET_KEY'))
         self.client = CosS3Client(_config)
 
     def prefix(self) -> str:

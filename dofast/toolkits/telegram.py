@@ -10,7 +10,8 @@ from email.header import Header
 
 import dofast.utils as du
 from dofast.utils import p, pp
-from dofast.config import HEMA_BOT, HTTPS_PROXY, HTTP_PROXY, YAHOO_USER_NAME, YAHOO_USER_PASSWORD
+from dofast.config import decode
+HEMA_BOT, HTTPS_PROXY, HTTP_PROXY, YAHOO_USER_NAME, YAHOO_USER_PASSWORD
 
 proxies = {'http': HTTP_PROXY}
 
