@@ -8,6 +8,7 @@ from tqdm import tqdm
 
 from .config import decode
 
+
 class COS:
     def __init__(self):
         self.bucket = decode('TENCENT_BUCKET')

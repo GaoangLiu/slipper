@@ -17,7 +17,7 @@ class Bucket:
     def __init__(self, phrase: str = None):
         _id = decode("ALIYUN_ACCESS_KEY_ID")
         _secret = decode("ALIYUN_ACCESS_KEY_SECRET")
-        _bucket =decode("ALIYUN_BUCKET")
+        _bucket = decode("ALIYUN_BUCKET")
         _region = decode("ALIYUN_REGION")
         _auth = oss2.Auth(_id, _secret)
         _service = oss2.Service(_auth, _region)

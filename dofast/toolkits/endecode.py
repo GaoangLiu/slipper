@@ -59,4 +59,3 @@ def decode_with_keyfile(file_path: str, encrypted_message: str) -> str:
     with open(file_path, 'r') as f:
         _decode = short_decode if '|' in encrypted_message else decode
         return _decode(encrypted_message, f.read().strip())
-
