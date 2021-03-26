@@ -132,8 +132,8 @@ def _main():
         from .toolkits.endecode import short_decode, short_encode
 
         text = sp.aes.value
-        if sp.aes.encode: du.p(short_encode(text, sp.aes.encode))
-        elif sp.aes.decode: du.p(short_decode(text, sp.aes.decode))
+        if sp.aes.encode: print(short_encode(text, sp.aes.encode))
+        elif sp.aes.decode: print(short_decode(text, sp.aes.decode))
 
     else:
         from .data.msg import display_message
