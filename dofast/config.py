@@ -8,4 +8,3 @@ def decode(keyword: str) -> str:
     js = json.load(open(config_file, 'r'))
     _pass = decode_with_keyfile(js["auth_file"], js[keyword.lower()])
     return _pass
-

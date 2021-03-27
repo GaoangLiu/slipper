@@ -249,7 +249,8 @@ def git_io_shorten(url):
 
 
 def githup_upload(file_name: str, shorten=True):
-    g = Github(decode('GIT_TOKEN'), timeout=300)
+    _token = decode('GIT_TOKEN')
+    g = Github(_token, timeout=300)
     repo = g.get_user().get_repo('stuff')
     data = base64.b64encode(open(file_name, "rb").read())
     blob = repo.create_git_blob(data.decode("utf-8"), "base64")
@@ -271,8 +272,8 @@ def githup_upload(file_name: str, shorten=True):
 
     if shorten:
         url_long = f"{decode('GIT_RAW_PREFIX')}{path}"
-        p("Long url", url_long)
-        p("Short url", git_io_shorten(url_long))
+        print("Long url:  ", url_long)
+        print("Short url: ", git_io_shorten(url_long))
 
 
 class YouDao():
