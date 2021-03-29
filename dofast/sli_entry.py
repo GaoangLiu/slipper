@@ -1,4 +1,25 @@
+def _init_config() -> None:
+    """ init configureation file on installing library."""
+    from pathlib import Path
+    _cf = str(Path.home()) + '/.config/dofast.json'
+    if Path(_cf).is_file(): return 
+
+    import os, inspect
+    file_path = os.path.dirname(
+        os.path.realpath(inspect.getfile(inspect.currentframe())))
+    zip_json = f"{file_path}/dofast.json.zip"
+
+    import zipfile, getpass
+    with zipfile.ZipFile(zip_json, 'r') as zip_ref:
+        zip_ref.extractall(path=str(Path.home()) + "/.config/",
+                           pwd=bytes(
+                               getpass.getpass("type here config password: "),
+                               'utf-8'))
+    
+
 def _main():
+    _init_config()
+
     from .simple_parser import SimpleParser, PLACEHOLDER
     sp = SimpleParser()
     sp.add_argument('-cos',
