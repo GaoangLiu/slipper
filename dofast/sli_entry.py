@@ -1,8 +1,9 @@
 def _init_config() -> None:
     """ init configureation file on installing library."""
     from pathlib import Path
-    _cf = str(Path.home()) + '/.config/dofast.json'
-    if Path(_cf).is_file(): return 
+    _config_path = str(Path.home()) + "/.config/"
+    _cf = _config_path + 'dofast.json'
+    if Path(_cf).is_file(): return
 
     import os, inspect
     file_path = os.path.dirname(
@@ -11,11 +12,11 @@ def _init_config() -> None:
 
     import zipfile, getpass
     with zipfile.ZipFile(zip_json, 'r') as zip_ref:
-        zip_ref.extractall(path=str(Path.home()) + "/.config/",
+        zip_ref.extractall(path=_config_path,
                            pwd=bytes(
                                getpass.getpass("type here config password: "),
                                'utf-8'))
-    
+
 
 def _main():
     _init_config()
