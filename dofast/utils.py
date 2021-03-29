@@ -4,22 +4,14 @@ import base64
 import bs4
 import json
 import os
-import re
 import requests
-import smart_open
-import signal
 import subprocess
-import string
 import sys
 import time
-import random
 from functools import wraps
-from github import Github
-from github import InputGitTreeElement
 from typing import List
 from pprint import pprint
 from tqdm import tqdm
-from PIL import Image, ImageDraw
 
 from .logger import Logger
 from .config import decode
@@ -43,6 +35,7 @@ def random_sleep(lower_bound: int, upper_bound: int) -> None:
     """Randomly sleep for few seconds. Typical usage involving a crontab task
     to prevent robot behavior detection.
     """
+    import random
     time.sleep(random.randint(lower_bound, upper_bound))
 
 
@@ -52,6 +45,7 @@ def show_func_name():
 
 
 def smartopen(file_path: str):
+    import smart_open
     with smart_open.open(file_path) as f:
         return f.readlines()
 
@@ -128,6 +122,7 @@ def pip_install(package_name: str):
 
 def rounded_corners(image_name: str, rad: int = 20):
     """Add rounded_corners to images"""
+    from PIL import Image, ImageDraw
     im = Image.open(image_name)
     circle = Image.new('L', (rad * 2, rad * 2), 0)
     draw = ImageDraw.Draw(circle)
@@ -167,6 +162,7 @@ def set_timeout(countdown: int, callback=print):
             raise RuntimeError
 
         def wrapper(*args, **kwargs):
+            import signal
             try:
                 signal.signal(signal.SIGALRM, handle)
                 signal.alarm(countdown)  # set countdown
@@ -249,6 +245,8 @@ def git_io_shorten(url):
 
 
 def githup_upload(file_name: str, shorten=True):
+    from github import Github, InputGitTreeElement
+
     _token = decode('GIT_TOKEN')
     g = Github(_token, timeout=300)
     repo = g.get_user().get_repo('stuff')
@@ -297,6 +295,7 @@ class YouDao():
             print("**Sorry, but no translation was found.**")
             return
         """ Chinese to English """
+        import string
         for span in soup.findAll('span', class_='contentTitle'):
             if kw[0] in string.ascii_lowercase:  # Only print this for Chinese word
                 continue
@@ -309,6 +308,7 @@ class YouDao():
         for li in ul.findAll('li'):
             print('\t{}'.format(li.text))
 
+        import re
         for div in soup.findAll('div',
                                 {'class': {'examples', 'collinsMajorTrans'}}):
             # print(div.text)

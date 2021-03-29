@@ -2,10 +2,10 @@ A package for faster Python programming.
 
 ## Usage
 ```python
-import dofast as df
+import dofast.utils as cc
 
-js = df.jsonread('json_file.json')
-sp.df(js) # == pprint.pprint(js)
+text = cc.jsonread('json_file.json')
+cc.pp(js) # == pprint.pprint(js)
 ```
 
 ## Install
@@ -14,3 +14,4 @@ sp.df(js) # == pprint.pprint(js)
 Or, update to latest version with:
 
 `python3 -m pip install dofast --upgrade`
+

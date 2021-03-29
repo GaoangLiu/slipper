@@ -18,7 +18,7 @@ def _init_config() -> None:
                                'utf-8'))
 
 
-def _main():
+def main():
     _init_config()
 
     from .simple_parser import SimpleParser, PLACEHOLDER
@@ -161,8 +161,6 @@ def _main():
         from .data.msg import display_message
         display_message()
 
-
-main = _main
 
 if __name__ == '__main__':
     main()
