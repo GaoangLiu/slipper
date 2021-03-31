@@ -2,10 +2,10 @@ A package for faster Python programming.
 
 ## Usage
 ```python
-import dofast.utils as cc
+import dofast.utils as df
 
-text = cc.jsonread('json_file.json')
-cc.pp(js) # == pprint.pprint(js)
+text = df.jsonread('json_file.json')
+df.pp(js) # == pprint.pprint(js)
 ```
 
 ## Install

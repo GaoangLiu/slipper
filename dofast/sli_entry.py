@@ -49,8 +49,15 @@ def main():
                     '--aes',
                     sub_args=[['en', 'encode'], ['de', 'decode']])
 
+    sp.add_argument('-gcr', '--githubcommitreminder')
+
     sp.parse_args()
-    if sp.cos:
+
+    if sp.githubcommitreminder:
+        from .crontasks import git_commit_reminder
+        git_commit_reminder()
+
+    elif sp.cos:
         from .cos import COS
         cli = COS()
         if sp.cos.upload:
