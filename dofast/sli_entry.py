@@ -54,8 +54,9 @@ def main():
     sp.parse_args()
 
     if sp.githubcommitreminder:
-        from .crontasks import git_commit_reminder
+        from .crontasks import git_commit_reminder, tasks_reminder
         git_commit_reminder()
+        tasks_reminder()
 
     elif sp.cos:
         from .cos import COS

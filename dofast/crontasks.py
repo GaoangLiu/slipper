@@ -27,3 +27,14 @@ def git_commit_reminder() -> None:
     YahooMail().send(decode('GMAIL2'),
                      subject="Github commit reminder",
                      message=msg)
+
+
+def tasks_reminder():
+    url = decode('GIT_RAW_PREFIX') + '2021/ps.md'
+    
+    import requests
+    tasks = requests.get(url).text.split('\n')
+    todo = '\n'.join(t for t in tasks if not t.startswith('- [x]'))
+
+    from dofast.toolkits.telegram import YahooMail
+    YahooMail().send(decode('GMAIL2'), subject="TODO list", message=todo)
