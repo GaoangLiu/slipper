@@ -23,34 +23,31 @@ def main():
 
     from .simple_parser import SimpleParser, PLACEHOLDER
     sp = SimpleParser()
-    sp.add_argument('-cos',
-                    '--cos',
-                    sub_args=[["u", "up", "upload"], ["download", "d", "dw"],
-                              ["l", "list"], ["del", "delete"]])
-    sp.add_argument('-oss',
-                    '--oss',
-                    sub_args=[["u", "up", "upload"], ["download", "d", "dw"],
-                              ["l", "list"], ["del", "delete"]])
-    sp.add_argument('-dw', '--download', sub_args=[])
-    sp.add_argument('-d', '--ddfile')
-    sp.add_argument('-ip',
-                    '--ip',
-                    sub_args=[['p', 'port']],
-                    default_value="localhost")
-    sp.add_argument('-rc', '--roundcorner', sub_args=[['r', 'radius']])
-    sp.add_argument('-gu', '--githubupload')
-    sp.add_argument('-sm', '--smms')
-    sp.add_argument('-yd', '--youdao')
-    sp.add_argument('-fd', '--find', sub_args=[['dir', 'directory']])
-    sp.add_argument('-m', '--msg', sub_args=[['r', 'read'], ['w', 'write']])
-    sp.add_argument('-fund', '--fund', sub_args=[['ba', 'buyalert']])
-    sp.add_argument('-stock', '--stock')
-    sp.add_argument('-aes',
-                    '--aes',
-                    sub_args=[['en', 'encode'], ['de', 'decode']])
-
-    sp.add_argument('-gcr', '--githubcommitreminder')
-    sp.add_argument('-pf', '--phoneflow', sub_args=[['rest'], ['daily']])
+    sp.input('-cos',
+             '--cos',
+             sub_args=[["u", "up", "upload"], ["download", "d", "dw"],
+                       ["l", "list"], ["del", "delete"]])
+    sp.input('-oss',
+             '--oss',
+             sub_args=[["u", "up", "upload"], ["download", "d", "dw"],
+                       ["l", "list"], ["del", "delete"]])
+    sp.input('-dw', '--download', sub_args=[])
+    sp.input('-d', '--ddfile')
+    sp.input('-ip',
+             '--ip',
+             sub_args=[['p', 'port']],
+             default_value="localhost")
+    sp.input('-rc', '--roundcorner', sub_args=[['r', 'radius']])
+    sp.input('-gu', '--githubupload')
+    sp.input('-sm', '--smms')
+    sp.input('-yd', '--youdao')
+    sp.input('-fd', '--find', sub_args=[['dir', 'directory']])
+    sp.input('-m', '--msg', sub_args=[['r', 'read'], ['w', 'write']])
+    sp.input('-fund', '--fund', sub_args=[['ba', 'buyalert']])
+    sp.input('-stock', '--stock')
+    sp.input('-aes', '--aes', sub_args=[['en', 'encode'], ['de', 'decode']])
+    sp.input('-gcr', '--githubcommitreminder')
+    sp.input('-pf', '--phoneflow', sub_args=[['rest'], ['daily']])
 
     sp.parse_args()
 

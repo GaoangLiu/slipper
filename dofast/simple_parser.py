@@ -12,6 +12,19 @@ class SimpleParser:
     def __init__(self):
         self.__dict__ = collections.defaultdict(Attribute)
 
+    def input(self,
+              abbr: str = "",
+              full_arg: str = "",
+              default_value: str = "",
+              sub_args: List = [],
+              description: str = ""):
+        # alias of add argument
+        self.add_argument(abbr,
+                          full_arg,
+                          default_value=default_value,
+                          sub_args=sub_args,
+                          description=description)
+
     def add_argument(self,
                      abbr: str = "",
                      full_arg: str = "",

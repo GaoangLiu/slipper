@@ -18,6 +18,7 @@ msg = """A Simple yet powerful terminal CLient. 😏
 -aes [-en | -de ] ::: AES encode/decode.
 
 -gcr(--gitcommitreminder) ::: Github daily commit reminder.
+-pf(--phoneflow) [rest, daily] ::: Phone flow monitor.
 """
 
 
