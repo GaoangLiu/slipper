@@ -48,10 +48,15 @@ def main():
     sp.input('-aes', '--aes', sub_args=[['en', 'encode'], ['de', 'decode']])
     sp.input('-gcr', '--githubcommitreminder')
     sp.input('-pf', '--phoneflow', sub_args=[['rest'], ['daily']])
+    sp.input('-hx', '--happyxiao')
 
     sp.parse_args()
+    
+    if sp.happyxiao:
+        from .crontasks import HappyXiao
+        HappyXiao.rss()
 
-    if sp.phoneflow:
+    elif sp.phoneflow:
         from .crontasks import PapaPhone
         if sp.phoneflow.rest:
             PapaPhone.issue_daily_usage()

@@ -113,3 +113,30 @@ class GithubTasks:
                 int(e) for e in h2.text.split() if e.isdigit())
             return commits_count
         return 0
+
+
+class HappyXiao:
+    ''' happyxiao articles poster'''
+    @classmethod
+    def rss(cls, url: str = 'https://happyxiao.com/') -> None:
+        rsp = bs4.BeautifulSoup(requests.get(url).text, 'lxml')
+        more = rsp.find_all('a', attrs={'class': 'more-link'})
+        articles = {m.attrs['href']: '' for m in more}
+        jsonfile = 'hx.json'
+
+        if not os.path.exists(jsonfile):
+            open(jsonfile, 'w').write('{}')
+
+        j = json.load(open(jsonfile, 'r'))
+        res = '\n'.join(cls.brief(k) for k in articles.keys() if k not in j)
+        j.update(articles)
+        json.dump(j, open(jsonfile, 'w'), indent=2)
+        if res:
+            bot_messalert(res.replace('#', '%23'))
+
+    @classmethod
+    def brief(cls, url) -> str:
+        rsp = bs4.BeautifulSoup(requests.get(url).text, 'lxml')
+        art = rsp.find('article')
+        res = url + '\n' + art.text.replace('\t', '') + str(art.a)
+        return res

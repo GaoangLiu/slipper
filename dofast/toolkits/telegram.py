@@ -19,7 +19,7 @@ def bot_say(api_token: str,
             use_proxy: bool = True):
     url = f"https://api.telegram.org/bot{api_token}/sendMessage?chat_id=@{bot_name}&text={text}"
     res = requests.get(url, proxies=proxies if use_proxy else None)
-    print(res, res.text)
+    print(res, res.content)
 
 
 def bot_messalert(msg: str) -> None:
