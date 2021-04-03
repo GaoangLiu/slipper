@@ -50,13 +50,21 @@ def main():
                     sub_args=[['en', 'encode'], ['de', 'decode']])
 
     sp.add_argument('-gcr', '--githubcommitreminder')
+    sp.add_argument('-pf', '--phoneflow', sub_args=[['rest'], ['daily']])
 
     sp.parse_args()
 
-    if sp.githubcommitreminder:
-        from .crontasks import git_commit_reminder, tasks_reminder
-        git_commit_reminder()
-        tasks_reminder()
+    if sp.phoneflow:
+        from .crontasks import PapaPhone
+        if sp.phoneflow.rest:
+            PapaPhone.issue_daily_usage()
+        elif sp.phoneflow.daily:
+            PapaPhone.issue_recharge_message()
+
+    elif sp.githubcommitreminder:
+        from .crontasks import GithubTasks
+        GithubTasks.git_commit_reminder()
+        GithubTasks.tasks_reminder()
 
     elif sp.cos:
         from .cos import COS

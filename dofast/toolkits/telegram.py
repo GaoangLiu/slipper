@@ -13,9 +13,13 @@ from dofast.config import decode
 proxies = {'https': decode('HTTP_PROXY')}
 
 
-def bot_say(api_token: str, text: str, bot_name: str = 'PlutoShare'):
+def bot_say(api_token: str,
+            text: str,
+            bot_name: str = 'PlutoShare',
+            use_proxy: bool = True):
     url = f"https://api.telegram.org/bot{api_token}/sendMessage?chat_id=@{bot_name}&text={text}"
-    requests.get(url, proxies=proxies)
+    res = requests.get(url, proxies=proxies if use_proxy else None)
+    print(res, res.text)
 
 
 def bot_messalert(msg: str) -> None:
@@ -39,8 +43,6 @@ def download_file_by_id(file_id: str) -> None:
     du.download(file_url, proxy=proxies)
 
 
-
-
 def mail2foxmail(subject: str, message: str):
     r = decode('FOXMAIL')
     YahooMail().send(r, subject, message)
@@ -49,6 +51,7 @@ def mail2foxmail(subject: str, message: str):
 def mail2gmail(subject: str, message: str):
     r = decode('GMAIL2')
     YahooMail().send(r, subject, message)
+
 
 class YahooMail:
     def __init__(self):
@@ -90,13 +93,3 @@ class Message:
     def __repr__(self) -> str:
         return '\nReceiver: {}\nSubject : {}\nMessage : {}'.format(
             self.r, self.s, self.m)
-
-
-def bot_say(api_token: str,
-            text: str,
-            bot_name: str = 'PlutoShare',
-            use_proxy: bool = True):
-    url = f"https://api.telegram.org/bot{api_token}/sendMessage?chat_id=@{bot_name}&text={text}"
-    res = requests.get(url, proxies=proxies if use_proxy else None)
-    p(res)
-
