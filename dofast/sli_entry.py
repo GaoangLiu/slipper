@@ -59,10 +59,10 @@ def main():
     elif sp.phoneflow:
         from .crontasks import PapaPhone
         if sp.phoneflow.rest:
-            PapaPhone.issue_daily_usage()
-        elif sp.phoneflow.daily:
             PapaPhone.issue_recharge_message()
-
+        elif sp.phoneflow.daily:
+            PapaPhone.issue_daily_usage()
+            
     elif sp.githubcommitreminder:
         from .crontasks import GithubTasks
         GithubTasks.git_commit_reminder()
@@ -99,7 +99,6 @@ def main():
 
     elif sp.download:
         from .utils import download
-        print(sp.download)
         download(sp.download.value)
 
     elif sp.ddfile:
