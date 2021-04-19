@@ -49,10 +49,14 @@ def main():
     sp.input('-gcr', '--githubcommitreminder')
     sp.input('-pf', '--phoneflow', sub_args=[['rest'], ['daily']])
     sp.input('-hx', '--happyxiao')
+    sp.input('-tgbot', '--telegrambot')
 
     sp.parse_args()
-    
-    if sp.happyxiao:
+    if sp.tgbot:
+        from .toolkits.telegram import bot_messalert
+        bot_messalert(sp.tgbot.value)
+
+    elif sp.happyxiao:
         from .crontasks import HappyXiao
         HappyXiao.rss()
 
