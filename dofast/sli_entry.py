@@ -1,3 +1,7 @@
+import os
+from .utils import jsonwrite, jsonread
+from .utils import download as getfile
+
 def _init_config() -> None:
     """ init configureation file on installing library."""
     from pathlib import Path
@@ -16,7 +20,6 @@ def _init_config() -> None:
                            pwd=bytes(
                                getpass.getpass("type here config password: "),
                                'utf-8'))
-
 
 def main():
     _init_config()
@@ -50,6 +53,7 @@ def main():
     sp.input('-pf', '--phoneflow', sub_args=[['rest'], ['daily']])
     sp.input('-hx', '--happyxiao')
     sp.input('-tgbot', '--telegrambot')
+    sp.input('-sync', '--sync')
 
     sp.parse_args()
     if sp.tgbot:
@@ -88,22 +92,34 @@ def main():
 
     elif sp.oss:
         from .oss import Bucket, Message
-        from .utils import download
         cli = Bucket()
         if sp.oss.upload:
             cli.upload(sp.oss.upload)
         elif sp.oss.download:
             # Note the download func here is: .utils.download
-            download(cli.url_prefix + sp.oss.download)
+            getfile(cli.url_prefix + sp.oss.download)
         elif sp.oss.delete:
             cli.delete(sp.oss.delete)
         elif sp.oss.list:
             print(cli.url_prefix)
             cli.list_files()
 
+    elif sp.sync:
+        from .oss import Bucket, Message
+        cli = Bucket()
+        if sp.sync.value != PLACEHOLDER:
+            cli.upload(sp.sync.value)
+            jsonwrite({'value': sp.sync.value}, '/tmp/syncsync.json')
+            cli.upload('/tmp/syncsync.json')
+        else:
+            cli.download('syncsync.json')
+            f = jsonread('syncsync.json')['value']
+            getfile(cli.url_prefix + f)
+            os.remove('syncsync.json')
+
+
     elif sp.download:
-        from .utils import download
-        download(sp.download.value)
+        getfile(sp.download.value)
 
     elif sp.ddfile:
         from .utils import create_random_file
