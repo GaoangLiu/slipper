@@ -2,6 +2,7 @@ import os
 from .utils import jsonwrite, jsonread
 from .utils import download as getfile
 
+
 def _init_config() -> None:
     """ init configureation file on installing library."""
     from pathlib import Path
@@ -20,6 +21,7 @@ def _init_config() -> None:
                            pwd=bytes(
                                getpass.getpass("type here config password: "),
                                'utf-8'))
+
 
 def main():
     _init_config()
@@ -70,7 +72,7 @@ def main():
             PapaPhone.issue_recharge_message()
         elif sp.phoneflow.daily:
             PapaPhone.issue_daily_usage()
-            
+
     elif sp.githubcommitreminder:
         from .crontasks import GithubTasks
         GithubTasks.git_commit_reminder()
@@ -96,8 +98,9 @@ def main():
         if sp.oss.upload:
             cli.upload(sp.oss.upload)
         elif sp.oss.download:
-            # Note the download func here is: .utils.download
-            getfile(cli.url_prefix + sp.oss.download)
+            url_prefix = cli.url_prefix
+            getfile(url_prefix + sp.oss.download,
+                    referer=url_prefix.strip('/transfer/'))
         elif sp.oss.delete:
             cli.delete(sp.oss.delete)
         elif sp.oss.list:
@@ -114,12 +117,12 @@ def main():
         else:
             cli.download('syncsync.json')
             f = jsonread('syncsync.json')['value']
-            getfile(cli.url_prefix + f)
+            getfile(cli.url_prefix + f,
+                    referer=cli.url_prefix.strip('/transfer/'))
             os.remove('syncsync.json')
 
-
     elif sp.download:
-        getfile(sp.download.value)
+        getfile(sp.download.value, referer=cli.url_prefix.strip('/transfer/'))
 
     elif sp.ddfile:
         from .utils import create_random_file
