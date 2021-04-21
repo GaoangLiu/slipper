@@ -81,8 +81,10 @@ class Message():
 
     def write(self, msg_body: str):
         contents = shell('whoami').strip() + "⎮" + msg_body
-        info = self.bucket.head_object(self.file)
-        loc = info.content_length
+        loc = 0
+        if self.bucket.object_exists(self.file):
+            info = self.bucket.head_object(self.file)
+            loc = info.content_length
         resp = self.bucket.append_object(self.file, loc, "\n" + contents)
         if resp.status == 200:
             print("✔ Message Sent!")
