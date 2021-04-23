@@ -22,6 +22,8 @@ msg = """A Simple yet powerful terminal CLient. 😏
 -pf(--phoneflow) [rest, daily] ::: Phone flow monitor.
 -hx(--happyxiao) ::: http://www.happyxiao.com/ newsletters
 -sync ::: Sync file among devices.
+-vpsinit ::: VPS initiation. 
+
 """
 
 

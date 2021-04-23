@@ -13,10 +13,11 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/GaoangLiu/slipper",
     packages=setuptools.find_packages(),
-    package_data={"dofast":["dofast.json.zip"]},
+    package_data={"dofast":["dofast.json.zip", 'data/vps_init.sh']},
     install_requires=[
         'colorlog>=4.6.1', 'tqdm', 'PyGithub', 'oss2', 'lxml',
-        'cos-python-sdk-v5', 'smart-open', 'pillow', 'bs4', 'arrow', 'numpy',
+        'cos-python-sdk-v5', 
+        'smart-open', 'pillow', 'bs4', 'arrow', 'numpy',
         'termcolor'
     ],
     entry_points={

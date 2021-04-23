@@ -56,6 +56,7 @@ def main():
     sp.input('-hx', '--happyxiao')
     sp.input('-tgbot', '--telegrambot')
     sp.input('-sync', '--sync')
+    sp.input('-vpsinit', '--vpsinit')
 
     sp.parse_args()
     if sp.tgbot:
@@ -196,6 +197,14 @@ def main():
         text = sp.aes.value
         if sp.aes.encode: print(short_encode(text, sp.aes.encode))
         elif sp.aes.decode: print(short_decode(text, sp.aes.decode))
+
+    elif sp.vpsconfig:
+        from .utils import shell
+        import os, inspect
+        file_path = os.path.dirname(
+            os.path.realpath(inspect.getfile(inspect.currentframe())))
+        bash_file = f"{file_path}/data/vps_init.sh"
+        shell(f'sudo bash bash_file')
 
     else:
         from .data.msg import display_message
