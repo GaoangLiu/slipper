@@ -204,7 +204,7 @@ def main():
         file_path = os.path.dirname(
             os.path.realpath(inspect.getfile(inspect.currentframe())))
         bash_file = f"{file_path}/data/vps_init.sh"
-        shell(f'sudo bash bash_file')
+        shell(f'bash {bash_file}')
 
     else:
         from .data.msg import display_message
