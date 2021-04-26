@@ -1,4 +1,3 @@
-import os
 from .utils import jsonwrite, jsonread
 from .utils import download as getfile
 
@@ -56,7 +55,9 @@ def main():
     sp.input('-hx', '--happyxiao')
     sp.input('-tgbot', '--telegrambot')
     sp.input('-sync', '--sync')
-    sp.input('-vpsinit', '--vpsinit')
+    sp.input('-vpsinit',
+             '--vpsinit',
+             description='VPS environment initiation.')
 
     sp.parse_args()
     if sp.tgbot:
@@ -110,6 +111,7 @@ def main():
 
     elif sp.sync:
         from .oss import Bucket, Message
+        import os
         cli = Bucket()
         if sp.sync.value != PLACEHOLDER:
             cli.upload(sp.sync.value)
@@ -123,7 +125,9 @@ def main():
             os.remove('syncsync.json')
 
     elif sp.download:
-        getfile(sp.download.value, referer=cli.url_prefix.strip('/transfer/'))
+        from .oss import Bucket
+        getfile(sp.download.value,
+                referer=Bucket().url_prefix.strip('/transfer/'))
 
     elif sp.ddfile:
         from .utils import create_random_file
@@ -198,7 +202,7 @@ def main():
         if sp.aes.encode: print(short_encode(text, sp.aes.encode))
         elif sp.aes.decode: print(short_decode(text, sp.aes.decode))
 
-    elif sp.vpsconfig:
+    elif sp.vpsinit:
         from .utils import shell
         import os, inspect
         file_path = os.path.dirname(

@@ -1,16 +1,11 @@
 import os, sys
 import json
-import base64
-import tempfile
 from Crypto.Cipher import AES
 
 import oss2
-from getpass import getpass
-from dofast.config import decode
-from dofast.utils import shell, textwrite, textread
-from tqdm import tqdm
-
-from .toolkits.file import load_password
+import codefast as cf
+from .config import decode
+from .utils import shell
 
 
 class Bucket:
@@ -67,24 +62,20 @@ class Bucket:
 class Message():
     def __init__(self):
         self.bucket = Bucket().bucket
-        self.file = 'transfer/msgbuffer.txt'
-        self._tmp = '/tmp/msgbuffer.txt'
+        self.file = 'transfer/msgbuffer.json'
+        self._tmp = '/tmp/msgbuffer.json'
+        self.bucket.get_object_to_file(self.file, self._tmp)
+        self.conversations = cf.json.read(self._tmp)
 
     def read(self) -> dict:
-        self.bucket.get_object_to_file(self.file, self._tmp)
-        conversations = textread(self._tmp)
-        for line in conversations[-10:]:
-            if not line: continue
-            name, content = line.strip().split('⎮')
+        for conv in self.conversations['msg'][-10:]:
+            name, content = conv['name'], conv['content']
             sign = "🔥" if name == shell('whoami').strip() else "❄️ "
             print('{} {}'.format(sign, content))
 
     def write(self, msg_body: str):
-        contents = shell('whoami').strip() + "⎮" + msg_body
-        loc = 0
-        if self.bucket.object_exists(self.file):
-            info = self.bucket.head_object(self.file)
-            loc = info.content_length
-        resp = self.bucket.append_object(self.file, loc, "\n" + contents)
-        if resp.status == 200:
-            print("✔ Message Sent!")
+        name = shell('whoami').strip()
+        content = msg_body
+        self.conversations['msg'].append({'name': name, 'content': content})
+        cf.json.write(self.conversations, self._tmp)
+        resp = Bucket().upload(self._tmp)
