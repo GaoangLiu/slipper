@@ -1,9 +1,12 @@
 ''' crontab tasks. '''
 import json
 import os
+
 import socket
+from oss2.headers import RSA_NONE_OAEPWithSHA1AndMGF1Padding
 import requests
 import bs4
+import codefast as cf
 from .config import decode
 from .logger import Logger
 from .toolkits.telegram import bot_messalert
@@ -13,24 +16,48 @@ logger = Logger('/var/log/phone.log')
 
 
 class PapaPhone:
-    def __init__(self):
-        pass
+    url = 'https://h5.ha.chinamobile.com/h5-rest/flow/data'
+    params = {'channel': 2, 'version': '6.4.2'}
 
-    def get_headers(self):
+    @classmethod
+    def get_headers(cls):
         h = {}
-        h["Cookie"] = decode('cmcc_cookie')
-        h['Authorization'] = decode('cmcc_authorization')
+        h["Cookie"] = decode('cmcc_cookie_2')
+        h['Authorization'] = decode('cmcc_authorization_2')
         h["User-Agent"] = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:2.0.1) Gecko/20100101 Firefox/4.0.1"
         h["Content-Type"] = "application/x-www-form-urlencoded; charset=UTF-8"
         h['device'] = 'iPhone 7'
         h['Referer'] = 'https://h5.ha.chinamobile.com/hnmccClientWap/h5-rest/'
         return h
 
-    def _query_flow(self) -> (float, str):
+    @classmethod
+    def query3510(cls) -> dict:
         try:
-            url = 'https://h5.ha.chinamobile.com/h5-rest/flow/data'
-            params = {'channel': 2, 'version': '6.4.2'}
-            res = requests.get(url, data=params, headers=self.get_headers())
+            resp = requests.get(cls.url,
+                                data=cls.params,
+                                headers=cls.get_headers())
+            json_res = json.loads(resp.text)
+            res = {'info': '', 'flow': 0}
+            for dl in json_res['data']['flowList']:
+                if isinstance(dl['details'], list):
+                    for d in dl['details']:
+                        res['info'] += f"{d['expireTime']} {d['flowRemain']} {d['name']}\n"
+                        flow = d['flowRemain']
+                        flow = float(flow.replace(
+                            'MB', '')) / 1000 if 'MB' in flow else float(
+                                flow.replace('GB', ''))
+                        res['flow'] += flow
+            return res
+        except Exception as e:
+            logger.error(f'Get data flow from second card failed: {repr(e)}')
+            return {}
+
+    @classmethod
+    def _query_flow(cls):
+        try:
+            res = requests.get(cls.url,
+                               data=cls.params,
+                               headers=cls.get_headers())
             json_res = json.loads(res.text)
             flow = float(json_res['data']['flowList'][0]['surplusFlow'])
             unit = json_res['data']['flowList'][0]['surplusFlowUnit']
@@ -46,18 +73,19 @@ class PapaPhone:
         if retry <= 0:
             bot_messalert('手机余量查询失败\n' + '已经连续重试 3 次，全部失败。')
         else:
-            flow, unit = PapaPhone()._query_flow()
-            if flow == -1:
+            results = cls.query3510()
+            cf.text.say(results)
+            if 'flow' not in results:
                 cls.issue_recharge_message(retry - 1)
-            elif flow < 1 or unit == 'MB':
-                message = f'Papa手机流量还剩余 {flow} {unit}，可以充值了。'
+            elif results['flow'] < 1:
+                message = f"Papa cellphone data flow remain {results['flow']} GB, time to rechage."
                 logger.info(message)
                 bot_messalert(message)
 
     @classmethod
     def issue_daily_usage(cls):
-        value, unit = PapaPhone()._query_flow()
-        msg = f'日常流量提醒 \n\n papa cellphone data flow {value} {unit}'
+        info = cls.query3510().get('info', '')
+        msg = f'日常流量提醒 \n\n papa cellphone data flow {info}'
         bot_messalert(msg)
 
 

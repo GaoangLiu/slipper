@@ -6,11 +6,11 @@ from typing import List
 
 PLACEHOLDER = "PLACEHOLDER"
 
-
 class SimpleParser:
     """A simple argument parser"""
     def __init__(self):
         self.__dict__ = collections.defaultdict(Attribute)
+        self.help_message = {}
 
     def input(self,
               abbr: str = "",
@@ -41,6 +41,7 @@ class SimpleParser:
         assert full_arg != "", "Full argument name is required."
         full = full_arg.strip('-')
         abbr = abbr.strip('-') if abbr else full
+        self.help_message[full] = description
 
         attribute_holder = _AttributeHolder(default_value)
         setattr(self, full, attribute_holder)
@@ -58,31 +59,36 @@ class SimpleParser:
         1. main argument, once decided, values of all other main argument is set to None
         2. sub argument.
         """
-        _main, _sub = None, None
+        main_arg, sub_arg = None, None
         for item in sys.argv[1:]:
             if item.startswith('-'):
-                _sub = item.strip('-')
-                if not _main:
-                    _main = _sub
-                    if not self.__dict__[_sub].value:
+                sub_arg = item.strip('-')
+                if not main_arg:
+                    main_arg = sub_arg
+                    if not self.__dict__[sub_arg].value:
                         self.__dict__[
-                            _sub].value = PLACEHOLDER  # Assign default value.
+                            sub_arg].value = PLACEHOLDER  # Assign default value.
                 else:
-                    _AttributeHolder.__dict__[_sub].value = PLACEHOLDER
+                    _AttributeHolder.__dict__[sub_arg].value = PLACEHOLDER
             else:
-                if _main == _sub:
-                    self.__dict__[_main].value = item
+                if main_arg == sub_arg:
+                    self.__dict__[main_arg].value = item
                 else:
-                    _AttributeHolder.__dict__[_sub].value = item
+                    _AttributeHolder.__dict__[sub_arg].value = item
 
         # When no argument is passed in, forge a main argument.
-        if not _main:
-            _main = PLACEHOLDER
-            setattr(self, _main, None)
+        if not main_arg:
+            main_arg = PLACEHOLDER
+            setattr(self, main_arg, None)
 
         for _other in self.__dict__.keys():  # set value of other arg to None
-            if getattr(self, _other) != getattr(self, _main):
+            if getattr(self, _other) != getattr(self, main_arg):
                 setattr(self, _other, None)
+
+    def help(self) -> None:
+        ''' display help message '''
+        for k, v in self.help_message.items():
+            print("{:<70} {:<20}".format(k, v))
 
 
 class Attribute:

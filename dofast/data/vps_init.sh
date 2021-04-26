@@ -29,6 +29,7 @@ PACKMETHOD=$(pack_meth)
 install_libs() {
 	$PACKMETHOD install -y python3-pip tree zip python3-pip emacs bmon vnstat ufw 
     $PACKMETHOD install -y aria2 jq htop shadowsocks-libev 
+    snap install gost
 }
 
 # For monitoring [Data, CPU, Network-speed] usage
