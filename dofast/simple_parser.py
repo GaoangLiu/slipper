@@ -1,5 +1,4 @@
 import sys
-import requests
 import collections
 from operator import itemgetter
 from typing import List

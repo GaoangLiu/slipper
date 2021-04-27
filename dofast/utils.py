@@ -1,5 +1,4 @@
 # coding:utf-8
-import argparse
 import base64
 import bs4
 import json

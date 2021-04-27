@@ -1,5 +1,7 @@
-from .utils import jsonwrite, jsonread
+import codefast as cf
+
 from .utils import download as getfile
+from .utils import jsonread, jsonwrite
 
 
 def _init_config() -> None:
@@ -9,12 +11,14 @@ def _init_config() -> None:
     _cf = _config_path + 'dofast.json'
     if Path(_cf).is_file(): return
 
-    import os, inspect
+    import inspect
+    import os
     file_path = os.path.dirname(
         os.path.realpath(inspect.getfile(inspect.currentframe())))
     zip_json = f"{file_path}/dofast.json.zip"
 
-    import zipfile, getpass
+    import getpass
+    import zipfile
     with zipfile.ZipFile(zip_json, 'r') as zip_ref:
         zip_ref.extractall(path=_config_path,
                            pwd=bytes(
@@ -25,8 +29,8 @@ def _init_config() -> None:
 def main():
     _init_config()
 
-    from .simple_parser import SimpleParser, PLACEHOLDER
-    sp = SimpleParser()
+    from codefast.argparser import PLACEHOLDER, ArgParser
+    sp = ArgParser()
     sp.input('-cos',
              '--cos',
              sub_args=[["u", "up", "upload"], ["download", "d", "dw"],
@@ -58,6 +62,10 @@ def main():
     sp.input('-vpsinit',
              '--vpsinit',
              description='VPS environment initiation.')
+    sp.input('-json',
+             '--jsonify',
+             sub_args=[['o', 'output']],
+             description='jsonify single quoted string')
 
     sp.parse_args()
     if sp.tgbot:
@@ -110,8 +118,9 @@ def main():
             cli.list_files()
 
     elif sp.sync:
-        from .oss import Bucket, Message
         import os
+
+        from .oss import Bucket, Message
         cli = Bucket()
         if sp.sync.value != PLACEHOLDER:
             cli.upload(sp.sync.value)
@@ -148,6 +157,13 @@ def main():
             else:
                 print('FAILED(socks5 proxy check)')
                 print(shell(curl_http))
+
+    elif sp.json:
+        import json
+        jdict = cf.json.eval(sp.json.value)
+        print(json.dumps(jdict))
+        if sp.json.output:
+            cf.json.write(jdict, sp.json.output)
 
     elif sp.roundcorner:
         from .utils import rounded_corners
@@ -203,8 +219,10 @@ def main():
         elif sp.aes.decode: print(short_decode(text, sp.aes.decode))
 
     elif sp.vpsinit:
+        import inspect
+        import os
+
         from .utils import shell
-        import os, inspect
         file_path = os.path.dirname(
             os.path.realpath(inspect.getfile(inspect.currentframe())))
         bash_file = f"{file_path}/data/vps_init.sh"
@@ -213,6 +231,7 @@ def main():
     else:
         from .data.msg import display_message
         display_message()
+        sp.help()
 
 
 if __name__ == '__main__':
