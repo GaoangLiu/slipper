@@ -21,11 +21,7 @@ msg = """A Simple yet powerful terminal CLient. 😏
 -gcr(--gitcommitreminder) ::: Github daily commit reminder.
 -pf(--phoneflow) [rest, daily] ::: Phone flow monitor.
 -hx(--happyxiao) ::: http://www.happyxiao.com/ newsletters
--sync ::: Sync file among devices.
--vpsinit ::: VPS initiation. 
-
 """
-
 
 def display_message(message: str = msg):
     for l in message.split("\n"):

@@ -58,7 +58,7 @@ def main():
     sp.input('-pf', '--phoneflow', sub_args=[['rest'], ['daily']])
     sp.input('-hx', '--happyxiao')
     sp.input('-tgbot', '--telegrambot')
-    sp.input('-sync', '--sync')
+    sp.input('-sync', '--sync', description='synchronize files. usage: sli -sync file1|file2|file3')
     sp.input('-vpsinit',
              '--vpsinit',
              description='VPS environment initiation.')
@@ -123,14 +123,16 @@ def main():
         from .oss import Bucket, Message
         cli = Bucket()
         if sp.sync.value != PLACEHOLDER:
-            cli.upload(sp.sync.value)
+            for f in sp.sync.value.split('|'):
+                cli.upload(f.strip())
             jsonwrite({'value': sp.sync.value}, '/tmp/syncsync.json')
             cli.upload('/tmp/syncsync.json')
         else:
             cli.download('syncsync.json')
-            f = jsonread('syncsync.json')['value']
-            getfile(cli.url_prefix + f,
-                    referer=cli.url_prefix.strip('/transfer/'))
+            files = jsonread('syncsync.json')['value'].split('|')
+            for f in files:
+                getfile(cli.url_prefix + f,
+                        referer=cli.url_prefix.strip('/transfer/'))
             os.remove('syncsync.json')
 
     elif sp.download:
