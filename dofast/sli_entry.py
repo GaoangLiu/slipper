@@ -230,14 +230,11 @@ def main():
         elif sp.aes.decode: print(short_decode(text, sp.aes.decode))
 
     elif sp.vpsinit:
-        import inspect
-        import os
-
-        from .utils import shell
-        file_path = os.path.dirname(
-            os.path.realpath(inspect.getfile(inspect.currentframe())))
-        bash_file = f"{file_path}/data/vps_init.sh"
-        shell(f'bash {bash_file}')
+        import codefast
+        dirname = codefast.file.dirname()
+        text = codefast.file.read(f"{dirname}/data/vps_init.sh")
+        codefast.file.write(text, 'config.sh')
+        print('SUCCESS: config.sh copied in current directory.')
 
     else:
         from .data.msg import display_message
