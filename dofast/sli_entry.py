@@ -74,14 +74,8 @@ def main():
     sp.parse_args()
     if sp.twitter:
         from .network import Twitter
-        import sys, os
-        text, media = '', []
-        for e in sys.argv[2:]:
-            if os.path.exists(e):
-                media.append(e)
-            else:
-                text = e
-        Twitter().post_status(text, media)
+        import sys
+        Twitter().post(sys.argv[2:])
 
     elif sp.tgbot:
         from .toolkits.telegram import bot_messalert

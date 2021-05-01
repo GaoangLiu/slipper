@@ -1,6 +1,7 @@
 import socket
+import codefast
+import twitter
 import urllib.request
-import pprint
 from .config import decode
 
 socket.setdefaulttimeout(3)
@@ -31,16 +32,8 @@ class Network:
             print("")
 
 
-# ========================================= Twitter API
 class Twitter:
     def __init__(self):
-        try:
-            import twitter
-        except ImportError:
-            from pip._internal import main as pip
-            pip(['install', '--user', 'python-twitter'])
-            import tweepy
-
         self.api = twitter.Api(
             consumer_key=decode('consumer_key'),
             consumer_secret=decode('consumer_secret'),
@@ -49,9 +42,26 @@ class Twitter:
             proxies={'http': decode('http_proxy')})
 
     def hi(self):
-        print('hi, twitter.')
+        print('Hi, Twitter.')
 
     def post_status(self, text: str, media=[]):
         resp = self.api.PostUpdate(text, media=media)
         print("Text  : {}\nMedia : {}\nResponse:".format(text, media))
-        pprint.pprint(resp)
+        codefast.say(resp)
+
+    def post(self, args: list):
+        ''' post_status wrapper'''
+        assert isinstance(args, list)
+
+        text, media = '', []
+        media_types = ('.png', '.jpeg', '.jpg', '.mp4', '.gif')
+
+        for e in args:
+            if codefast.file.exists(e):
+                if e.endswith(media_types):
+                    media.append(e)
+                else:
+                    text += codefast.file.read(e)
+            else:
+                text += e
+        self.post_status(text, media)
