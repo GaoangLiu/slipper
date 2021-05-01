@@ -1,5 +1,7 @@
 import socket
 import urllib.request
+import pprint
+from .config import decode
 
 socket.setdefaulttimeout(3)
 
@@ -29,4 +31,27 @@ class Network:
             print("")
 
 
-# Network.is_good_proxy('localhost:9898')
+# ========================================= Twitter API
+class Twitter:
+    def __init__(self):
+        try:
+            import twitter
+        except ImportError:
+            from pip._internal import main as pip
+            pip(['install', '--user', 'python-twitter'])
+            import tweepy
+
+        self.api = twitter.Api(
+            consumer_key=decode('consumer_key'),
+            consumer_secret=decode('consumer_secret'),
+            access_token_key=decode('access_token'),
+            access_token_secret=decode('access_token_secret'),
+            proxies={'http': decode('http_proxy')})
+
+    def hi(self):
+        print('hi, twitter.')
+
+    def post_status(self, text: str, media=[]):
+        resp = self.api.PostUpdate(text, media=media)
+        print("Text  : {}\nMedia : {}\nResponse:".format(text, media))
+        pprint.pprint(resp)

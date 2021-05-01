@@ -58,7 +58,10 @@ def main():
     sp.input('-pf', '--phoneflow', sub_args=[['rest'], ['daily']])
     sp.input('-hx', '--happyxiao')
     sp.input('-tgbot', '--telegrambot')
-    sp.input('-sync', '--sync', description='synchronize files. usage: sli -sync file1|file2|file3')
+    sp.input(
+        '-sync',
+        '--sync',
+        description='synchronize files. usage: sli -sync file1|file2|file3')
     sp.input('-vpsinit',
              '--vpsinit',
              description='VPS environment initiation.')
@@ -66,9 +69,21 @@ def main():
              '--jsonify',
              sub_args=[['o', 'output']],
              description='jsonify single quoted string')
+    sp.input('-tt', '-twitter', description='Twitter API.')
 
     sp.parse_args()
-    if sp.tgbot:
+    if sp.twitter:
+        from .network import Twitter
+        import sys, os
+        text, media = '', []
+        for e in sys.argv[2:]:
+            if os.path.exists(e):
+                media.append(e)
+            else:
+                text = e
+        Twitter().post_status(text, media)
+
+    elif sp.tgbot:
         from .toolkits.telegram import bot_messalert
         bot_messalert(sp.tgbot.value)
 
