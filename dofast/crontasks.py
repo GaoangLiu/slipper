@@ -74,7 +74,7 @@ class PapaPhone:
             bot_messalert('手机余量查询失败\n' + '已经连续重试 3 次，全部失败。')
         else:
             results = cls.query3510()
-            cf.text.say(results)
+            cf.say(results)
             if 'flow' not in results:
                 cls.issue_recharge_message(retry - 1)
             elif results['flow'] < 1:
