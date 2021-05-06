@@ -58,6 +58,7 @@ def main():
     sp.input('-pf', '--phoneflow', sub_args=[['rest'], ['daily']])
     sp.input('-hx', '--happyxiao')
     sp.input('-tgbot', '--telegrambot')
+    sp.input('-db', '--doubaninfo', description='Get douban film information.')
     sp.input(
         '-sync',
         '--sync',
@@ -72,7 +73,11 @@ def main():
     sp.input('-tt', '-twitter', description='Twitter API.')
 
     sp.parse_args()
-    if sp.twitter:
+    if sp.doubaninfo:
+        from .network import Douban
+        Douban.query_film_info(sp.doubaninfo.value)
+        
+    elif sp.twitter:
         from .network import Twitter
         import sys
         Twitter().post(sys.argv[2:])

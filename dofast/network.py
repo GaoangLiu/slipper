@@ -1,7 +1,11 @@
+import json
 import socket
+import urllib.request
+
 import codefast
 import twitter
-import urllib.request
+from bs4 import BeautifulSoup
+
 from .config import decode
 
 socket.setdefaulttimeout(3)
@@ -65,3 +69,43 @@ class Twitter:
             else:
                 text += e
         self.post_status(text, media)
+
+
+class Douban:
+    @classmethod
+    def query_film_info(cls, dblink: str) -> str:
+        soup = BeautifulSoup(codefast.net.get(dblink).text, 'lxml')
+        film_info = soup.find('script', {
+            'type': "application/ld+json"
+        }).contents[0].strip().replace('\n', '')
+        dbinfos = json.loads(film_info)
+        poster = dbinfos['image'].replace('.webp', '.jpg').replace(
+            's_ratio_poster', 'l')
+        codefast.utils.shell('curl -o poster.jpg {}'.format(poster))
+        codefast.logger.info('// poster.jpg downloaded')
+
+        html = ""
+        with open('info.txt', 'w') as f:
+            html += "#" + dbinfos['name'].rstrip() + "\n\n"
+            info = soup.find('div', {'id': 'info'})
+            for l in info.__str__().split("br/>"):
+                text = BeautifulSoup(l, 'lxml').text.lstrip()
+                if any(e in text
+                       for e in ('导演', '主演', '季数', 'IMDb', '编剧', '又名')):
+                    continue
+                if text:
+                    if '类型' in text:
+                        text = text.replace(': ', ': #').replace('/ ', '#')
+                    html += "➖" + text + "\n"
+
+            vsummary = soup.find('span', {"property": 'v:summary'})
+            vsummary = '\n'.join(
+                (l.lstrip() for l in vsummary.text.split('\n')))
+
+            html += "➖豆瓣 ({}): {}".format(
+                dbinfos.get('aggregateRating', {}).get('ratingValue', '/'),
+                dblink) + "\n\n"
+
+            html += " {} \n".format(vsummary)
+            codefast.logger.info(html)
+            f.write(html)
