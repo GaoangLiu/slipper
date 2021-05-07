@@ -11,14 +11,10 @@ def _init_config() -> None:
     _cf = _config_path + 'dofast.json'
     if Path(_cf).is_file(): return
 
-    import inspect
-    import os
-    file_path = os.path.dirname(
-        os.path.realpath(inspect.getfile(inspect.currentframe())))
-    zip_json = f"{file_path}/dofast.json.zip"
-
     import getpass
     import zipfile
+
+    zip_json = f"{cf.file.dirname()}/dofast.json.zip"
     with zipfile.ZipFile(zip_json, 'r') as zip_ref:
         zip_ref.extractall(path=_config_path,
                            pwd=bytes(
@@ -39,7 +35,7 @@ def main():
              '--oss',
              sub_args=[["u", "up", "upload"], ["download", "d", "dw"],
                        ["l", "list"], ["del", "delete"]])
-    sp.input('-dw', '--download', sub_args=[])
+    sp.input('-dw', '--download', sub_args=[['p', 'proxy']])
     sp.input('-d', '--ddfile')
     sp.input('-ip',
              '--ip',
@@ -150,7 +146,7 @@ def main():
             os.remove('syncsync.json')
 
     elif sp.download:
-        getfile(sp.download.value)
+        getfile(sp.download.value, proxy=sp.download.proxy)
 
     elif sp.ddfile:
         from .utils import create_random_file
