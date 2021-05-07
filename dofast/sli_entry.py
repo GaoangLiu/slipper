@@ -150,9 +150,7 @@ def main():
             os.remove('syncsync.json')
 
     elif sp.download:
-        from .oss import Bucket
-        getfile(sp.download.value,
-                referer=Bucket().url_prefix.strip('/transfer/'))
+        getfile(sp.download.value)
 
     elif sp.ddfile:
         from .utils import create_random_file
