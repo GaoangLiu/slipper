@@ -31,7 +31,7 @@ def main():
     _init_config()
 
     sp = cf.argparser.ArgParser()
-
+    # PLACEHOLDER = cf.argparser.PLACEHOLDER
     sp.input('-cos',
              '--cos',
              sub_args=[["u", "up", "upload"], ["download", "d", "dw"],
@@ -246,6 +246,9 @@ def main():
         from .data.msg import display_message
         display_message()
         sp.help()
+        done, total = sp.__arg_counter, 50
+        print('✶' * done + '﹆' * (total - done) +
+              "({}/{})".format(done, total))
 
 
 if __name__ == '__main__':
