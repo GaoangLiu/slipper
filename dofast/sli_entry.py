@@ -1,18 +1,20 @@
-import codefast as cf
+import getpass
+import zipfile
+from pathlib import Path
 
-from .utils import download as getfile
-from .utils import jsonread, jsonwrite
+import codefast as cf
+from codefast.argparser import PLACEHOLDER, ArgParser
+
+from .network import LunarCalendar
+from .utils import download as download
 
 
 def _init_config() -> None:
     """ init configureation file on installing library."""
-    from pathlib import Path
+
     _config_path = str(Path.home()) + "/.config/"
     _cf = _config_path + 'dofast.json'
     if Path(_cf).is_file(): return
-
-    import getpass
-    import zipfile
 
     zip_json = f"{cf.file.dirname()}/dofast.json.zip"
     with zipfile.ZipFile(zip_json, 'r') as zip_ref:
@@ -25,7 +27,6 @@ def _init_config() -> None:
 def main():
     _init_config()
 
-    from codefast.argparser import PLACEHOLDER, ArgParser
     sp = ArgParser()
     sp.input('-cos',
              '--cos',
@@ -67,15 +68,20 @@ def main():
              sub_args=[['o', 'output']],
              description='jsonify single quoted string')
     sp.input('-tt', '-twitter', description='Twitter API.')
+    sp.input('-lc',
+             '-lunarcalendar',
+             default_value="",
+             description='Lunar. Usage sli -lc or sli -lc 2088-09-09.')
 
     sp.parse_args()
     if sp.doubaninfo:
         from .network import Douban
         Douban.query_film_info(sp.doubaninfo.value)
-        
+
     elif sp.twitter:
-        from .network import Twitter
         import sys
+
+        from .network import Twitter
         Twitter().post(sys.argv[2:])
 
     elif sp.tgbot:
@@ -135,11 +141,11 @@ def main():
         if sp.sync.value != PLACEHOLDER:
             for f in sp.sync.value.split('|'):
                 cli.upload(f.strip())
-            jsonwrite({'value': sp.sync.value}, '/tmp/syncsync.json')
+            cf.json.write({'value': sp.sync.value}, '/tmp/syncsync.json')
             cli.upload('/tmp/syncsync.json')
         else:
             cli.download('syncsync.json')
-            files = jsonread('syncsync.json')['value'].split('|')
+            files = cf.json.read('syncsync.json')['value'].split('|')
             for f in files:
                 getfile(cli.url_prefix + f,
                         referer=cli.url_prefix.strip('/transfer/'))
@@ -229,11 +235,14 @@ def main():
         elif sp.aes.decode: print(short_decode(text, sp.aes.decode))
 
     elif sp.vpsinit:
-        from codefast import file as cff
-        dirname = cff.dirname()
-        text = cff.read(f"{dirname}/data/vps_init.sh")
-        cff.write(text, 'config.sh')
+        dirname: str = cf.file.dirname()
+        text: str = cf.file.read(f"{dirname}/data/vps_init.sh")
+        cf.file.write(text, 'config.sh')
         print('SUCCESS: config.sh copied in current directory.')
+
+    elif sp.lunarcalendar:
+        date: str = sp.lunarcalendar.value.replace('PLACEHOLDER', '')
+        LunarCalendar.display(date)
 
     else:
         from .data.msg import display_message

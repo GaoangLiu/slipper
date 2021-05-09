@@ -1,3 +1,4 @@
+import arrow
 import json
 import socket
 import urllib.request
@@ -109,3 +110,52 @@ class Douban:
             html += " {} \n".format(vsummary)
             codefast.logger.info(html)
             f.write(html)
+
+
+class LunarCalendar:
+    '''爬虫实现的农历'''
+    @classmethod
+    def display(cls, date_str: str = ""):
+        year, month, day = arrow.now().format('YYYY-MM-DD').split('-')
+        if date_str:
+            year, month, day = date_str.split('-')[:3]
+        print('Date {}-{}-{}'.format(year, month, day))
+
+        r = codefast.net.get(
+            'https://wannianrili.51240.com/ajax/?q={}-{}&v=19102608'.format(
+                year, month))
+
+        s = BeautifulSoup(r.text, 'lxml')
+        pairs = []
+        for x in s.findAll('div', {'class': 'wnrl_k_you'}):
+            for y in x.findAll(
+                    'div', {
+                        'class': [
+                            'wnrl_k_you_id_biaoti', 'wnrl_k_you_id_wnrl_riqi',
+                            'wnrl_k_you_id_wnrl_nongli'
+                        ]
+                    }):
+                pairs.append(y.text)
+
+        weekdays = ["星期" + w for w in "一二三四五六日"]
+        for w in weekdays:
+            print("{:<2} | {:<8}".format(' ', w), end="")
+        print('\n' + '*' * 117)
+
+        for w in weekdays:
+            if not pairs[0].endswith(w):
+                print("\033[30m{} | {}\033[0m".format(pairs[1], pairs[2]),
+                      end="\t")
+            else:
+                break
+
+        for j in range(0, len(pairs), 3):
+            if day == pairs[j + 1]:
+                print("\033[31m\033[1m{} | {}\033[0m".format(
+                    pairs[j + 1], pairs[j + 2]),
+                      end="\t")
+            else:
+                print("{} | {}".format(pairs[j + 1], pairs[j + 2]), end="\t")
+            if pairs[j].endswith('星期日'):
+                print('')
+        print('')
