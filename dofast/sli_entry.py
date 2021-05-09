@@ -1,12 +1,15 @@
 import getpass
+import os
+import sys
 import zipfile
 from pathlib import Path
 
 import codefast as cf
-from codefast.argparser import PLACEHOLDER, ArgParser
+from codefast.argparser import PLACEHOLDER
 
 from .network import LunarCalendar
-from .utils import download as download
+from .oss import Bucket, Message
+from .utils import download as getfile
 
 
 def _init_config() -> None:
@@ -18,16 +21,17 @@ def _init_config() -> None:
 
     zip_json = f"{cf.file.dirname()}/dofast.json.zip"
     with zipfile.ZipFile(zip_json, 'r') as zip_ref:
-        zip_ref.extractall(path=_config_path,
-                           pwd=bytes(
-                               getpass.getpass("type here config password: "),
-                               'utf-8'))
+        zip_ref.extractall(
+            path=_config_path,
+            pwd=bytes(getpass.getpass("type here your config password: "),
+                      'utf-8'))
 
 
 def main():
     _init_config()
 
-    sp = ArgParser()
+    sp = cf.argparser.ArgParser()
+
     sp.input('-cos',
              '--cos',
              sub_args=[["u", "up", "upload"], ["download", "d", "dw"],
@@ -59,7 +63,7 @@ def main():
     sp.input(
         '-sync',
         '--sync',
-        description='synchronize files. usage: sli -sync file1|file2|file3')
+        description='synchronize files. Usage: sli -sync file1 file2 file3')
     sp.input('-vpsinit',
              '--vpsinit',
              description='VPS environment initiation.')
@@ -79,8 +83,6 @@ def main():
         Douban.query_film_info(sp.doubaninfo.value)
 
     elif sp.twitter:
-        import sys
-
         from .network import Twitter
         Twitter().post(sys.argv[2:])
 
@@ -119,7 +121,6 @@ def main():
             cli.list_files("transfer/")
 
     elif sp.oss:
-        from .oss import Bucket, Message
         cli = Bucket()
         if sp.oss.upload:
             cli.upload(sp.oss.upload)
@@ -134,14 +135,12 @@ def main():
             cli.list_files()
 
     elif sp.sync:
-        import os
-
-        from .oss import Bucket, Message
         cli = Bucket()
-        if sp.sync.value != PLACEHOLDER:
-            for f in sp.sync.value.split('|'):
+        files: str = '|'.join(sys.argv[2:])
+        if files:
+            for f in sys.argv[2:]:
                 cli.upload(f.strip())
-            cf.json.write({'value': sp.sync.value}, '/tmp/syncsync.json')
+            cf.json.write({'value': files}, '/tmp/syncsync.json')
             cli.upload('/tmp/syncsync.json')
         else:
             cli.download('syncsync.json')
@@ -205,7 +204,6 @@ def main():
         findfile(sp.find.value, sp.find.directory or '.')
 
     elif sp.msg:
-        from .oss import Message
         if sp.msg.write:
             Message().write(sp.msg.write)
         elif sp.msg.read:
