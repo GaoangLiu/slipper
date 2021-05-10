@@ -1,12 +1,12 @@
 ''' crontab tasks. '''
 import json
 import os
-
 import socket
-from oss2.headers import RSA_NONE_OAEPWithSHA1AndMGF1Padding
-import requests
+
 import bs4
 import codefast as cf
+import requests
+
 from .config import decode
 from .logger import Logger
 from .toolkits.telegram import bot_messalert
@@ -83,6 +83,7 @@ class PapaPhone:
                 bot_messalert(message)
 
     @classmethod
+    @cf.utils.retry(total_tries=3)
     def issue_daily_usage(cls):
         info = cls.query3510().get('info', '')
         msg = f'日常流量提醒 \n\n papa cellphone data flow {info}'
@@ -146,6 +147,7 @@ class GithubTasks:
 class HappyXiao:
     ''' happyxiao articles poster'''
     @classmethod
+    @cf.utils.retry(total_tries=3)
     def rss(cls, url: str = 'https://happyxiao.com/') -> None:
         rsp = bs4.BeautifulSoup(requests.get(url).text, 'lxml')
         more = rsp.find_all('a', attrs={'class': 'more-link'})
