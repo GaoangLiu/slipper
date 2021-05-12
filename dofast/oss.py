@@ -67,8 +67,8 @@ class Message():
         self.bucket.get_object_to_file(self.file, self._tmp)
         self.conversations = cf.json.read(self._tmp)
 
-    def read(self) -> dict:
-        for conv in self.conversations['msg'][-10:]:
+    def read(self, top:int=10) -> dict:
+        for conv in self.conversations['msg'][-top:]:
             name, content = conv['name'], conv['content']
             sign = "🔥" if name == shell('whoami').strip() else "❄️ "
             print('{} {}'.format(sign, content))

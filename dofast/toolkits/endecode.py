@@ -1,9 +1,5 @@
-import os, sys
-import json
 import base64
-import tempfile
 from Crypto.Cipher import AES
-from itertools import dropwhile
 
 
 def encode(message: str, passphrase: str) -> str:
@@ -60,3 +56,9 @@ def decode_with_keyfile(file_path: str, encrypted_message: str) -> str:
     with open(file_path, 'r') as f:
         _decode = short_decode if '|' in encrypted_message else decode
         return _decode(encrypted_message, f.read().strip())
+
+
+def encode_with_keyfile(file_path: str, msg: str) -> str:
+    """Enocde message with keyfile, which contains the key phrase"""
+    with open(file_path, 'r') as f:
+        return short_encode(msg, f.read().strip())

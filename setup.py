@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="dofast",
-    version="0.0.8",  # Latest version .
+    version="0.0.9",  # Latest version .
     author="SLP",
     author_email="byteleap@gmail.com",
     description="A package for dirty faster Python programming",
@@ -18,7 +18,8 @@ setuptools.setup(
         'colorlog>=4.6.1', 'tqdm', 'PyGithub', 'oss2', 'lxml',
         'cos-python-sdk-v5', 
         'smart-open', 'pillow', 'bs4', 'arrow', 'numpy',
-        'termcolor', 'codefast', 'python-twitter'
+        'termcolor', 'codefast', 'python-twitter', 
+	'deprecation'
     ],
     entry_points={
         'console_scripts': ['sli=dofast.sli_entry:main'],

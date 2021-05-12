@@ -207,7 +207,8 @@ def main():
         if sp.msg.write:
             Message().write(sp.msg.write)
         elif sp.msg.read:
-            Message().read()
+            top_ = 1 if sp.msg.read == PLACEHOLDER else int(sp.msg.read)
+            Message().read(top=top_) # show only 1 line
         elif sp.msg.value != PLACEHOLDER:
             Message().write(sp.msg.value)
         else:
