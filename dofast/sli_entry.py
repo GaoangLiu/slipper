@@ -80,8 +80,13 @@ def main():
 
     sp.parse_args()
     if sp.fileinfo:
-        cf.say(cf.file.info(sp.fileinfo.value))
-        
+        info = cf.file.info(sp.fileinfo.value)
+        for key in ('bit_rate', 'channel_layout', 'channels',
+                    'codec_tag_string', 'codec_long_name', 'codec_name',
+                    'duration', 'filename', 'format_name', 'sample_rate',
+                    'size', 'width'):
+            print('{:<20} {}'.format(key, info.get(key, None)))
+
     elif sp.doubaninfo:
         from .network import Douban
         Douban.query_film_info(sp.doubaninfo.value)
@@ -212,7 +217,7 @@ def main():
             Message().write(sp.msg.write)
         elif sp.msg.read:
             top_ = 1 if sp.msg.read == PLACEHOLDER else int(sp.msg.read)
-            Message().read(top=top_) # show only 1 line
+            Message().read(top=top_)  # show only 1 line
         elif sp.msg.value != PLACEHOLDER:
             Message().write(sp.msg.value)
         else:
