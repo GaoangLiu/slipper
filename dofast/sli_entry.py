@@ -76,9 +76,13 @@ def main():
              '-lunarcalendar',
              default_value="",
              description='Lunar. Usage sli -lc or sli -lc 2088-09-09.')
+    sp.input('-fi', '-fileinfo', description='Get file meta information.')
 
     sp.parse_args()
-    if sp.doubaninfo:
+    if sp.fileinfo:
+        cf.say(cf.file.info(sp.fileinfo.value))
+        
+    elif sp.doubaninfo:
         from .network import Douban
         Douban.query_film_info(sp.doubaninfo.value)
 
