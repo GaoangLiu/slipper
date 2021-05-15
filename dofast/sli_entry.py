@@ -10,6 +10,7 @@ from codefast.argparser import PLACEHOLDER
 from .network import LunarCalendar
 from .oss import Bucket, Message
 from .utils import download as getfile
+from .config import fast_text_decode, fast_text_encode
 
 
 def _init_config() -> None:
@@ -75,8 +76,12 @@ def main():
     sp.input('-lc',
              '-lunarcalendar',
              default_value="",
-             description='Lunar. Usage sli -lc or sli -lc 2088-09-09.')
+             description='Lunar calendar. Usage:\nsli -lc or sli -lc 2088-09-09.')
     sp.input('-fi', '-fileinfo', description='Get file meta information.')
+    sp.input('-st',
+             '-securitytext',
+             sub_args=[['-d', '-decode'], ['-o', '-output']],
+             description='Generate secirty text. Usage: \nsli -st input.txt -o output.txt \nsli -st input.txt -d -o m.txt')
 
     sp.parse_args()
     if sp.fileinfo:
@@ -241,6 +246,17 @@ def main():
         text = sp.aes.value
         if sp.aes.encode: print(short_encode(text, sp.aes.encode))
         elif sp.aes.decode: print(short_decode(text, sp.aes.decode))
+
+    elif sp.securitytext:
+        f = sp.securitytext.value
+        text = cf.file.read(f)
+        func = fast_text_decode if sp.securitytext.decode else fast_text_encode
+        text_r = func(text)
+        if sp.securitytext.output:
+            cf.file.write(text_r, sp.securitytext.output)
+            print('Text exported to {}'.format(sp.securitytext.output))
+        else:
+            print(text_r)
 
     elif sp.vpsinit:
         dirname: str = cf.file.dirname()
