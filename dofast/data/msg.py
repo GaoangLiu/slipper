@@ -16,7 +16,6 @@ msg = """A Simple yet powerful terminal CLient. 😏
 -tgbot, --telegrambot ::: Telegram bot message.
 -fund, --fund [fund_code] ::: Fund investment.
 -stock, --stock [stock_code] ::: Stock trend.
--aes [-en | -de ] ::: AES encode/decode.
 
 -gcr(--gitcommitreminder) ::: Github daily commit reminder.
 -pf(--phoneflow) [rest, daily] ::: Phone flow monitor.

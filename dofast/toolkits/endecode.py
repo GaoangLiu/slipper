@@ -44,8 +44,11 @@ def short_decode(message: str, passphrase: str) -> str:
     passphrase = passphrase.encode().ljust(32, b'*')
     try:
         cipher = AES.new(passphrase, AES.MODE_ECB)
-        return cipher.decrypt(
-            base64.b64decode(bytes_text)).decode().split('|')[0].strip()
+        text = cipher.decrypt(
+            base64.b64decode(bytes_text)).decode().split('|')
+        while text and not text[-1]:
+            text.pop()
+        return '|'.join(text)
     except Exception as e:
         print(f"Maybe wrong password. {e}")
         return ""

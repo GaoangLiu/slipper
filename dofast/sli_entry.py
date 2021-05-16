@@ -55,7 +55,9 @@ def main():
     sp.input('-m', '--msg', sub_args=[['r', 'read'], ['w', 'write']])
     sp.input('-fund', '--fund', sub_args=[['ba', 'buyalert']])
     sp.input('-stock', '--stock')
-    sp.input('-aes', '--aes', sub_args=[['en', 'encode'], ['de', 'decode']])
+    sp.input('-aes', '--aes', sub_args=[['en', 'encode'], ['de', 'decode']], 
+        description='AES encode/decode message. Usage: \n sli -aes msg -en password \n sli -aes encrypted_msg -de password\n')
+
     sp.input('-gcr', '--githubcommitreminder')
     sp.input('-pf', '--phoneflow', sub_args=[['rest'], ['daily']])
     sp.input('-hx', '--happyxiao')
@@ -83,8 +85,14 @@ def main():
              sub_args=[['-d', '-decode'], ['-o', '-output']],
              description='Generate secirty text. Usage: \nsli -st input.txt -o output.txt \nsli -st input.txt -d -o m.txt')
 
+    sp.input('-ap', '-autoproxy', sub_args=[['-a', '-add'], ['-d', '--delete']], 
+            description='AutoProxy configuration. Usage:\n sli -ap google.com \n sli -ap -d google.com')
+
     sp.parse_args()
-    if sp.fileinfo:
+    if sp.autoproxy:
+        pass
+        
+    elif sp.fileinfo:
         info = cf.file.info(sp.fileinfo.value)
         for key in ('bit_rate', 'channel_layout', 'channels',
                     'codec_tag_string', 'codec_long_name', 'codec_name',

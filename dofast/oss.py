@@ -1,11 +1,10 @@
 import os, sys
-import json
 from Crypto.Cipher import AES
 
 import oss2
 import codefast as cf
 from .config import decode
-from .utils import shell
+from .utils import shell, download
 
 
 class Bucket:
@@ -21,7 +20,7 @@ class Bucket:
         self.bucket = oss2.Bucket(_auth, _region, _bucket)
         self.url_prefix = f"https://{_bucket}.{_http_region}/transfer/"
 
-    def upload(self, file_name) -> None:
+    def upload(self, file_name:str) -> None:
         """Upload a file to transfer/"""
         file_size = os.path.getsize(file_name)
         chuck = file_size // 100
@@ -43,11 +42,12 @@ class Bucket:
         sys.stdout.write("]\n")  # this ends the progress bar
         print(f"✅ {file_name} uploaded to transfer/")
 
-    def download(self, file_name) -> None:
+    def download(self, file_name:str) -> None:
         """Download a file from transfer/"""
         self.bucket.get_object_to_file(f"transfer/{file_name}",
                                        file_name.split('/')[-1])
         print(f"✅ {file_name} Downloaded.")
+    
 
     def delete(self, file_name: str) -> None:
         """Delete a file from transfer/"""
@@ -57,6 +57,19 @@ class Bucket:
     def list_files(self, prefix="transfer/") -> None:
         for obj in oss2.ObjectIterator(self.bucket, prefix=prefix):
             print(obj.key)
+
+
+class FastOSS:
+    CLIEND = Bucket()
+    @classmethod
+    def upload(cls, path:str)->None:
+        cls.CLIEND.upload(path)
+    
+    @classmethod
+    def download(cls, file_name:str)->None:
+        prefix = cls.CLIEND.url_prefix
+        download(prefix + file_name,
+                    referer=prefix.strip('/transfer/'))
 
 
 class Message():
