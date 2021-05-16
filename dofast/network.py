@@ -1,13 +1,14 @@
-import arrow
 import json
 import socket
 import urllib.request
+from typing import List
 
-import codefast
+import arrow
+import codefast as cf
 import twitter
 from bs4 import BeautifulSoup
 
-from .config import decode
+from .config import decode, fast_text_decode, fast_text_encode
 
 socket.setdefaulttimeout(3)
 
@@ -52,7 +53,7 @@ class Twitter:
     def post_status(self, text: str, media=[]):
         resp = self.api.PostUpdate(text, media=media)
         print("Text  : {}\nMedia : {}\nResponse:".format(text, media))
-        codefast.say(resp)
+        cf.say(resp)
 
     def post(self, args: list):
         ''' post_status wrapper'''
@@ -62,11 +63,11 @@ class Twitter:
         media_types = ('.png', '.jpeg', '.jpg', '.mp4', '.gif')
 
         for e in args:
-            if codefast.file.exists(e):
+            if cf.file.exists(e):
                 if e.endswith(media_types):
                     media.append(e)
                 else:
-                    text += codefast.file.read(e)
+                    text += cf.file.read(e)
             else:
                 text += e
         self.post_status(text, media)
@@ -75,15 +76,15 @@ class Twitter:
 class Douban:
     @classmethod
     def query_film_info(cls, dblink: str) -> str:
-        soup = BeautifulSoup(codefast.net.get(dblink).text, 'lxml')
+        soup = BeautifulSoup(cf.net.get(dblink).text, 'lxml')
         film_info = soup.find('script', {
             'type': "application/ld+json"
         }).contents[0].strip().replace('\n', '')
         dbinfos = json.loads(film_info)
         poster = dbinfos['image'].replace('.webp', '.jpg').replace(
             's_ratio_poster', 'l')
-        codefast.utils.shell('curl -o poster.jpg {}'.format(poster))
-        codefast.logger.info('// poster.jpg downloaded')
+        cf.utils.shell('curl -o poster.jpg {}'.format(poster))
+        cf.logger.info('// poster.jpg downloaded')
 
         html = ""
         with open('info.txt', 'w') as f:
@@ -108,7 +109,7 @@ class Douban:
                 dblink) + "\n\n"
 
             html += " {} \n".format(vsummary)
-            codefast.logger.info(html)
+            cf.logger.info(html)
             f.write(html)
 
 
@@ -121,7 +122,7 @@ class LunarCalendar:
             year, month, day = date_str.split('-')[:3]
         print('Date {}-{}-{}'.format(year, month, day))
 
-        r = codefast.net.get(
+        r = cf.net.get(
             'https://wannianrili.51240.com/ajax/?q={}-{}&v=19102608'.format(
                 year, month))
 
@@ -159,3 +160,59 @@ class LunarCalendar:
             if pairs[j].endswith('星期日'):
                 print('')
         print('')
+
+
+from .oss import FastOSS as fo
+from .utils import githup_upload
+
+
+class AutoProxy:
+    pac = '/tmp/autoproxy.pac'
+    tmp = '/tmp/autoproxy_encrypted'
+
+    @classmethod
+    def query_rules(cls) -> List[str]:
+        fo.download(cf.file.basename(cls.tmp), export_name=cls.tmp)
+        text = cf.file.read(cls.tmp)
+        return fast_text_decode(text).split('\n')
+
+    @classmethod
+    def sync2git(cls):
+        f = cf.file.basename(cls.pac)
+        cf.file.copy(cls.pac, f)
+        githup_upload(f, shorten=False)
+        cf.logger.info(f'{f} was synced to Github.')
+        cf.file.rm(f)
+
+    @classmethod
+    def add(cls, url: str) -> None:
+        rule_list = cls.query_rules()
+        url = '  \"||{}\"'.format(url)
+        if any(url in e for e in rule_list):
+            cf.logger.info('{} was already included.'.format(url))
+            return
+
+        rule_list.insert(63, url)
+        str_rules = '\n'.join(rule_list)
+        text_new = fast_text_encode(str_rules)
+        cf.file.write(text_new, cls.tmp)
+        cf.file.write(str_rules, cls.pac)
+        fo.upload(cls.tmp)
+        cf.logger.info('{} added to rule list SUCCESS'.format(url))
+        cls.sync2git()
+
+    @classmethod
+    def delete(cls, url: str) -> None:
+        rule_list = cls.query_rules()
+        url = '  \"||{}\"'.format(url)
+        if url in rule_list:
+            rule_list.remove(url)
+            str_rules = '\n'.join(rule_list)
+            text_new = fast_text_encode(str_rules)
+            cf.file.write(text_new, cls.tmp)
+            cf.file.write(str_rules, cls.pac)
+            fo.upload(cls.tmp)
+            cf.logger.info('{} removed from rule list SUCCESS'.format(url))
+            cls.sync2git()
+        else:
+            cf.logger.info('{} was NOT included in rule list'.format(url))

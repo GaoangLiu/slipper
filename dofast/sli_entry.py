@@ -7,10 +7,10 @@ from pathlib import Path
 import codefast as cf
 from codefast.argparser import PLACEHOLDER
 
-from .network import LunarCalendar
+from .config import fast_text_decode, fast_text_encode
+from .network import AutoProxy, LunarCalendar
 from .oss import Bucket, Message
 from .utils import download as getfile
-from .config import fast_text_decode, fast_text_encode
 
 
 def _init_config() -> None:
@@ -39,7 +39,7 @@ def main():
                        ["l", "list"], ["del", "delete"]])
     sp.input('-oss',
              '--oss',
-             sub_args=[["u", "up", "upload"], ["download", "d", "dw"],
+             sub_args=[["u", "up", "upload"], ["d", "dw", 'download'],
                        ["l", "list"], ["del", "delete"]])
     sp.input('-dw', '--download', sub_args=[['p', 'proxy']])
     sp.input('-d', '--ddfile')
@@ -55,8 +55,13 @@ def main():
     sp.input('-m', '--msg', sub_args=[['r', 'read'], ['w', 'write']])
     sp.input('-fund', '--fund', sub_args=[['ba', 'buyalert']])
     sp.input('-stock', '--stock')
-    sp.input('-aes', '--aes', sub_args=[['en', 'encode'], ['de', 'decode']], 
-        description='AES encode/decode message. Usage: \n sli -aes msg -en password \n sli -aes encrypted_msg -de password\n')
+    sp.input(
+        '-aes',
+        '--aes',
+        sub_args=[['en', 'encode'], ['de', 'decode']],
+        description=
+        'AES encode/decode message. Usage: \n sli -aes msg -en password \n sli -aes encrypted_msg -de password\n'
+    )
 
     sp.input('-gcr', '--githubcommitreminder')
     sp.input('-pf', '--phoneflow', sub_args=[['rest'], ['daily']])
@@ -75,23 +80,36 @@ def main():
              sub_args=[['o', 'output']],
              description='jsonify single quoted string')
     sp.input('-tt', '-twitter', description='Twitter API.')
-    sp.input('-lc',
-             '-lunarcalendar',
-             default_value="",
-             description='Lunar calendar. Usage:\nsli -lc or sli -lc 2088-09-09.')
+    sp.input(
+        '-lc',
+        '-lunarcalendar',
+        default_value="",
+        description='Lunar calendar. Usage:\n sli -lc or sli -lc 2088-09-09.')
     sp.input('-fi', '-fileinfo', description='Get file meta information.')
-    sp.input('-st',
-             '-securitytext',
-             sub_args=[['-d', '-decode'], ['-o', '-output']],
-             description='Generate secirty text. Usage: \nsli -st input.txt -o output.txt \nsli -st input.txt -d -o m.txt')
+    sp.input(
+        '-st',
+        '-securitytext',
+        sub_args=[['-d', '-decode'], ['-o', '-output']],
+        description=
+        'Generate secirty text. Usage: \n sli -st input.txt -o output.txt \n sli -st input.txt -d -o m.txt'
+    )
 
-    sp.input('-ap', '-autoproxy', sub_args=[['-a', '-add'], ['-d', '--delete']], 
-            description='AutoProxy configuration. Usage:\n sli -ap google.com \n sli -ap -d google.com')
+    sp.input(
+        '-ap',
+        '-autoproxy',
+        sub_args=[['-a', '-add'], ['-d', '--delete']],
+        description=
+        'AutoProxy configuration. Usage:\n sli -ap google.com \n sli -ap -d google.com'
+    )
 
     sp.parse_args()
     if sp.autoproxy:
-        pass
-        
+        if sp.autoproxy.delete:
+            AutoProxy.delete(sp.autoproxy.delete)
+
+        if sp.autoproxy.add:
+            AutoProxy.add(sp.autoproxy.add)
+
     elif sp.fileinfo:
         info = cf.file.info(sp.fileinfo.value)
         for key in ('bit_rate', 'channel_layout', 'channels',
