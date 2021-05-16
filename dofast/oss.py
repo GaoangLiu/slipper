@@ -31,42 +31,27 @@ class Bucket:
                 sys.stdout.write(str(ratio(acc) // 10))
                 sys.stdout.flush()
 
-        object_name = 'transfer/' + file_name.split('/')[-1]
+        object_name = 'transfer/' + cf.file.basename(file_name)
         self.bucket.put_object_from_file(object_name,
                                          file_name,
                                          progress_callback=progress_bar)
         sys.stdout.write("]\n")  # this ends the progress bar
-        print(f"✅ {file_name} uploaded to transfer/")
+        cf.logger.info(f"{file_name} uploaded to transfer/")
 
-    def download(self, file_name: str) -> None:
+    def download(self, file_name: str, export_to:str=None) -> None:
         """Download a file from transfer/"""
-        self.bucket.get_object_to_file(f"transfer/{file_name}",
-                                       file_name.split('/')[-1])
-        cf.logger.info(f"✅ {file_name} Downloaded.")
+        f = export_to if export_to else cf.file.basename(file_name)
+        self.bucket.get_object_to_file(f"transfer/{file_name}", f)
+        cf.logger.info(f"{file_name} Downloaded.")
 
     def delete(self, file_name: str) -> None:
         """Delete a file from transfer/"""
         self.bucket.delete_object(f"transfer/{file_name}")
-        cf.logger.info(f"✅ {file_name} deleted from transfer/")
+        cf.logger.info(f"{file_name} deleted from transfer/")
 
     def list_files(self, prefix="transfer/") -> None:
         for obj in oss2.ObjectIterator(self.bucket, prefix=prefix):
             print(obj.key)
-
-
-class FastOSS:
-    CLIEND = Bucket()
-
-    @classmethod
-    def upload(cls, path: str) -> None:
-        cls.CLIEND.upload(path)
-
-    @classmethod
-    def download(cls, file_name: str, export_name: str = None) -> None:
-        prefix = cls.CLIEND.url_prefix
-        download(prefix + file_name,
-                 referer=prefix.strip('/transfer/'),
-                 name=export_name)
 
 
 class Message():

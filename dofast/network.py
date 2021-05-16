@@ -1,3 +1,5 @@
+from .utils import githup_upload
+from .oss import Bucket
 import json
 import socket
 import urllib.request
@@ -162,17 +164,15 @@ class LunarCalendar:
         print('')
 
 
-from .oss import FastOSS as fo
-from .utils import githup_upload
 
 
-class AutoProxy:
+class AutoProxy(Bucket):
     pac = '/tmp/autoproxy.pac'
     tmp = '/tmp/autoproxy_encrypted'
 
     @classmethod
     def query_rules(cls) -> List[str]:
-        fo.download(cf.file.basename(cls.tmp), export_name=cls.tmp)
+        AutoProxy().download(cf.file.basename(cls.tmp), export_to=cls.tmp)
         text = cf.file.read(cls.tmp)
         return fast_text_decode(text).split('\n')
 
@@ -197,7 +197,7 @@ class AutoProxy:
         text_new = fast_text_encode(str_rules)
         cf.file.write(text_new, cls.tmp)
         cf.file.write(str_rules, cls.pac)
-        fo.upload(cls.tmp)
+        AutoProxy().upload(cls.tmp)
         cf.logger.info('{} added to rule list SUCCESS'.format(url))
         cls.sync2git()
 
@@ -208,10 +208,10 @@ class AutoProxy:
         if url in rule_list:
             rule_list.remove(url)
             str_rules = '\n'.join(rule_list)
-            text_new = fast_text_encode(str_rules)
-            cf.file.write(text_new, cls.tmp)
+            str_rules_encrypted = fast_text_encode(str_rules)
+            cf.file.write(str_rules_encrypted, cls.tmp)
             cf.file.write(str_rules, cls.pac)
-            fo.upload(cls.tmp)
+            AutoProxy().upload(cls.tmp)
             cf.logger.info('{} removed from rule list SUCCESS'.format(url))
             cls.sync2git()
         else:

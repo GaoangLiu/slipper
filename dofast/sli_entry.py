@@ -106,8 +106,7 @@ def main():
     if sp.autoproxy:
         if sp.autoproxy.delete:
             AutoProxy.delete(sp.autoproxy.delete)
-
-        if sp.autoproxy.add:
+        elif sp.autoproxy.add:
             AutoProxy.add(sp.autoproxy.add)
 
     elif sp.fileinfo:
