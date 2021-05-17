@@ -1,9 +1,10 @@
 import sys
 
-import oss2
 import codefast as cf
+import oss2
+
 from .config import decode
-from .utils import shell, download
+from .utils import download, shell
 
 
 class Bucket:
@@ -54,9 +55,9 @@ class Bucket:
             print(obj.key)
 
 
-class Message():
+class Message(Bucket):
     def __init__(self):
-        self.bucket = Bucket().bucket
+        super(Message, self).__init__()
         self.file = 'transfer/msgbuffer.json'
         self._tmp = '/tmp/msgbuffer.json'
         self.bucket.get_object_to_file(self.file, self._tmp)
@@ -68,9 +69,8 @@ class Message():
             sign = "🔥" if name == shell('whoami').strip() else "❄️ "
             print('{} {}'.format(sign, content))
 
-    def write(self, msg_body: str):
+    def write(self, content: str)-> None:
         name = shell('whoami').strip()
-        content = msg_body
         self.conversations['msg'].append({'name': name, 'content': content})
         cf.json.write(self.conversations, self._tmp)
-        resp = Bucket().upload(self._tmp)
+        self.upload(self._tmp)

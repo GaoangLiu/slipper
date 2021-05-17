@@ -1,5 +1,3 @@
-from .utils import githup_upload
-from .oss import Bucket
 import json
 import socket
 import urllib.request
@@ -11,6 +9,8 @@ import twitter
 from bs4 import BeautifulSoup
 
 from .config import decode, fast_text_decode, fast_text_encode
+from .oss import Bucket
+from .utils import githup_upload
 
 socket.setdefaulttimeout(3)
 
@@ -40,14 +40,14 @@ class Network:
             print("")
 
 
-class Twitter:
+class Twitter(twitter.Api):
     def __init__(self):
-        self.api = twitter.Api(
-            consumer_key=decode('consumer_key'),
-            consumer_secret=decode('consumer_secret'),
-            access_token_key=decode('access_token'),
-            access_token_secret=decode('access_token_secret'),
-            proxies={'http': decode('http_proxy')})
+        super(Twitter,
+              self).__init__(consumer_key=decode('consumer_key'),
+                             consumer_secret=decode('consumer_secret'),
+                             access_token_key=decode('access_token'),
+                             access_token_secret=decode('access_token_secret'),
+                             proxies={'http': decode('http_proxy')})
 
     def hi(self):
         print('Hi, Twitter.')
@@ -162,8 +162,6 @@ class LunarCalendar:
             if pairs[j].endswith('星期日'):
                 print('')
         print('')
-
-
 
 
 class AutoProxy(Bucket):

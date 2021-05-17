@@ -1,4 +1,5 @@
 # coding:utf-8
+from _typeshed import OpenTextModeUpdating
 import base64
 import bs4
 import json
@@ -14,18 +15,9 @@ from tqdm import tqdm
 
 from .logger import Logger
 from .config import decode
-
+import codefast as cf
 
 # =========================================================== display
-def p(*s):
-    for i in s:
-        print(i)
-
-
-def pp(d: dict):
-    pprint(d)
-
-
 def sleep(countdown: int) -> None:
     time.sleep(countdown)
 
@@ -40,7 +32,7 @@ def random_sleep(lower_bound: int, upper_bound: int) -> None:
 
 # =========================================================== IO
 def show_func_name():
-    p(f"\n--------------- {sys._getframe(1).f_code.co_name} ---------------")
+    cf.say(f"\n--------------- {sys._getframe(1).f_code.co_name} ---------------")
 
 
 def smartopen(file_path: str):
@@ -79,7 +71,7 @@ def shell(cmd: str, print_str: bool = False) -> str:
         print(e)
     finally:
         if print_str:
-            p(ret_str)
+            cf.say(ret_str)
         return ret_str
 
 
