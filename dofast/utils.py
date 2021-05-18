@@ -1,5 +1,4 @@
 # coding:utf-8
-from _typeshed import OpenTextModeUpdating
 import base64
 import bs4
 import json

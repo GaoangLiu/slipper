@@ -102,7 +102,7 @@ def main():
         'AutoProxy configuration. Usage:\n sli -ap google.com \n sli -ap -d google.com'
     )
 
-    sp.parse_args()
+    sp.parse()
     if sp.autoproxy:
         if sp.autoproxy.delete:
             AutoProxy.delete(sp.autoproxy.delete)
@@ -297,7 +297,7 @@ def main():
         from .data.msg import display_message
         display_message()
         sp.help()
-        done, total = sp.__arg_counter, 50
+        done, total = sp._arg_counter, 50
         print('✶' * done + '﹆' * (total - done) +
               "({}/{})".format(done, total))
 
