@@ -1,36 +1,16 @@
-import getpass
 import os
 import sys
-import zipfile
-from pathlib import Path
 
 import codefast as cf
 from codefast.argparser import PLACEHOLDER
 
 from .config import fast_text_decode, fast_text_encode
-from .network import AutoProxy, LunarCalendar
+from .network import AutoProxy, LunarCalendar, CoinMarketCap, Douban, Twitter
 from .oss import Bucket, Message
 from .utils import download as getfile
 
 
-def _init_config() -> None:
-    """ init configureation file on installing library."""
-
-    _config_path = str(Path.home()) + "/.config/"
-    _cf = _config_path + 'dofast.json'
-    if Path(_cf).is_file(): return
-
-    zip_json = f"{cf.file.dirname()}/dofast.json.zip"
-    with zipfile.ZipFile(zip_json, 'r') as zip_ref:
-        zip_ref.extractall(
-            path=_config_path,
-            pwd=bytes(getpass.getpass("type here your config password: "),
-                      'utf-8'))
-
-
 def main():
-    _init_config()
-
     sp = cf.argparser.ArgParser()
     # PLACEHOLDER = cf.argparser.PLACEHOLDER
     sp.input('-cos',
@@ -81,7 +61,7 @@ def main():
              description='jsonify single quoted string')
     sp.input('-tt', '-twitter', description='Twitter API.')
     sp.input(
-        '-lc',
+        '-lunar',
         '-lunarcalendar',
         default_value="",
         description='Lunar calendar. Usage:\n sli -lc or sli -lc 2088-09-09.')
@@ -97,13 +77,25 @@ def main():
     sp.input(
         '-ap',
         '-autoproxy',
-        sub_args=[['-a', '-add'], ['-d', '--delete']],
+        sub_args=[['-a', '-add'], ['-d', '-delete']],
         description=
         'AutoProxy configuration. Usage:\n sli -ap google.com \n sli -ap -d google.com'
     )
 
+    sp.input('-coin',
+             sub_args=[['-q', '-quote']],
+             description=
+             'Coin Market API. Usage: \n sli -coin -q \n sli -coin -q btc')
+
     sp.parse()
-    if sp.autoproxy:
+    if sp.coin:
+        cmc, _quote = CoinMarketCap(), sp.coin.quote
+        if _quote:
+            coins = ['BTC', 'ETC', 'ETH', 'SHIB'] if isinstance(
+                _quote, dict) else [_quote]
+            cmc.part_display(cmc.quote(coins))
+
+    elif sp.autoproxy:
         if sp.autoproxy.delete:
             AutoProxy.delete(sp.autoproxy.delete)
         elif sp.autoproxy.add:
@@ -118,11 +110,9 @@ def main():
             print('{:<20} {}'.format(key, info.get(key, None)))
 
     elif sp.doubaninfo:
-        from .network import Douban
         Douban.query_film_info(sp.doubaninfo.value)
 
     elif sp.twitter:
-        from .network import Twitter
         Twitter().post(sys.argv[2:])
 
     elif sp.tgbot:
@@ -273,8 +263,9 @@ def main():
         elif sp.aes.decode: print(short_decode(text, sp.aes.decode))
 
     elif sp.securitytext:
-        f = sp.securitytext.value
-        text = cf.file.read(f)
+        text = sp.securitytext.value
+        if cf.file.exists(text):
+            text = cf.file.read(text)
         func = fast_text_decode if sp.securitytext.decode else fast_text_encode
         text_r = func(text)
         if sp.securitytext.output:

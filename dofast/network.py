@@ -7,6 +7,10 @@ import arrow
 import codefast as cf
 import twitter
 from bs4 import BeautifulSoup
+from requests import Session
+from termcolor import colored
+
+from dofast.config import decode
 
 from .config import decode, fast_text_decode, fast_text_encode
 from .oss import Bucket
@@ -53,7 +57,7 @@ class Twitter(twitter.Api):
         print('Hi, Twitter.')
 
     def post_status(self, text: str, media=[]):
-        resp = self.api.PostUpdate(text, media=media)
+        resp = self.PostUpdate(text, media=media)
         print("Text  : {}\nMedia : {}\nResponse:".format(text, media))
         cf.say(resp)
 
@@ -214,3 +218,40 @@ class AutoProxy(Bucket):
             cls.sync2git()
         else:
             cf.logger.info('{} was NOT included in rule list'.format(url))
+
+
+class CoinMarketCap:
+    def __init__(self):
+        self.url_listing = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest'
+        self.url_quote = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest'
+        headers = {
+            'Accepts': 'application/json',
+            'X-CMC_PRO_API_KEY': decode('coin_market_api_key')
+        }
+
+        self.client = Session()
+        self.client.headers.update(headers)
+
+    def quote(self, coins: list = ['BTC']) -> dict:
+        parameters = {'symbol': ','.join(coins)}
+        resp = self.client.get(self.url_quote, params=parameters)
+        return json.loads(resp.text)
+
+    def part_display(self, d: dict) -> None:
+        fields = ['cmc_rank', 'symbol', 'name']
+        for coin in list(d['data']):
+            print('-' * 63)
+            prices = d['data'][coin]['quote']['USD']
+            for f in fields:
+                print(" {:<20} {:<20}".format(f, d['data'][coin][f]))
+
+            tags = ['price'] + [
+                'percent_change_' + _
+                for _ in '1h|24h|7d|30d|60d|90d'.split('|')
+            ]
+            for t in tags:
+                v = prices[t]
+                if t.startswith('percent'):
+                    v = cf.format.red(v) if float(v) > 0 else cf.format.green(
+                        v)
+                print(" {:<20} {:<20}".format(t, v))
