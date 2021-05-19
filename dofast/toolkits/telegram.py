@@ -7,7 +7,6 @@ import smtplib
 from email.mime.text import MIMEText
 
 import dofast.utils as du
-from dofast.utils import p, pp
 from dofast.config import decode
 
 proxies = {'https': decode('HTTP_PROXY')}
