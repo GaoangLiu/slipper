@@ -1,4 +1,5 @@
 import json
+import os
 import socket
 import urllib.request
 from typing import List
@@ -8,9 +9,6 @@ import codefast as cf
 import twitter
 from bs4 import BeautifulSoup
 from requests import Session
-from termcolor import colored
-
-from dofast.config import decode
 
 from .config import decode, fast_text_decode, fast_text_encode
 from .oss import Bucket
@@ -255,3 +253,16 @@ class CoinMarketCap:
                     v = cf.format.red(v) if float(v) > 0 else cf.format.green(
                         v)
                 print(" {:<20} {:<20}".format(t, v))
+
+
+def bitly(uri: str) -> None:
+    query_params = {'access_token': decode('bitly_token'), 'longUrl': uri}
+
+    endpoint = 'https://api-ssl.bitly.com/v3/shorten'
+    response = cf.net.get(endpoint, params=query_params)
+
+    data = response.json()
+    print("{:<20} {}".format("long url", uri))
+    print("{:<20} {}".format("shorten url", data['data']['url']))
+    short = data['data']['url']
+    os.system(f"echo {short} | pbcopy")

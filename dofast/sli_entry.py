@@ -5,7 +5,8 @@ import codefast as cf
 from codefast.argparser import PLACEHOLDER
 
 from .config import fast_text_decode, fast_text_encode
-from .network import AutoProxy, LunarCalendar, CoinMarketCap, Douban, Twitter
+from .network import (AutoProxy, CoinMarketCap, Douban, LunarCalendar, Twitter,
+                      bitly)
 from .oss import Bucket, Message
 from .utils import download as getfile
 
@@ -87,8 +88,14 @@ def main():
              description=
              'Coin Market API. Usage: \n sli -coin -q \n sli -coin -q btc')
 
+    sp.input('-bitly', description='Bitly shorten url.')
     sp.parse()
-    if sp.coin:
+
+    # ------------------------------------
+    if sp.bitly:
+        bitly(sp.bitly.value)
+
+    elif sp.coin:
         cmc, _quote = CoinMarketCap(), sp.coin.quote
         if _quote:
             coins = ['BTC', 'ETC', 'ETH', 'SHIB'] if isinstance(
@@ -236,7 +243,7 @@ def main():
         if sp.msg.write:
             Message().write(sp.msg.write)
         elif sp.msg.read:
-            top_ = 1 if sp.msg.read == PLACEHOLDER else int(sp.msg.read)
+            top_ = 1 if sp.msg.read == {'value': ''} else int(sp.msg.read)
             Message().read(top=top_)  # show only 1 line
         elif sp.msg.value != PLACEHOLDER:
             Message().write(sp.msg.value)
