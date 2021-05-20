@@ -88,6 +88,8 @@ class PapaPhone:
         info = cls.query3510().get('info', '')
         msg = f'日常流量提醒 \n\n papa cellphone data flow {info}'
         bot_messalert(msg)
+        logger.info('Phone data flow daily message sent.')
+        
 
 
 class GithubTasks:

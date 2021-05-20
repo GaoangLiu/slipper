@@ -1,12 +1,13 @@
 import os
+import socketserver
 import sys
 
 import codefast as cf
 from codefast.argparser import PLACEHOLDER
 
 from .config import fast_text_decode, fast_text_encode
-from .network import (AutoProxy, CoinMarketCap, Douban, LunarCalendar, Twitter,
-                      bitly)
+from .network import (AutoProxy, CoinMarketCap, CustomHTTPRequestHandler,
+                      Douban, LunarCalendar, Twitter, bitly)
 from .oss import Bucket, Message
 from .utils import download as getfile
 
@@ -89,10 +90,21 @@ def main():
              'Coin Market API. Usage: \n sli -coin -q \n sli -coin -q btc')
 
     sp.input('-bitly', description='Bitly shorten url.')
+    sp.input('-http',
+             '-httpserver',
+             sub_args=[['p', 'port']],
+             description='Simple HTTP server. Usage:\n sli -http -p 8899')
     sp.parse()
 
     # ------------------------------------
-    if sp.bitly:
+    if sp.httpserver:
+        port = 8899 if not sp.httpserver.port else int(sp.httpserver.port)
+        Handler = CustomHTTPRequestHandler
+        with socketserver.TCPServer(("", port), Handler) as httpd:
+            cf.logger.info(f"serving at port {port}")
+            httpd.serve_forever()
+
+    elif sp.bitly:
         bitly(sp.bitly.value)
 
     elif sp.coin:
