@@ -7,7 +7,7 @@ from codefast.argparser import PLACEHOLDER
 
 from .config import fast_text_decode, fast_text_encode
 from .network import (AutoProxy, CoinMarketCap, CustomHTTPRequestHandler,
-                      Douban, LunarCalendar, Twitter, bitly)
+                      Douban, LunarCalendar, Twitter, bitly, Phone)
 from .oss import Bucket, Message
 from .utils import download as getfile
 
@@ -94,10 +94,16 @@ def main():
              '-httpserver',
              sub_args=[['p', 'port']],
              description='Simple HTTP server. Usage:\n sli -http -p 8899')
+
+    sp.input('-uni', description='Unicom data flow usage.')
+
     sp.parse()
 
     # ------------------------------------
-    if sp.httpserver:
+    if sp.uni:
+        Phone().unicom()
+
+    elif sp.httpserver:
         port = 8899 if not sp.httpserver.port else int(sp.httpserver.port)
         Handler = CustomHTTPRequestHandler
         with socketserver.TCPServer(("", port), Handler) as httpd:

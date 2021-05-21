@@ -1,3 +1,4 @@
+import re
 import json
 import os
 import socket
@@ -306,6 +307,54 @@ class CoinMarketCap:
                     v = cf.format.red(v) if float(v) > 0 else cf.format.green(
                         v)
                 print(" {:<20} {:<20}".format(t, v))
+
+class Phone:
+    def parse(self,text:str):
+        res = BeautifulSoup(text, 'lxml')
+        if '系统检测您的访问过于频繁' in str(res):
+            cf.logger.info('Unicoms leaders mothers are all dead !!! R.I.P. !')
+            return 
+
+        if '请在系统完成升级后再来办理' in str(res):
+            cf.logger.info('System under maintenance. Try again tomorrow.')
+            return 
+
+        if '暂时无法为您提供服务' in str(res):
+            cf.logger.info('暂时无法为您提供服务')
+            return 
+
+        def _pure_text(t):
+            for s in ["\\r", "\\n", "\\t", "\n", " ", "\t", "\r", "\n"]:
+                t = t.lstrip().replace(s, '')
+            return '\t'.join([i for i in t.replace('"', '\'').split('\'') if len(i) > 0])
+
+        for i, span in enumerate(res.findAll('span', {'class':'wz_22'})):
+            label = '免流' if i == 0 else '日租'
+            print("{}: {}".format(label, _pure_text(span.text).replace('MB', ' MB').replace('GB', ' GB')))
+
+
+        data = res.findAll('p', {'class':'TotleData'})
+        for i, d in enumerate(data):
+            text = d.text
+            text = re.sub(r'[\r\n\s\t]', '', text)
+            used = re.search(r'已用(.*)', text).groups()[0].replace('MB', ' MB').replace('GB', ' GB')
+            total = re.search(r'共(.*),', text).groups()[0].replace('MB', ' MB').replace('GB', ' GB')
+
+            c = "余量" if i == 0 else "通话"
+            print("{}: {} / {}".format(c, used, total))
+
+    def unicom(self):
+        _headers = {
+            'cookie': decode('unicom_cookie'),
+        }
+        url = 'http://m.client.10010.com/mobileService/operationservice/queryOcsPackageFlowLeftContent.htm'
+        params = {'menuId':'000200020004'}
+        r = cf.net.post(url, data=params, headers=_headers)
+        if r.status_code != 200:
+            cf.logger.warning(r.text)
+        else:
+            self.parse(r.text)
+    
 
 
 def bitly(uri: str) -> None:
