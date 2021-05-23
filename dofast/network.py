@@ -1,6 +1,6 @@
-import re
 import json
 import os
+import re
 import socket
 import urllib.request
 from typing import List
@@ -20,6 +20,54 @@ socket.setdefaulttimeout(3)
 import cgi
 import http.server
 import io
+
+from .oss import Bucket
+
+cf.logger.level = 'info'
+
+
+class Bookmark(Bucket):
+    def __init__(self):
+        super(Bookmark, self).__init__()
+        self._local = '/tmp/bookmark.json'
+        self.download('bookmark.json', self._local)
+        self.json = cf.json.read(
+            fast_text_decode(cf.file.read(self._local, '')))
+
+    def _update_remote(self):
+        cf.file.write(fast_text_encode(str(self.json)), self._local)
+        self.upload(self._local)
+
+    def add(self, keyword: str, url: str) -> None:
+        if keyword in self.json:
+            cf.warning(
+                f'{keyword} with URL {self.json[keyword]} already added.')
+        else:
+            self.json[keyword] = url
+            self._update_remote()
+            cf.info(f'{keyword} with URL {self.json[keyword]} added SUCCESS.')
+
+    def remove(self, keyword: str = '', url: str = '') -> None:
+        ''' can delete by either keyword or URL'''
+        _tuple = ('', '')
+        if keyword and keyword in self.json:
+            _tuple = (keyword, self.json[keyword])
+            del self.json[keyword]
+
+        elif url:
+            for _key in list(self.json):
+                if self.json[_key] == url:
+                    _tuple = (_key, self.json[_key])
+                    del self.json[_key]
+        self._update_remote()
+        cf.info(f'{_tuple[0]} / {_tuple[1]} remove SUCCESS')
+
+    def get_url_by_keyword(self, keyword: str) -> str:
+        return self.json.get(keyword, 'https://google.com')
+
+    def list(self) -> None:
+        for k, v in self.json.items():
+            print(" {:<15} {:<63}".format(k, v))
 
 
 class CustomHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
@@ -125,7 +173,7 @@ class Twitter(twitter.Api):
                 if e.endswith(media_types):
                     media.append(e)
                 else:
-                    text += cf.file.read(e)
+                    text += cf.file.read(e, '')
             else:
                 text += e
         self.post_status(text, media)
@@ -308,37 +356,44 @@ class CoinMarketCap:
                         v)
                 print(" {:<20} {:<20}".format(t, v))
 
+
 class Phone:
-    def parse(self,text:str):
+    def parse(self, text: str):
         res = BeautifulSoup(text, 'lxml')
         if '系统检测您的访问过于频繁' in str(res):
             cf.logger.info('Unicoms leaders mothers are all dead !!! R.I.P. !')
-            return 
+            return
 
         if '请在系统完成升级后再来办理' in str(res):
             cf.logger.info('System under maintenance. Try again tomorrow.')
-            return 
+            return
 
         if '暂时无法为您提供服务' in str(res):
             cf.logger.info('暂时无法为您提供服务')
-            return 
+            return
 
         def _pure_text(t):
             for s in ["\\r", "\\n", "\\t", "\n", " ", "\t", "\r", "\n"]:
                 t = t.lstrip().replace(s, '')
-            return '\t'.join([i for i in t.replace('"', '\'').split('\'') if len(i) > 0])
+            return '\t'.join(
+                [i for i in t.replace('"', '\'').split('\'') if len(i) > 0])
 
-        for i, span in enumerate(res.findAll('span', {'class':'wz_22'})):
+        for i, span in enumerate(res.findAll('span', {'class': 'wz_22'})):
             label = '免流' if i == 0 else '日租'
-            print("{}: {}".format(label, _pure_text(span.text).replace('MB', ' MB').replace('GB', ' GB')))
+            print("{}: {}".format(
+                label,
+                _pure_text(span.text).replace('MB',
+                                              ' MB').replace('GB', ' GB')))
 
-
-        data = res.findAll('p', {'class':'TotleData'})
+        data = res.findAll('p', {'class': 'TotleData'})
         for i, d in enumerate(data):
             text = d.text
             text = re.sub(r'[\r\n\s\t]', '', text)
-            used = re.search(r'已用(.*)', text).groups()[0].replace('MB', ' MB').replace('GB', ' GB')
-            total = re.search(r'共(.*),', text).groups()[0].replace('MB', ' MB').replace('GB', ' GB')
+            used = re.search(r'已用(.*)',
+                             text).groups()[0].replace('MB', ' MB').replace(
+                                 'GB', ' GB')
+            total = re.search(r'共(.*),', text).groups()[0].replace(
+                'MB', ' MB').replace('GB', ' GB')
 
             c = "余量" if i == 0 else "通话"
             print("{}: {} / {}".format(c, used, total))
@@ -348,13 +403,12 @@ class Phone:
             'cookie': decode('unicom_cookie'),
         }
         url = 'http://m.client.10010.com/mobileService/operationservice/queryOcsPackageFlowLeftContent.htm'
-        params = {'menuId':'000200020004'}
+        params = {'menuId': '000200020004'}
         r = cf.net.post(url, data=params, headers=_headers)
         if r.status_code != 200:
             cf.logger.warning(r.text)
         else:
             self.parse(r.text)
-    
 
 
 def bitly(uri: str) -> None:

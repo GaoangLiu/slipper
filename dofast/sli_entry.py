@@ -6,8 +6,9 @@ import codefast as cf
 from codefast.argparser import PLACEHOLDER
 
 from .config import fast_text_decode, fast_text_encode
-from .network import (AutoProxy, CoinMarketCap, CustomHTTPRequestHandler,
-                      Douban, LunarCalendar, Twitter, bitly, Phone)
+from .network import (AutoProxy, Bookmark, CoinMarketCap,
+                      CustomHTTPRequestHandler, Douban, LunarCalendar, Phone,
+                      Twitter, bitly)
 from .oss import Bucket, Message
 from .utils import download as getfile
 
@@ -96,11 +97,39 @@ def main():
              description='Simple HTTP server. Usage:\n sli -http -p 8899')
 
     sp.input('-uni', description='Unicom data flow usage.')
+    sp.input(
+        '-bm',
+        '--bookmark',
+        sub_args=[['a', 'add'], ['d', 'delete'], ['l', 'list'], ['o', 'open']],
+        description=
+        'Make bookmark easier. Usage:\n sli -bm -o google \n sli -bm -a google https://google.com \n sli -bm -d google'
+    )
 
     sp.parse()
 
     # ------------------------------------
-    if sp.uni:
+    if sp.bookmark:
+        bm = Bookmark()
+        if sp.bookmark.open:
+            url = bm.get_url_by_keyword(sp.bookmark.open)
+            cf.shell(f'open {url}')
+
+        elif sp.bookmark.add:
+            _args = sp.bookmark.add
+            assert len(_args) == 2, 'Usage: sli -bm -a/-add keyword URL'
+            bm.add(keyword=_args[0], url=_args[1])
+
+        elif sp.bookmark.delete:
+            _args = sp.bookmark.delete
+            if _args.startswith('http'):
+                bm.remove(url=_args)
+            else:
+                bm.remove(keyword=_args)
+
+        else:
+            bm.list()
+
+    elif sp.uni:
         Phone().unicom()
 
     elif sp.httpserver:
