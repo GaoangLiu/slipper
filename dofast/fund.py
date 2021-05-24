@@ -1,19 +1,18 @@
 import json
 import math
-import re
-import numpy as np
-import arrow
 import random
-import requests
+import re
 import time
 
-from bs4 import BeautifulSoup
-from .toolkits.telegram import bot_say, YahooMail
-from .toolkits.file import load_password
-from .config import decode
-from .logger import Logger
+import arrow
+import numpy as np
+import requests
+from codefast.utils import Logger, retry
 
-bird = Logger('/var/log/fund.log')
+from .config import decode
+from .toolkits.telegram import YahooMail, bot_say
+
+bird = Logger('/tmp/fund.log')
 
 
 class bcolors:
@@ -170,15 +169,16 @@ def invest_advice(fund_code: str = None):
     show_sz_index()
 
 
+@retry()
 def tgalert(proxyoff: str = ""):
     """Send investment advice to Telegram Channel.
     If any argument is passed in, then turn off proxy for Telegram.
     """
     try:
         msg = '\n'.join([
-            Fund(code).buy_advice() for code in ['162605', '570008', '161903']
+            Fund(code).buy_advice() for code in ['162605', '161903']
         ])
-        _token = decode('PLUTOSHARE')
+        _token = decode('PLUTO_SHARE')
         bot_say(_token, msg, use_proxy=False if proxyoff else True)
         bird.info('Telegram fund alert SUCCESS.')
 

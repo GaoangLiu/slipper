@@ -112,7 +112,8 @@ def main():
         bm = Bookmark()
         if sp.bookmark.open:
             url = bm.get_url_by_keyword(sp.bookmark.open)
-            cf.shell(f'open {url}')
+            cmd = f'open {url}' if 'macos' in cf.os.platform() else f'xdg-open {url}'
+            cf.shell(cmd)
 
         elif sp.bookmark.add:
             _args = sp.bookmark.add

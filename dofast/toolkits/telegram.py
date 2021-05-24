@@ -8,10 +8,12 @@ from email.mime.text import MIMEText
 
 import dofast.utils as du
 from dofast.config import decode
+from codefast.utils import retry
 
 proxies = {'https': decode('HTTP_PROXY')}
 
 
+@retry()
 def bot_say(api_token: str,
             text: str,
             bot_name: str = 'PlutoShare',
