@@ -111,7 +111,16 @@ def main():
     if sp.bookmark:
         bm = Bookmark()
         if sp.bookmark.open:
-            url = bm.get_url_by_keyword(sp.bookmark.open)
+            _key, url = sp.bookmark.open, 'http://google.com'
+            matched = [(k, v) for k, v in bm.json.items() if _key in k]
+            if len(matched) == 1:
+                url = matched[0][1]
+            elif len(matched) > 1:
+                for i, pair in enumerate(matched):
+                    print("{:<3} {:<10} {:<10}".format(i, pair[0], pair[1]))
+                c = input('Pick one:')
+                url = matched[int(c) % len(matched)][1]
+
             cmd = f'open {url}' if 'macos' in cf.os.platform() else f'xdg-open {url}'
             cf.shell(cmd)
 
