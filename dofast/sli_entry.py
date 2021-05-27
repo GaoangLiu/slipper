@@ -329,7 +329,7 @@ def main():
     elif sp.securitytext:
         text = sp.securitytext.value
         if cf.file.exists(text):
-            text = cf.file.read(text)
+            text = cf.file.read(text, '')
         func = fast_text_decode if sp.securitytext.decode else fast_text_encode
         text_r = func(text)
         if sp.securitytext.output:

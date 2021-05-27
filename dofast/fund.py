@@ -161,7 +161,7 @@ def show_sz_index():
 
 def invest_advice(fund_code: str = None):
     _personal_choices = [fund_code] if fund_code else [
-        '162605', '110022', '161903', '570008'
+        '162605', '110022', '161903', '519714'
     ]
     for pc in _personal_choices:
         f = Fund(pc)

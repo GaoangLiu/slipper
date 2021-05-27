@@ -91,10 +91,10 @@ class Stock():
                                          int(top5sellers[i]) // 100))
 
     def my_trend(self):
-        self.trend('002223')
-        self.trend('159928')
+        self.trend('002563')
+        self.trend('600429')
 
 
 if __name__ == "__main__":
-    Stock().trend('002223')
-    Stock().trend('159928')
+    Stock().trend('600429')
+    Stock().trend('002563')
