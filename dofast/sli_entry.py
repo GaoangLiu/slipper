@@ -100,7 +100,8 @@ def main():
     sp.input(
         '-bm',
         '--bookmark',
-        sub_args=[['a', 'add'], ['d', 'delete'], ['l', 'list'], ['o', 'open']],
+        sub_args=[['a', 'add'], ['d', 'delete'], ['l', 'list'], ['o', 'open'],
+                  ['reload']],
         description=
         'Make bookmark easier. Usage:\n sli -bm -o google \n sli -bm -a google https://google.com \n sli -bm -d google'
     )
@@ -115,13 +116,15 @@ def main():
             matched = [(k, v) for k, v in bm.json.items() if _key in k]
             if len(matched) == 1:
                 url = matched[0][1]
+
             elif len(matched) > 1:
                 for i, pair in enumerate(matched):
                     print("{:<3} {:<10} {:<10}".format(i, pair[0], pair[1]))
                 c = input('Pick one:')
                 url = matched[int(c) % len(matched)][1]
 
-            cmd = f'open {url}' if 'macos' in cf.os.platform() else f'xdg-open {url}'
+            cmd = f'open {url}' if 'macos' in cf.os.platform(
+            ) else f'xdg-open {url}'
             cf.shell(cmd)
 
         elif sp.bookmark.add:
@@ -135,6 +138,9 @@ def main():
                 bm.remove(url=_args)
             else:
                 bm.remove(keyword=_args)
+
+        elif sp.bookmark.reload:
+            bm.reload()
 
         else:
             bm.list()

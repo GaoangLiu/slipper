@@ -30,6 +30,14 @@ class Bookmark(Bucket):
     def __init__(self):
         super(Bookmark, self).__init__()
         self._local = '/tmp/bookmark.json'
+        if not cf.file.exists(self._local):
+            self.download('bookmark.json', self._local)
+
+        self.json = cf.json.read(
+            fast_text_decode(cf.file.read(self._local, '')))
+
+    def reload(self):
+        ''' reload file whenever necessary '''
         self.download('bookmark.json', self._local)
         self.json = cf.json.read(
             fast_text_decode(cf.file.read(self._local, '')))
