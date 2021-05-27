@@ -8,7 +8,7 @@ from .utils import download, shell
 
 
 class Bucket:
-    def __init__(self, phrase: str = None):
+    def __init__(self):
         _id = decode("ALIYUN_ACCESS_KEY_ID")
         _secret = decode("ALIYUN_ACCESS_KEY_SECRET")
         _bucket = decode("ALIYUN_BUCKET")
@@ -53,6 +53,10 @@ class Bucket:
     def list_files(self, prefix="transfer/") -> None:
         for obj in oss2.ObjectIterator(self.bucket, prefix=prefix):
             print(obj.key)
+    
+    def __repr__(self)->str:
+        return '\n'.join(f'{k:<10} {v:<10}' for k, v in self.__dict__.items())
+
 
 
 class Message(Bucket):
