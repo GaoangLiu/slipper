@@ -39,11 +39,17 @@ class Bucket:
         sys.stdout.write("]\n")  # this ends the progress bar
         cf.logger.info(f"{file_name} uploaded to transfer/")
 
-    def download(self, file_name: str, export_to:str=None) -> None:
+    def _download(self, file_name: str, export_to: str = None) -> None:
         """Download a file from transfer/"""
         f = export_to if export_to else cf.file.basename(file_name)
         self.bucket.get_object_to_file(f"transfer/{file_name}", f)
         cf.logger.info(f"{file_name} Downloaded.")
+
+    def download(self, remote_file_name: str, local_file_name: str) -> None:
+        from .utils import download as _dw
+        _dw(self.url_prefix + remote_file_name,
+            referer=self.url_prefix.strip('/transfer/'),
+            name=local_file_name)
 
     def delete(self, file_name: str) -> None:
         """Delete a file from transfer/"""
@@ -53,10 +59,9 @@ class Bucket:
     def list_files(self, prefix="transfer/") -> None:
         for obj in oss2.ObjectIterator(self.bucket, prefix=prefix):
             print(obj.key)
-    
-    def __repr__(self)->str:
-        return '\n'.join(f'{k:<10} {v:<10}' for k, v in self.__dict__.items())
 
+    def __repr__(self) -> str:
+        return '\n'.join(f'{k:<10} {v:<10}' for k, v in self.__dict__.items())
 
 
 class Message(Bucket):
@@ -73,7 +78,7 @@ class Message(Bucket):
             sign = "🔥" if name == shell('whoami').strip() else "❄️ "
             print('{} {}'.format(sign, content))
 
-    def write(self, content: str)-> None:
+    def write(self, content: str) -> None:
         name = shell('whoami').strip()
         self.conversations['msg'].append({'name': name, 'content': content})
         cf.json.write(self.conversations, self._tmp)

@@ -13,6 +13,19 @@ from .oss import Bucket, Message
 from .utils import download as getfile
 
 
+def _sync():
+    cli = Bucket()
+    if len(sys.argv) > 1:
+        cf.utils.shell('zip -r9 -P syncsync63 -FSr /tmp/sync.zip {}'.format(
+            ' '.join(sys.argv[1:])))
+        cf.info('Files zipped.')
+        cli.upload('/tmp/sync.zip')
+    else:
+        cli.download('sync.zip', '/tmp/sync.zip')
+        cf.info('zip filed downloaded.')
+        cf.utils.shell('unzip -P syncsync63 -o /tmp/sync.zip')
+
+
 def main():
     sp = cf.argparser.ArgParser()
     # PLACEHOLDER = cf.argparser.PLACEHOLDER
