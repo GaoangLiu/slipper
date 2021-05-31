@@ -8,7 +8,7 @@ setuptools.setup(
     author="SLP",
     author_email="byteleap@gmail.com",
     description="A package for dirty faster Python programming",
-    long_description=cf.file.read('README.md', '')
+    long_description=open('README.md', 'r').read(),
     long_description_content_type="text/markdown",
     url="https://github.com/GaoangLiu/slipper",
     packages=setuptools.find_packages(),

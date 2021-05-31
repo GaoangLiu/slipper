@@ -72,7 +72,7 @@ class Bucket:
             print(obj.key)
 
     def __repr__(self) -> str:
-        return '\n'.join(f'{k:<10} {v:<10}' for k, v in self.__dict__.items())
+        return '\n'.join('{:<20} {:<10}'.format(str(k), str(v)) for k, v in vars(self).items())
 
 
 class Message(Bucket):
