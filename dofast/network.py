@@ -16,12 +16,10 @@ from .oss import Bucket
 from .utils import githup_upload
 
 socket.setdefaulttimeout(3)
-
 import cgi
 import http.server
 import io
-
-from .oss import Bucket
+import string
 
 cf.logger.level = 'info'
 
@@ -75,7 +73,7 @@ class Bookmark(Bucket):
 
     def list(self) -> None:
         for k, v in self.json.items():
-            print(" {:<15} {:<63}".format(k, v))
+            print(" {:<29} {:<63}".format(k, v))
 
 
 class CustomHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
@@ -430,3 +428,30 @@ def bitly(uri: str) -> None:
     print("{:<20} {}".format("shorten url", data['data']['url']))
     short = data['data']['url']
     os.system(f"echo {short} | pbcopy")
+
+
+class InputMethod(Bucket):
+    def __init__(self):
+        _dir_project = cf.file.dirname()
+        self._wubi = f'{_dir_project}/data/x86wubi.txt'
+        self._pinyin = f'{_dir_project}/data/pinyin.txt'
+        self._wubi_code = {}
+        for line in cf.file.iter(self._wubi):
+            zh, en = line.split('\t')
+            self._wubi_code[zh] = en
+
+    def entry(self, pinyin: str) -> None:
+        self._choose_your_cn_char(pinyin)
+
+    def _choose_your_cn_char(self, str_pinyin):
+        cnt = 0
+
+        for e in cf.file.iter(self._pinyin):
+            p = e.split(' ')
+            if len(p) > 0 and p[1] == str_pinyin:
+                code = self._wubi_code.get(p[0], 'None').ljust(4)
+                print(f'{p[0]}({code})', end='  ')
+                cnt += 1
+                if (cnt % 7) == 0:
+                    print()
+        print('\n')

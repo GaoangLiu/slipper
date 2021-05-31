@@ -1,28 +1,30 @@
 import setuptools
+import codefast as cf
 
-with open("README.md", "r") as fh:
-    long_description = fh.read()
 
 setuptools.setup(
     name="dofast",
-    version="0.2.2",  # Latest version .
+    version="0.2.3",  # Latest version .
     author="SLP",
     author_email="byteleap@gmail.com",
     description="A package for dirty faster Python programming",
-    long_description=long_description,
+    long_description=cf.file.read('README.md', '')
     long_description_content_type="text/markdown",
     url="https://github.com/GaoangLiu/slipper",
     packages=setuptools.find_packages(),
-    package_data={"dofast":["dofast.json.zip", 'data/vps_init.sh']},
+    package_data={
+        "dofast": ["dofast.json.zip", 'data/vps_init.sh', 'data/*.txt']
+    },
     install_requires=[
         'colorlog>=4.6.1', 'tqdm', 'PyGithub', 'oss2', 'lxml',
-        'cos-python-sdk-v5', 
-        'smart-open', 'pillow', 'bs4', 'arrow', 'numpy',
-        'termcolor', 'codefast', 'python-twitter', 
-	'deprecation'
+        'cos-python-sdk-v5', 'smart-open', 'pillow', 'bs4', 'arrow', 'numpy',
+        'termcolor', 'codefast', 'python-twitter', 'deprecation'
     ],
     entry_points={
-        'console_scripts': ['sli=dofast.sli_entry:main', 'snc=dofast.sli_entry:_sync']
+        'console_scripts': [
+            'sli=dofast.sli_entry:main', 'hint=dofast.sli_entry:_hint_wubi',
+            'snc=dofast.sli_entry:_sync'
+        ]
     },
     classifiers=[
         "Programming Language :: Python :: 3",

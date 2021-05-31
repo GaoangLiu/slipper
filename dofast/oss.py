@@ -5,7 +5,7 @@ import oss2
 
 from .config import decode
 from .utils import download, shell
-
+from .config import decode, fast_text_decode, fast_text_encode
 
 class Bucket:
     def __init__(self):
@@ -50,7 +50,18 @@ class Bucket:
         _dw(self.url_prefix + remote_file_name,
             referer=self.url_prefix.strip('/transfer/'),
             name=local_file_name)
-
+        
+    def download_decode(self, remote_file_name)-> str:
+        '''Download encrypted file, read content and return decoded string'''
+        self.download(cf.file.basename(remote_file_name), '/tmp/tmp')
+        return fast_text_decode(cf.file.read('/tmp/tmp', ''))
+    
+    def upload_encode(self, local_file_name)-> None:
+        '''Read local content, encode and upload it'''
+        _con = cf.file.read(local_file_name, 'r')
+        cf.file.write(fast_text_encode(_con), f'/tmp/{local_file_name}')
+        self.upload(f'/tmp/{local_file_name}')
+    
     def delete(self, file_name: str) -> None:
         """Delete a file from transfer/"""
         self.bucket.delete_object(f"transfer/{file_name}")

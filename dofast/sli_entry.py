@@ -7,8 +7,8 @@ from codefast.argparser import PLACEHOLDER
 
 from .config import fast_text_decode, fast_text_encode
 from .network import (AutoProxy, Bookmark, CoinMarketCap,
-                      CustomHTTPRequestHandler, Douban, LunarCalendar, Phone,
-                      Twitter, bitly)
+                      CustomHTTPRequestHandler, Douban, InputMethod,
+                      LunarCalendar, Phone, Twitter, bitly)
 from .oss import Bucket, Message
 from .utils import download as getfile
 
@@ -24,6 +24,11 @@ def _sync():
         cli.download('sync.zip', '/tmp/sync.zip')
         cf.info('zip filed downloaded.')
         cf.utils.shell('unzip -P syncsync63 -o /tmp/sync.zip')
+
+
+def _hint_wubi():
+    if len(sys.argv) > 1:
+        InputMethod().entry(sys.argv[1])
 
 
 def main():
