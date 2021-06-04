@@ -1,4 +1,5 @@
 import json
+import operator
 import os
 import re
 import socket
@@ -19,9 +20,80 @@ socket.setdefaulttimeout(3)
 import cgi
 import http.server
 import io
-import string
 
 cf.logger.level = 'info'
+
+
+class cloud:
+    ''' Encrypt local file and sync to cloud'''
+    cli = Bucket()
+
+    @classmethod
+    def upload(cls, local_file: str):
+        cls.cli.upload(local_file)
+
+    @classmethod
+    def encode_remote(cls, text: str, local_file: str) -> None:
+        cf.file.write(fast_text_encode(str(text)), local_file)
+        cls.cli.upload(local_file)
+
+    @classmethod
+    def decode_remote(cls, local_file: str) -> str:
+        if not cf.file.exists(local_file):
+            cls.download(cf.file.basename(local_file), local_file)
+        return fast_text_decode(cf.file.read(local_file, ''))
+
+    @classmethod
+    def download(cls, remote_name: str, local_file: str):
+        cls.cli.download(remote_name, local_file)
+
+
+class ForgiveCurve:
+    def __init__(self):
+        self._file = '/tmp/ebb.json'
+        self._tasks = cf.json.read(cloud.decode_remote(self._file))
+
+    def reminder(self) -> list:
+        ''' return list of tasks to be done. '''
+        tasks = sorted(self._tasks.items(), key=operator.itemgetter(0))
+        todo = []
+        for t, ts in tasks:
+            fibs = [2, 3]
+            while len(fibs) < len(ts):
+                fibs.append(fibs[-1] + fibs[-2])
+
+            if arrow.now().format("YYYY-MM-DD") != ts[-1]:
+                days_elapsed = (arrow.now() - arrow.get(ts[len(ts) - 1])).days
+                if days_elapsed > fibs[-1]:
+                    msg = f"[{t}] X {len(ts)} " + ' / '.join(ts)
+                    cf.info(msg)
+                    todo.append(msg)
+        return todo
+
+    def repeat_task(self, t: str):
+        today = arrow.now().format("YYYY-MM-DD")
+        if today not in self._tasks[t]:
+            self._tasks[t].append(today)
+        cloud.encode_remote(self._tasks, self._file)
+
+        cf.info(f"Task [{t}] was repeated.")
+
+    def add_task(self, t: str):
+        today = arrow.now().format("YYYY-MM-DD")
+        if t not in self._tasks:
+            self._tasks[t] = []
+
+        if today not in self._tasks[t]:
+            self._tasks[t].append(today)
+
+        cloud.encode_remote(self._tasks, self._file)
+        cf.info(f"New task [{t}] was created.")
+
+    def remove_task(self, task):
+        """Remove a task from task list"""
+        del self._tasks[task]
+        cf.json.write(self._tasks, self._file)
+        cloud.upload(self._file)
 
 
 class Bookmark(Bucket):
