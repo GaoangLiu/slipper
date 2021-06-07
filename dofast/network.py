@@ -15,6 +15,7 @@ from requests import Session
 from .config import decode, fast_text_decode, fast_text_encode
 from .oss import Bucket
 from .utils import githup_upload
+from .toolkits.telegram import tg_bot
 
 socket.setdefaulttimeout(3)
 import cgi
@@ -53,6 +54,7 @@ class ForgiveCurve:
         self._file = '/tmp/ebb.json'
         self._tasks = cf.json.read(cloud.decode_remote(self._file))
 
+    @property
     def reminder(self) -> list:
         ''' return list of tasks to be done. '''
         tasks = sorted(self._tasks.items(), key=operator.itemgetter(0))
@@ -69,6 +71,11 @@ class ForgiveCurve:
                     cf.info(msg)
                     todo.append(msg)
         return todo
+    
+    @tg_bot
+    def tg_reminder(self)->None:
+        texts = '\n'.join(self.reminder)
+        return texts
 
     def repeat_task(self, t: str):
         today = arrow.now().format("YYYY-MM-DD")

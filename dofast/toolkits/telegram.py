@@ -1,14 +1,14 @@
 """Telegram bot"""
-import os
+import functools
 import json
-import requests
 import smtplib
-
 from email.mime.text import MIMEText
+
+import requests
+from codefast.utils import retry
 
 import dofast.utils as du
 from dofast.config import decode
-from codefast.utils import retry
 
 proxies = {'https': decode('HTTP_PROXY')}
 
@@ -21,6 +21,18 @@ def bot_say(api_token: str,
     url = f"https://api.telegram.org/bot{api_token}/sendMessage?chat_id=@{bot_name}&text={text}"
     res = requests.get(url, proxies=proxies if use_proxy else None)
     print(res, res.content)
+
+
+def tg_bot(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        _msg = func(*args, **kwargs)
+        _token = decode('mess_alert')
+        url = f"https://api.telegram.org/bot{_token}/sendMessage?chat_id=@messalert&text={_msg}"
+        res = requests.get(url, proxies=proxies)
+        return res, res.content
+
+    return wrapper
 
 
 def bot_messalert(msg: str) -> None:

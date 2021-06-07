@@ -126,7 +126,8 @@ def main():
 
     sp.input('-ebb',
              '-ebbinghaus',
-             sub_args=[['r', 'repeat'], ['d', 'delete'], ['a', 'add']],
+             sub_args=[['r', 'repeat'], ['d', 'delete'], ['a', 'add'],
+                       ['reminder']],
              description='\nEbbinghaus forgive curve in usage.')
 
     sp.parse()
@@ -138,6 +139,10 @@ def main():
             fc.add_task(sp.ebbinghaus.add)
         elif sp.ebbinghaus.delete:
             fc.remove_task(sp.ebbinghaus.delete)
+        elif sp.ebbinghaus.repeat:
+            fc.repeat_task(sp.ebbinghaus.repeat)
+        elif sp.ebbinghaus.reminder:
+            fc.tg_reminder()
         else:
             fc.reminder()
 
