@@ -91,9 +91,11 @@ class ForgiveCurve:
 
     def remove_task(self, task):
         """Remove a task from task list"""
-        del self._tasks[task]
-        cf.json.write(self._tasks, self._file)
-        cloud.upload(self._file)
+        if task in self._tasks:
+            del self._tasks[task]
+            cloud.encode_remote(self._tasks, self._file)
+        else:
+            cf.warning(f'{task} was already removed')
 
 
 class Bookmark(Bucket):

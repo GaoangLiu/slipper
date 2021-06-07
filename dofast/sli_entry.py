@@ -7,8 +7,8 @@ from codefast.argparser import PLACEHOLDER
 
 from .config import fast_text_decode, fast_text_encode
 from .network import (AutoProxy, Bookmark, CoinMarketCap,
-                      CustomHTTPRequestHandler, Douban, InputMethod,
-                      LunarCalendar, Phone, Twitter, bitly)
+                      CustomHTTPRequestHandler, Douban, ForgiveCurve,
+                      InputMethod, LunarCalendar, Phone, Twitter, bitly)
 from .oss import Bucket, Message
 from .utils import download as getfile
 
@@ -124,10 +124,24 @@ def main():
         'Make bookmark easier. Usage:\n sli -bm -o google \n sli -bm -a google https://google.com \n sli -bm -d google'
     )
 
+    sp.input('-ebb',
+             '-ebbinghaus',
+             sub_args=[['r', 'repeat'], ['d', 'delete'], ['a', 'add']],
+             description='\nEbbinghaus forgive curve in usage.')
+
     sp.parse()
 
     # ------------------------------------
-    if sp.bookmark:
+    if sp.ebbinghaus:
+        fc = ForgiveCurve()
+        if sp.ebbinghaus.add:
+            fc.add_task(sp.ebbinghaus.add)
+        elif sp.ebbinghaus.delete:
+            fc.remove_task(sp.ebbinghaus.delete)
+        else:
+            fc.reminder()
+
+    elif sp.bookmark:
         bm = Bookmark()
         if sp.bookmark.open:
             _key, url = sp.bookmark.open, 'http://google.com'
