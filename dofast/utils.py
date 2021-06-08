@@ -95,7 +95,7 @@ def jsonwrite(d: dict, file_name: str):
 
 
 def create_random_file(size: int = 100):  # Default 100M
-    _file = 'sample.txt'
+    _file = 'cc.txt'
     open(_file, 'w').write("")
     print(f">> Create {_file} of size {size} MB")
 
