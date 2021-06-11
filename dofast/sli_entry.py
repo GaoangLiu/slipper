@@ -160,8 +160,7 @@ def main():
                 c = input('Pick one:')
                 url = matched[int(c) % len(matched)][1]
 
-            cmd = f'open {url}' if 'macos' in cf.os.platform(
-            ) else f'xdg-open {url}'
+            cmd = f'open "{url}"' if 'macos' in cf.os.platform() else f'xdg-open "{url}"'
             cf.shell(cmd)
 
         elif sp.bookmark.add:
