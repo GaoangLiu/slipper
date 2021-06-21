@@ -130,10 +130,16 @@ def main():
                        ['reminder']],
              description='\nEbbinghaus forgive curve in usage.')
 
+    sp.input('-excel2csv', description='Extract sheets to CSVs')
+
     sp.parse()
 
     # ------------------------------------
-    if sp.ebbinghaus:
+    if sp.excel2csv:
+        os.system('mkdir -p /tmp/excel/')
+        cf.reader.Excel(sp.excel2csv.value).to_csv('/tmp/excel/')
+
+    elif sp.ebbinghaus:
         fc = ForgiveCurve()
         if sp.ebbinghaus.add:
             fc.add_task(sp.ebbinghaus.add)
