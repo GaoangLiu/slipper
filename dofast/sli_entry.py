@@ -130,7 +130,7 @@ def main():
                        ['reminder']],
              description='\nEbbinghaus forgive curve in usage.')
 
-    sp.input('-excel2csv', description='Extract sheets to CSVs')
+    sp.input('-e2c', '-excel2csv', description='Extract sheets to CSVs')
 
     sp.parse()
 
