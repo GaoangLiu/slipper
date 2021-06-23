@@ -1,4 +1,5 @@
 import sys
+import datetime
 
 import codefast as cf
 import oss2
@@ -6,6 +7,15 @@ import oss2
 from .config import decode
 from .utils import download, shell
 from .config import decode, fast_text_decode, fast_text_encode
+
+
+def sizeof_fmt(num, suffix='B'):
+    for unit in ['', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei', 'Zi']:
+        if abs(num) < 1024.0:
+            return "%3.1f%s%s" % (num, unit, suffix)
+        num /= 1024.0
+    return "%.1f%s%s" % (num, 'Yi', suffix)
+
 
 class Bucket:
     def __init__(self):
@@ -50,29 +60,48 @@ class Bucket:
         _dw(self.url_prefix + remote_file_name,
             referer=self.url_prefix.strip('/transfer/'),
             name=local_file_name)
-        
-    def download_decode(self, remote_file_name)-> str:
+
+    def download_decode(self, remote_file_name) -> str:
         '''Download encrypted file, read content and return decoded string'''
         self.download(cf.file.basename(remote_file_name), '/tmp/tmp')
         return fast_text_decode(cf.file.read('/tmp/tmp', ''))
-    
-    def upload_encode(self, local_file_name)-> None:
+
+    def upload_encode(self, local_file_name) -> None:
         '''Read local content, encode and upload it'''
         _con = cf.file.read(local_file_name, 'r')
         cf.file.write(fast_text_encode(_con), f'/tmp/{local_file_name}')
         self.upload(f'/tmp/{local_file_name}')
-    
+
     def delete(self, file_name: str) -> None:
         """Delete a file from transfer/"""
         self.bucket.delete_object(f"transfer/{file_name}")
         cf.logger.info(f"{file_name} deleted from transfer/")
 
-    def list_files(self, prefix="transfer/") -> None:
+    def _get_files(self, prefix="transfer/") -> list:
+        res = []
         for obj in oss2.ObjectIterator(self.bucket, prefix=prefix):
-            print(obj.key)
+            res.append((obj.key, obj.last_modified, obj.size))
+        return res
+
+    def list_files(self, prefix="transfer/") -> None:
+        files = self._get_files(prefix)
+        files.sort(key=lambda e: e[1])
+        for tp in files:
+            print("{:<25} {:<10} {:<20}".format(
+                str(datetime.datetime.fromtimestamp(tp[1])), sizeof_fmt(tp[2]),
+                tp[0]))
+
+    def list_files_by_size(self, prefix="transfer/") -> None:
+        files = self._get_files(prefix)
+        files.sort(key=lambda e: e[2])
+        for tp in files:
+            print("{:<25} {:<10} {:<20}".format(
+                str(datetime.datetime.fromtimestamp(tp[1])), sizeof_fmt(tp[2]),
+                tp[0]))
 
     def __repr__(self) -> str:
-        return '\n'.join('{:<20} {:<10}'.format(str(k), str(v)) for k, v in vars(self).items())
+        return '\n'.join('{:<20} {:<10}'.format(str(k), str(v))
+                         for k, v in vars(self).items())
 
 
 class Message(Bucket):

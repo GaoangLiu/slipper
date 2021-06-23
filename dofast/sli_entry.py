@@ -41,7 +41,7 @@ def main():
     sp.input('-oss',
              '--oss',
              sub_args=[["u", "up", "upload"], ["d", "dw", 'download'],
-                       ["l", "list"], ["del", "delete"]])
+                       ["l", "list"], ["del", "delete"], ['size']])
     sp.input('-dw', '--download', sub_args=[['p', 'proxy']])
     sp.input('-d', '--ddfile')
     sp.input('-ip',
@@ -166,7 +166,8 @@ def main():
                 c = input('Pick one:')
                 url = matched[int(c) % len(matched)][1]
 
-            cmd = f'open "{url}"' if 'macos' in cf.os.platform() else f'xdg-open "{url}"'
+            cmd = f'open "{url}"' if 'macos' in cf.os.platform(
+            ) else f'xdg-open "{url}"'
             cf.shell(cmd)
 
         elif sp.bookmark.add:
@@ -273,7 +274,10 @@ def main():
             cli.delete(sp.oss.delete)
         elif sp.oss.list:
             print(cli.url_prefix)
-            cli.list_files()
+            if sp.oss.size:
+                cli.list_files_by_size()
+            else:
+                cli.list_files()
 
     elif sp.sync:
         cli = Bucket()
