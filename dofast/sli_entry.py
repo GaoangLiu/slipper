@@ -11,6 +11,7 @@ from .network import (AutoProxy, Bookmark, CoinMarketCap,
                       InputMethod, LunarCalendar, Phone, Twitter, bitly)
 from .oss import Bucket, Message
 from .utils import download as getfile
+from .utils import shell
 
 
 def _sync():
@@ -42,9 +43,10 @@ def secure_oss():
 
     if sp.upload:
         v = io.basename(sp.upload.value)
-        cf.utils.shell(f'zip -r0 -P syncsync63 /tmp/ossfiles/{v} {sp.upload.value}')
+        cf.utils.shell(
+            f'zip -r0 -P syncsync63 /tmp/ossfiles/{v} {sp.upload.value}')
         cli.upload(f'/tmp/ossfiles/{v}')
-        
+
     elif sp.download:
         url_prefix = cli.url_prefix
         v = sp.download.value
@@ -52,6 +54,23 @@ def secure_oss():
                 name=f'/tmp/ossfiles/{v}',
                 referer=url_prefix.strip('/transfer/'))
         cf.utils.shell(f'unzip -P syncsync63 /tmp/ossfiles/{v}')
+
+
+def pxy():
+    if len(sys.argv) == 1:
+        print(shell("curl -s cip.cc"))
+    else:
+        port = sys.argv.pop()
+        ip = 'localhost' if len(sys.argv) == 1 else sys.argv.pop()
+        print("Checking on:", ip, port)
+        curl_socks = f"curl -s --connect-timeout 5 --socks5 {ip}:{port} ipinfo.io"
+        curl_http = f"curl -s --connect-timeout 5 --proxy {ip}:{port} ipinfo.io"
+        res = shell(curl_socks)
+        if res != '':
+            print(res)
+        else:
+            print('FAILED(socks5 proxy check)')
+            print(shell(curl_http))
 
 
 def main():
