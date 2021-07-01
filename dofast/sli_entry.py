@@ -41,9 +41,10 @@ def secure_oss():
     cf.utils.shell('mkdir -p /tmp/ossfiles/')
 
     if sp.upload:
-        v = sp.upload.value
-        cf.utils.shell(f'zip -r0 -P syncsync63 /tmp/ossfiles/{v} {v}')
+        v = io.basename(sp.upload.value)
+        cf.utils.shell(f'zip -r0 -P syncsync63 /tmp/ossfiles/{v} {sp.upload.value}')
         cli.upload(f'/tmp/ossfiles/{v}')
+        
     elif sp.download:
         url_prefix = cli.url_prefix
         v = sp.download.value
