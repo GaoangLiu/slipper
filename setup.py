@@ -23,7 +23,7 @@ setuptools.setup(
     entry_points={
         'console_scripts': [
             'sli=dofast.sli_entry:main', 'hint=dofast.sli_entry:_hint_wubi',
-            'snc=dofast.sli_entry:_sync'
+            'snc=dofast.sli_entry:_sync', 'secoss=dofast.sli_entry:secure_oss'
         ]
     },
     classifiers=[

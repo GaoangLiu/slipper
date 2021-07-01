@@ -31,6 +31,28 @@ def _hint_wubi():
         InputMethod().entry(sys.argv[1])
 
 
+def secure_oss():
+    sp = cf.argparser.ArgParser()
+    sp.input('-u', '-upload')
+    sp.input('-d', '-download')
+    sp.parse()
+
+    cli = Bucket()
+    cf.utils.shell('mkdir -p /tmp/ossfiles/')
+
+    if sp.upload:
+        v = sp.upload.value
+        cf.utils.shell(f'zip -r0 -P syncsync63 /tmp/ossfiles/{v} {v}')
+        cli.upload(f'/tmp/ossfiles/{v}')
+    elif sp.download:
+        url_prefix = cli.url_prefix
+        v = sp.download.value
+        getfile(url_prefix + sp.download.value,
+                name=f'/tmp/ossfiles/{v}',
+                referer=url_prefix.strip('/transfer/'))
+        cf.utils.shell(f'unzip -P syncsync63 /tmp/ossfiles/{v}')
+
+
 def main():
     sp = cf.argparser.ArgParser()
     # PLACEHOLDER = cf.argparser.PLACEHOLDER
