@@ -4,7 +4,7 @@ import codefast as cf
 
 setuptools.setup(
     name="dofast",
-    version="0.3.1",  # Latest version .
+    version="0.3.2",  # Latest version .
     author="SLP",
     author_email="byteleap@gmail.com",
     description="A package for dirty faster Python programming",
@@ -18,13 +18,13 @@ setuptools.setup(
     install_requires=[
         'colorlog>=4.6.1', 'tqdm', 'PyGithub', 'oss2', 'lxml',
         'cos-python-sdk-v5', 'smart-open', 'pillow', 'bs4', 'arrow', 'numpy',
-        'termcolor', 'codefast', 'python-twitter', 'deprecation'
+        'termcolor', 'codefast', 'python-twitter', 'deprecation', 'faker', 'pynsq'
     ],
     entry_points={
         'console_scripts': [
             'sli=dofast.sli_entry:main', 'hint=dofast.sli_entry:_hint_wubi',
-            'snc=dofast.sli_entry:_sync', 'secoss=dofast.sli_entry:secure_oss',
-            'pxy=dofast.sli_entry:pxy'
+            'snc=dofast.sli_entry:_sync', 'oss=dofast.sli_entry:secure_oss',
+            'pxy=dofast.sli_entry:pxy', 'websurf=dofast.nsq.websurf:run'
         ]
     },
     classifiers=[
