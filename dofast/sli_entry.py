@@ -1,3 +1,4 @@
+import json
 import os
 import socketserver
 import sys
@@ -12,6 +13,17 @@ from .network import (AutoProxy, Bookmark, CoinMarketCap,
 from .oss import Bucket, Message
 from .utils import download as getfile
 from .utils import shell
+
+
+def jsonify() -> dict:
+    if len(sys.argv) <= 1:
+        print('Usage: jsonify file_name (> export.json)')
+        return
+    jsf = sys.argv[1]
+    assert io.exists(jsf)
+    js = jsn.read(io.read(jsf, ''))
+    js = json.dumps(js)
+    print(js)
 
 
 def _sync():
@@ -361,7 +373,6 @@ def main():
                 print(shell(curl_http))
 
     elif sp.json:
-        import json
         jdict = cf.json.eval(sp.json.value)
         print(json.dumps(jdict))
         if sp.json.output:

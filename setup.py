@@ -4,7 +4,7 @@ import codefast as cf
 
 setuptools.setup(
     name="dofast",
-    version="0.4.0",  # Latest version .
+    version="0.4.1",  # Latest version .
     author="SLP",
     author_email="byteleap@gmail.com",
     description="A package for dirty faster Python programming",
@@ -25,7 +25,7 @@ setuptools.setup(
             'sli=dofast.sli_entry:main', 'hint=dofast.sli_entry:_hint_wubi',
             'snc=dofast.sli_entry:_sync', 'oss=dofast.sli_entry:secure_oss',
             'pxy=dofast.sli_entry:pxy', 'websurf=dofast.nsq.websurf:run',
-            'weather=dofast.weather:entry'
+            'weather=dofast.weather:entry','jsonify=dofast.sli_entry:jsonify'
         ]
     },
     classifiers=[
