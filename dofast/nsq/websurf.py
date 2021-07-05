@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 from faker import Faker
 
 from .consumer import Consumer
+from dofast.utils import download
 
 cf.logger.level = 'info'
 cf.info('Go.')
@@ -31,6 +32,10 @@ def surf():
         r = s.get(url, headers=fake_headers(), timeout=6)
         time.sleep(random.randint(3, 10))
         soup = BeautifulSoup(r.text, 'html.parser')
+
+        if url.endswith(('png', 'jpg', 'txt', 'json')):
+            download(url, name='/tmp/websurf.png')
+
         io.write(r.text, '/tmp/tmp')
 
         for link in soup.find_all('a'):
