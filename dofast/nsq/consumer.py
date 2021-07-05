@@ -1,5 +1,5 @@
 import json
-import time
+import sys
 import traceback
 from abc import ABCMeta, abstractmethod
 from threading import Thread
@@ -58,6 +58,7 @@ class Consumer(metaclass=ABCMeta):
     def async_handler(self, message):
         worker = ExcThread(target=self.handler, args=(message, ), name='abc')
         worker.start()
+        worker.join()
         return True
 
 
