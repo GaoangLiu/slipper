@@ -2,6 +2,7 @@ import codefast as cf
 from dateutil.relativedelta import WE
 
 from dofast.toolkits.telegram import tg_bot
+from sphinx.util.texescape import init
 
 
 class Weather:
@@ -11,6 +12,7 @@ class Weather:
     def r_data(self):
         return cf.net.get(self.api).json()['data']['forecast'][0]
 
+    @cf.utils.retry(initial_wait=5)
     @tg_bot
     def daily(self):
         return '\n'.join('{:<10} {}'.format(k, v)
