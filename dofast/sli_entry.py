@@ -15,6 +15,41 @@ from .utils import download as getfile
 from .utils import shell
 
 
+class DCT(dict):
+    def __init__(self, data: dict):
+        self.data = data
+
+    def format_time(self, seconds: int) -> str:
+        if seconds <= 60:
+            return f'{seconds}s'
+        elif seconds <= 3600:
+            return f'{seconds // 60}m ' + self.format_time(seconds % 60)
+        else:
+            return f'{seconds // 3600}h ' + self.format_time(seconds % 3600)
+
+    def __repr__(self):
+        return '\n'.join('{:<10}: {:<10}'.format(p[0], p[1])
+                         for p in (('distance', self.data['distance']),
+                                   ('eta', self.format_time(self.data['eta'])),
+                                   ('station', self.data['stationLeft'])))
+
+
+def eta():
+    url = 'http://www.bjbus.com/api/api_etartime.php?conditionstr=000000058454081-110100016116032&token=eyJhbGciOiJIUzI1NiIsIlR5cGUiOiJKd3QiLCJ0eXAiOiJKV1QifQ.eyJwYXNzd29yZCI6IjY0ODU5MTQzNSIsInVzZXJOYW1lIjoiYmpidXMiLCJleHAiOjE2MjcwOTkyMDB9.OQYkF6rC9jfgxoC5nXDjjv1nqDIv3KfXqol0ATdts9g'
+    headers = {
+        'Cookie':
+        'PHPSESSID=e6a7785ab9fd771f201e91f1dbfec9e2; SERVERID=564a72c0a566803360ad8bcb09158728|1625665356|1625633922',
+        'User-Agent':
+        'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36'
+    }
+    res = cf.net.get(url, headers=headers).json()
+    data = res['data'][0]['datas']['trip']
+    data.sort(key=lambda e: e['distance'])
+
+    for e in data:
+        print(DCT(e))
+
+
 def jsonify() -> dict:
     if len(sys.argv) <= 1:
         print('Usage: jsonify file_name (> export.json)')
