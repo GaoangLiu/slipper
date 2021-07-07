@@ -72,7 +72,7 @@ class ForgiveCurve:
                     todo.append(msg)
         return todo
     
-    @tg_bot
+    @tg_bot()
     def tg_reminder(self)->None:
         texts = '\n'.join(self.reminder)
         return texts

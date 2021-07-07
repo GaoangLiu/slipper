@@ -42,7 +42,7 @@ def surf():
         r = s.get(url, headers=fake_headers(), timeout=1)
         soup = BeautifulSoup(r.text, 'html.parser')
 
-        if url.endswith(('png', 'jpg', 'txt', 'json', 'jpeg', 'mp3', 'mp4')):
+        if url.endswith(('png', 'jpg', 'txt', 'json', 'jpeg', 'mp3', 'mp4', 'pdf', 'mobi')):
             cf.info('Downloading {}'.format(url))
             download(url, name='/tmp/websurf.png')
 
