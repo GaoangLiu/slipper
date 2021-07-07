@@ -65,7 +65,7 @@ def secure_oss():
         getfile(url_prefix + sp.download.value,
                 name=f'/tmp/ossfiles/{v}',
                 referer=url_prefix.strip('/transfer/'))
-        cf.utils.shell(f'unzip -P syncsync63 /tmp/ossfiles/{v}')
+        cf.utils.shell(f'unzip -o -P syncsync63 /tmp/ossfiles/{v}')
 
 
 def pxy():
