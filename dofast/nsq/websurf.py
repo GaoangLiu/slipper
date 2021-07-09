@@ -28,6 +28,7 @@ def fake_headers():
 
 
 def surf():
+    cf.net.post('http://127.0.0.1:4151/pub?topic=web&channel=surf', data={'data': 42})
     s = requests.Session()
     if not ds.DOMAINS:
         ds.DOMAINS = io.read('/tmp/cnlist.txt')

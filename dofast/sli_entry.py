@@ -31,7 +31,7 @@ class DCT(dict):
         return '\n'.join('{:<10}: {:<10}'.format(p[0], p[1])
                          for p in (('distance', self.data['distance']),
                                    ('eta', self.format_time(self.data['eta'])),
-                                   ('station', self.data['stationLeft'])))
+                                   ('station', self.data['stationLeft']))) + '\n'
 
 
 def eta():
