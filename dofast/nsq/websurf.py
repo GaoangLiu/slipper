@@ -7,8 +7,9 @@ import requests
 from bs4 import BeautifulSoup
 from faker import Faker
 
-from .consumer import Consumer
 from dofast.utils import download
+
+from .consumer import Consumer
 
 cf.logger.level = 'info'
 cf.info('Go.')
@@ -28,7 +29,8 @@ def fake_headers():
 
 
 def surf():
-    cf.net.post('http://127.0.0.1:4151/pub?topic=web&channel=surf', data={'data': 42})
+    cf.net.post('http://127.0.0.1:4151/pub?topic=web&channel=surf',
+                data={'data': 42})
     s = requests.Session()
     if not ds.DOMAINS:
         ds.DOMAINS = io.read('/tmp/cnlist.txt')
@@ -36,14 +38,15 @@ def surf():
 
     try:
         url = domain if domain.startswith('http') else 'http://' + domain
-        if random.randint(1,100)>50:
-            url=url.replace('https', 'http')
+        if random.randint(1, 100) > 50:
+            url = url.replace('https', 'http')
 
         cf.info('visiting ' + url)
         r = s.get(url, headers=fake_headers(), timeout=1)
         soup = BeautifulSoup(r.text, 'html.parser')
 
-        if url.endswith(('png', 'jpg', 'txt', 'json', 'jpeg', 'mp3', 'mp4', 'pdf', 'mobi')):
+        if url.endswith(('png', 'jpg', 'txt', 'json', 'jpeg', 'mp3', 'mp4',
+                         'wav', 'csv', 'pdf', 'mobi')):
             cf.info('Downloading {}'.format(url))
             download(url, name='/tmp/websurf.png')
 
@@ -62,7 +65,9 @@ def surf():
         if domain in ds.DOMAINS:
             ds.DOMAINS.remove(domain)
         cf.error(str(e))
+
     finally:
+        time.sleep(random.randint(1, 3))
         ds.DOMAINS = sorted(ds.DOMAINS, key=lambda e: len(e), reverse=True)
         ds.HEADERS = ds.HEADERS[:10000]
 

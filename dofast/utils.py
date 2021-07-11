@@ -124,7 +124,10 @@ def rounded_corners(image_name: str, rad: int = 20):
     alpha.paste(circle.crop((rad, 0, rad * 2, rad)), (w - rad, 0))
     alpha.paste(circle.crop((rad, rad, rad * 2, rad * 2)), (w - rad, h - rad))
     im.putalpha(alpha)
-    im.save("out.png")
+    import uuid
+    export_name = f'{uuid.uuid4()}.png'
+    print(f'Export to {export_name}')
+    im.save(export_name)
     return im
 
 
