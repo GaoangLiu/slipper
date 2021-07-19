@@ -4,6 +4,7 @@ import os
 import re
 import socket
 import urllib.request
+from sys import builtin_module_names
 from typing import List
 
 import arrow
@@ -14,8 +15,8 @@ from requests import Session
 
 from .config import decode, fast_text_decode, fast_text_encode
 from .oss import Bucket
-from .utils import githup_upload
 from .toolkits.telegram import tg_bot
+from .utils import githup_upload
 
 socket.setdefaulttimeout(3)
 import cgi
@@ -71,9 +72,9 @@ class ForgiveCurve:
                     cf.info(msg)
                     todo.append(msg)
         return todo
-    
+
     @tg_bot()
-    def tg_reminder(self)->None:
+    def tg_reminder(self) -> None:
         texts = '\n'.join(self.reminder)
         return texts
 
@@ -517,6 +518,12 @@ class InputMethod(Bucket):
         self._wubi = f'{_dir_project}/data/x86wubi.txt'
         self._pinyin = f'{_dir_project}/data/pinyin.txt'
         self._wubi_code = {}
+        self._pinyin_code = {}
+
+        for line in cf.file.iter(self._pinyin):
+            zh, en, _ = line.split(' ')
+            self._pinyin_code[zh] = en
+
         for line in cf.file.iter(self._wubi):
             zh, en = line.split('\t')
             self._wubi_code[zh] = en
@@ -524,15 +531,27 @@ class InputMethod(Bucket):
     def entry(self, pinyin: str) -> None:
         self._choose_your_cn_char(pinyin)
 
-    def _choose_your_cn_char(self, str_pinyin):
+    def _choose_your_cn_char(self, str_pinyin: str):
+        '''input example: yuan, or gong yi'''
+        words = str_pinyin.split(' ')
         cnt = 0
+        if len(words) == 1:  # single char
+            for e in cf.file.iter(self._pinyin):
+                p = e.split(' ')
+                if len(p) > 0 and p[1] == words[0]:
+                    code = self._wubi_code.get(p[0], 'None').ljust(4)
+                    print(f'{p[0]}({code})', end='  ')
+                    cnt += 1
+                    if (cnt % 7) == 0:
+                        print()
+            print('\n')
 
-        for e in cf.file.iter(self._pinyin):
-            p = e.split(' ')
-            if len(p) > 0 and p[1] == str_pinyin:
-                code = self._wubi_code.get(p[0], 'None').ljust(4)
-                print(f'{p[0]}({code})', end='  ')
-                cnt += 1
-                if (cnt % 7) == 0:
-                    print()
-        print('\n')
+        else:
+            for _key, _value in self._wubi_code.items():
+                if len(_key) == len(words):
+                    zips = zip(list(_key), words)
+                    if all(self._pinyin_code.get(a, '') == b for a, b in zips):
+                        print(f'{_key}({_value})', end='  ')
+                        cnt += 1
+                        if cnt % 7 == 0:
+                            print()
