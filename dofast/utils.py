@@ -98,8 +98,15 @@ def create_random_file(size: int = 100):  # Default 100M
     _file = 'cc.txt'
     open(_file, 'w').write("")
     print(f">> Create {_file} of size {size} MB")
+    logfile = '/tmp/ddfile.txt'
+    if io.exists(logfile):
+        for f in io.read(logfile):
+            cf.info('removing previous file', f)
+            io.rm(f)
 
     with open(_file, 'ab') as fout:
+        cc_dir = os.path.join(io.pwd().rstrip(), _file)
+        io.write([cc_dir], logfile)
         for _ in tqdm(range(size)):
             fout.write(os.urandom(1024 * 1024))
 

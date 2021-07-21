@@ -555,3 +555,4 @@ class InputMethod(Bucket):
                         cnt += 1
                         if cnt % 7 == 0:
                             print()
+            print('\n')
