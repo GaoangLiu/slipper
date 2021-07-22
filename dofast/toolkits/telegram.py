@@ -17,23 +17,25 @@ proxies = {'https': decode('HTTP_PROXY')}
 def bot_say(api_token: str,
             text: str,
             bot_name: str = 'PlutoShare',
-            use_proxy: bool = True):
+            use_proxy: bool = False):
     url = f"https://api.telegram.org/bot{api_token}/sendMessage?chat_id=@{bot_name}&text={text}"
     res = requests.get(url, proxies=proxies if use_proxy else None)
     print(res, res.content)
 
 
-def tg_bot(use_proxy: bool=True):
+def tg_bot(use_proxy: bool = True):
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             _msg = func(*args, **kwargs)
             _token = decode('mess_alert')
             url = f"https://api.telegram.org/bot{_token}/sendMessage?chat_id=@messalert&text={_msg}"
-            res = requests.get(url, proxies=proxies) if use_proxy else requests.get(url)
+            res = requests.get(
+                url, proxies=proxies) if use_proxy else requests.get(url)
             return res, res.content
 
         return wrapper
+
     return decorator
 
 

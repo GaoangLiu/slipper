@@ -26,7 +26,7 @@ setuptools.setup(
             'snc=dofast.sli_entry:_sync', 'oss=dofast.sli_entry:secure_oss',
             'pxy=dofast.sli_entry:pxy', 'websurf=dofast.nsq.websurf:run',
             'weather=dofast.weather:entry','jsonify=dofast.sli_entry:jsonify',
-            '966=dofast.sli_entry:eta'
+            '966=dofast.sli_entry:eta', 'tgpostman=dofast.nsq.telegram_postman:daemon'
         ]
     },
     classifiers=[
