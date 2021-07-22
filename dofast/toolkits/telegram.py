@@ -4,6 +4,7 @@ import json
 import smtplib
 from email.mime.text import MIMEText
 
+import codefast as cf
 import requests
 from codefast.utils import retry
 
@@ -41,6 +42,19 @@ def tg_bot(use_proxy: bool = True):
 
 def bot_messalert(msg: str) -> None:
     bot_say(decode('mess_alert'), msg, bot_name='messalert')
+
+
+@retry()
+def messalert(msg: str) -> None:
+    '''send Telegram message via remote consumer'''
+    from dofast.security._hmac import generate_token
+    key = io.read('/etc/auth.key', '')
+    res = cf.net.post('http://a.ddot.cc:6363/messalert',
+                      json={
+                          'token': generate_token(key),
+                          'text': msg
+                      })
+    assert res.text == 'SUCCESS', 'Telegram message failed to send.'
 
 
 def read_hema_bot():
