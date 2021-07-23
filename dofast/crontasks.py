@@ -9,7 +9,7 @@ import requests
 
 from .config import decode
 from .logger import Logger
-from .toolkits.telegram import bot_messalert
+from .toolkits.telegram import messalert
 
 socket.setdefaulttimeout(30)
 logger = Logger('/var/log/phone.log')
@@ -71,7 +71,7 @@ class PapaPhone:
     def issue_recharge_message(cls, retry: int = 3) -> None:
         ''' issue recharge message when dataflow less than 1G'''
         if retry <= 0:
-            bot_messalert('手机余量查询失败\n' + '已经连续重试 3 次，全部失败。')
+            messalert('手机余量查询失败\n' + '已经连续重试 3 次，全部失败。')
         else:
             results = cls.query3510()
             cf.say(results)
@@ -80,14 +80,14 @@ class PapaPhone:
             elif results['flow'] < 1:
                 message = f"Papa cellphone data flow remain {results['flow']} GB, time to rechage."
                 logger.info(message)
-                bot_messalert(message)
+                messalert(message)
 
     @classmethod
     @cf.utils.retry(total_tries=3)
     def issue_daily_usage(cls):
         info = cls.query3510().get('info', '')
         msg = f'日常流量提醒 \n\n papa cellphone data flow {info}'
-        bot_messalert(msg)
+        messalert(msg)
         logger.info('Phone data flow daily message sent.')
         
 
@@ -108,7 +108,7 @@ class GithubTasks:
             'Github commit reminder \n\n' +
             f"You haven't do any commit today. Your previous commit count is {cnt}"
         )
-        bot_messalert(msg)
+        messalert(msg)
 
     @classmethod
     def tasks_reminder(cls):
@@ -116,7 +116,7 @@ class GithubTasks:
 
         tasks = cls._request_proxy_get(url).split('\n')
         todo = '\n'.join(t for t in tasks if not t.startswith('- [x]'))
-        bot_messalert('TODO list \n' + todo)
+        messalert('TODO list \n' + todo)
 
     @classmethod
     def _request_proxy_get(cls, url: str) -> str:
@@ -164,7 +164,7 @@ class HappyXiao:
         j.update(articles)
         json.dump(j, open(jsonfile, 'w'), indent=2)
         if res:
-            bot_messalert(res.replace('#', '%23'))
+            messalert(res.replace('#', '%23'))
 
     @classmethod
     def brief(cls, url) -> str:
