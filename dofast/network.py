@@ -127,6 +127,7 @@ class Bookmark(Bucket):
         self.upload(self._local)
 
     def add(self, keyword: str, url: str) -> None:
+        self.reload()
         if keyword in self.json:
             cf.warning(
                 f'{keyword} with URL {self.json[keyword]} already added.')
@@ -136,6 +137,7 @@ class Bookmark(Bucket):
             cf.info(f'{keyword} with URL {self.json[keyword]} added SUCCESS.')
 
     def remove(self, keyword: str = '', url: str = '') -> None:
+        self.reload()
         ''' can delete by either keyword or URL'''
         _tuple = ('', '')
         if keyword and keyword in self.json:
