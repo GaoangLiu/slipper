@@ -1,4 +1,5 @@
 import json
+import os
 import sys
 import traceback
 from abc import ABCMeta, abstractmethod
@@ -12,7 +13,11 @@ cf.info('start')
 
 
 class Config:
-    TCP = 'localhost:4150'
+    from pathlib import Path
+    config_file = os.path.join(Path.home(), '.config/nsq.json')
+    default_tcp = 'localhost:4150'
+    TCP = jsn.read(config_file).get(
+        'TCP', 'localhost:4150') if io.exists(config_file) else default_tcp
 
 
 class ExcThread(Thread):
