@@ -156,9 +156,10 @@ class Bookmark(Bucket):
         return self.json.get(keyword, 'https://google.com')
 
     def list(self) -> None:
-        for k, v in self.json.items():
+        _keys = sorted(list(self.json))
+        for k in _keys:
             print(" {:<29} {:<63}".format(
-                k, v[:63].replace('http://', '').replace('https://', '')))
+                k, self.json[k][:63].replace('http://', '').replace('https://', '')))
 
 
 class CustomHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
