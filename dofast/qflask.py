@@ -1,6 +1,5 @@
 import codefast as cf
 from flask import Flask, request
-from flask.helpers import safe_join
 
 from dofast.security._hmac import certify_token
 from dofast.toolkits.telegram import bot_messalert

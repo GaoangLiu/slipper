@@ -6,12 +6,12 @@ import sys
 import codefast as cf
 from codefast.argparser import PLACEHOLDER
 
-from .security._hmac import generate_token
-from .config import SERVER_HOST, fast_text_decode, fast_text_encode, SALT
+from .config import SALT, SERVER_HOST, fast_text_decode, fast_text_encode
 from .network import (AutoProxy, Bookmark, CoinMarketCap,
                       CustomHTTPRequestHandler, Douban, ForgiveCurve,
                       InputMethod, LunarCalendar, Phone, Twitter, bitly)
 from .oss import Bucket, Message
+from .security._hmac import generate_token
 from .utils import download as getfile
 from .utils import shell
 
@@ -316,22 +316,28 @@ def main():
         Douban.query_film_info(sp.doubaninfo.value)
 
     elif sp.twitter:
-        # Twitter().post(sys.argv[2:])
-        text, media = '', []
-        key = io.read(SALT, '')
-        for e in sys.argv[2:]:
-            if cf.file.exists(e):
-                media.append(io.basename(e))
-                cf.net.post(f'http://{SERVER_HOST}:8899',
-                            files={'file': open(e, 'rb')})
-            else:
-                text += cf.utils.cipher(key, e)
-        res = cf.net.post(f'http://{SERVER_HOST}:6363/tweet', json={
-            'token': generate_token(key),
-            'text': text,
-            'media': media
-        })
-        print(res, res.text)
+
+        @cf.utils.retry()
+        def post_status():
+            text, media = '', []
+            key = io.read(SALT, '')
+            for e in sys.argv[2:]:
+                if cf.file.exists(e):
+                    media.append(io.basename(e))
+                    cf.net.post(f'http://{SERVER_HOST}:8899',
+                                files={'file': open(e, 'rb')})
+                else:
+                    text += cf.utils.cipher(key, e)
+            res = cf.net.post(f'http://{SERVER_HOST}:6363/tweet',
+                              json={
+                                  'token': generate_token(key),
+                                  'text': text,
+                                  'media': media
+                              })
+            print(res, res.text)
+            assert res.text == 'SUCCESS', 'Webo post failed.'
+
+        post_status()
 
     elif sp.tgbot:
         from .toolkits.telegram import bot_messalert
