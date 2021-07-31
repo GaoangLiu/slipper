@@ -7,6 +7,8 @@ import codefast as cf
 from .toolkits.endecode import decode_with_keyfile, encode_with_keyfile
 
 
+SERVER_HOST = 'a.ddot.cc'
+
 def _init_config() -> dict:
     """ init configureation file on installing library."""
 
@@ -23,18 +25,17 @@ def _init_config() -> dict:
 
 
 js = _init_config()
-salt = js['auth_file']
-
+SALT = js['auth_file']
 
 def decode(keyword: str) -> str:
-    _pass = decode_with_keyfile(salt, js[keyword.lower()])
+    _pass = decode_with_keyfile(SALT, js[keyword.lower()])
     return _pass
 
 
 def fast_text_encode(text: str) -> str:
     ''' Encode text with passphrase in js[auth_file]'''
-    return encode_with_keyfile(salt, text)
+    return encode_with_keyfile(SALT, text)
 
 
 def fast_text_decode(text: str):
-    return decode_with_keyfile(salt, text)
+    return decode_with_keyfile(SALT, text)

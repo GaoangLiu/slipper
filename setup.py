@@ -4,7 +4,7 @@ import codefast as cf
 
 setuptools.setup(
     name="dofast",
-    version="0.5.2dev3",  # Latest version .
+    version="0.5.2dev5",  # Latest version .
     author="slipper",
     author_email="byteleap@gmail.com",
     description="A package for dirty faster Python programming",

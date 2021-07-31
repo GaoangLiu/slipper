@@ -49,5 +49,3 @@ def certify_token(key: str, token: str) -> bool:
     return True
 
 
-# key = io.read('/etc/auth.key', '')
-# token = generate_token(key)

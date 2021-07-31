@@ -242,8 +242,7 @@ class Twitter(twitter.Api):
               self).__init__(consumer_key=decode('consumer_key'),
                              consumer_secret=decode('consumer_secret'),
                              access_token_key=decode('access_token'),
-                             access_token_secret=decode('access_token_secret'),
-                             proxies={'http': decode('http_proxy')})
+                             access_token_secret=decode('access_token_secret'))
 
     def hi(self):
         print('Hi, Twitter.')

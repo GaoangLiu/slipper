@@ -6,7 +6,8 @@ import sys
 import codefast as cf
 from codefast.argparser import PLACEHOLDER
 
-from .config import fast_text_decode, fast_text_encode
+from .security._hmac import generate_token
+from .config import SERVER_HOST, fast_text_decode, fast_text_encode, SALT
 from .network import (AutoProxy, Bookmark, CoinMarketCap,
                       CustomHTTPRequestHandler, Douban, ForgiveCurve,
                       InputMethod, LunarCalendar, Phone, Twitter, bitly)
@@ -28,10 +29,10 @@ class DCT(dict):
             return f'{seconds // 3600}h ' + self.format_time(seconds % 3600)
 
     def __repr__(self):
-        return '\n'.join('{:<10}: {:<10}'.format(p[0], p[1])
-                         for p in (('distance', self.data['distance']),
-                                   ('eta', self.format_time(self.data['eta'])),
-                                   ('station', self.data['stationLeft']))) + '\n'
+        return '\n'.join('{:<10}: {:<10}'.format(p[0], p[1]) for p in (
+            ('distance', self.data['distance']),
+            ('eta', self.format_time(self.data['eta'])),
+            ('station', self.data['stationLeft']))) + '\n'
 
 
 def eta():
@@ -315,7 +316,21 @@ def main():
         Douban.query_film_info(sp.doubaninfo.value)
 
     elif sp.twitter:
-        Twitter().post(sys.argv[2:])
+        # Twitter().post(sys.argv[2:])
+        text, media = '', []
+        key = io.read(SALT, '')
+        for e in sys.argv[2:]:
+            if cf.file.exists(e):
+                media.append(f'/tmp/{io.basename(e)}')
+                cf.net.post(f'http://{SERVER_HOST}:8899',
+                            files={'file': open(e, 'rb')})
+            else:
+                text += str(cf.utils.cipher(key, e))
+        cf.net.post(f'http://{SERVER_HOST}:6363/tweet', json={
+            'token': generate_token(key),
+            'text': 'text',
+            'media': media
+        })
 
     elif sp.tgbot:
         from .toolkits.telegram import bot_messalert

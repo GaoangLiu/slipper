@@ -9,7 +9,7 @@ import requests
 from codefast.utils import retry
 
 import dofast.utils as du
-from dofast.config import decode
+from dofast.config import decode, SALT
 
 proxies = {'https': decode('HTTP_PROXY')}
 
@@ -47,8 +47,8 @@ def bot_messalert(msg: str) -> None:
 @retry()
 def messalert(msg: str) -> None:
     '''send Telegram message via remote consumer'''
-    from dofast.security._hmac import generate_token
-    key = io.read('/etc/auth.key', '')
+    from dofast.security._hmac import generate_token    
+    key = io.read(SALT, '')
     res = cf.net.post('http://a.ddot.cc:6363/messalert',
                       json={
                           'token': generate_token(key),
