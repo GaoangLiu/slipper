@@ -321,16 +321,17 @@ def main():
         key = io.read(SALT, '')
         for e in sys.argv[2:]:
             if cf.file.exists(e):
-                media.append(f'/tmp/{io.basename(e)}')
+                media.append(io.basename(e))
                 cf.net.post(f'http://{SERVER_HOST}:8899',
                             files={'file': open(e, 'rb')})
             else:
-                text += str(cf.utils.cipher(key, e))
-        cf.net.post(f'http://{SERVER_HOST}:6363/tweet', json={
+                text += cf.utils.cipher(key, e)
+        res = cf.net.post(f'http://{SERVER_HOST}:6363/tweet', json={
             'token': generate_token(key),
-            'text': 'text',
+            'text': text,
             'media': media
         })
+        print(res, res.text)
 
     elif sp.tgbot:
         from .toolkits.telegram import bot_messalert

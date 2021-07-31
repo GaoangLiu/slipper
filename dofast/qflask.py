@@ -29,10 +29,12 @@ def tweet():
     key = io.read(SALT, '')
     if not certify_token(key, msg.get('token')):
         return 'FAILED'
+
     text = cf.utils.decipher(key, msg.get('text'))
-    media = [f'tmp/{e}' for e in msg.get('media')]
-    Twitter.post([text] + media)
-    return True
+    media = [f'/tmp/{e}' for e in msg.get('media')]
+    cf.info(f'Input tweet: {text} / ' + ''.join(media))
+    Twitter().post([text] + media)
+    return 'SUCCESS'
 
 
 @app.route('/messalert', methods=['GET', 'POST'])
