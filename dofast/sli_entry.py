@@ -345,8 +345,8 @@ def main():
         post_status()
 
     elif sp.tgbot:
-        from .toolkits.telegram import bot_messalert
-        bot_messalert(sp.tgbot.value)
+        from .toolkits.telegram import messalert
+        messalert(sp.tgbot.value)
 
     elif sp.happyxiao:
         from .crontasks import HappyXiao
