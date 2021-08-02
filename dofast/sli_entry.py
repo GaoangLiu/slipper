@@ -61,6 +61,29 @@ def jsonify() -> dict:
     js = json.dumps(js)
     print(js)
 
+def nsq_sync():
+    cli = Bucket()
+    if len(sys.argv) > 1:
+        cf.utils.shell('zip -r9 -P syncsync63 -FSr /tmp/sync.zip {}'.format(
+            ' '.join(sys.argv[1:])))
+        cf.info('Files zipped.')
+        cli.upload('/tmp/sync.zip')
+        token = generate_token(cf.file.reads(SALT))
+        _uuid = cf.utils.uuid(),
+        jsn.write({'uuid': _uuid}, '/tmp/syncfile.json')
+        js = {
+            'token': token,
+            'topic': 'file',
+            'channel': 'sync',
+            'uuid': _uuid,
+            'data': {
+                'uuid': _uuid,
+                'filename': 'sync.zip'
+            }
+        }
+        res = cf.net.post('http://a.ddot.cc:6363/nsq', json=js)
+        cf.info('NSQ sync', res.text)
+
 
 def _sync():
     cli = Bucket()

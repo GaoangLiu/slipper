@@ -4,8 +4,8 @@ from flask import Flask, request
 from dofast.security._hmac import certify_token
 from dofast.toolkits.telegram import bot_messalert
 
-from .network import Twitter
 from .config import SALT
+from .network import Twitter
 
 app = Flask(__name__)
 
@@ -44,6 +44,21 @@ def msg():
     except Exception as e:
         cf.error(str(e))
         return 'FAILED'
+
+
+@app.route('/nsq', methods=['GET', 'POST'])
+def nsq():
+    msg = request.get_json()
+    key = cf.file.reads(SALT)
+    if not certify_token(key, msg.get('token')):
+        return 'FAILED'
+    topic = msg.get('topic')
+    channel = msg.get('channel')
+    data = msg.get('data')
+    cf.net.post(f'http://127.0.0.1:4151/pub?topic={topic}&channel={channel}',
+                json={'data': data})
+    print(topic, channel, data)
+    return 'SUCCESS'
 
 
 @app.route('/')
