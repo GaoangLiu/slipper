@@ -323,14 +323,19 @@ def main():
             key = io.read(SALT, '')
             for e in sys.argv[2:]:
                 if cf.file.exists(e):
-                    media.append(io.basename(e))
-                    cf.net.post(f'http://{SERVER_HOST}:8899',
-                                files={'file': open(e, 'rb')})
+                    if e.endswith(('.png', '.jpeg', '.jpg', '.mp4', '.gif')):
+                        media.append(io.basename(e))
+                        cf.net.post(f'http://{SERVER_HOST}:8899',
+                                    files={'file': open(e, 'rb')})
+                    elif e.endswith(('.txt', '.dat')):
+                        text += cf.utils.cipher(key, io.read(e, ''))
+                    else:
+                        cf.warning("Unsupported media type", e)
                 else:
                     text += cf.utils.cipher(key, e)
             res = cf.net.post(f'http://{SERVER_HOST}:6363/tweet',
                               json={
-                                  'token': generate_token(key),
+                                  'token': generate_token(key, expire=20),
                                   'text': text,
                                   'media': media
                               })
