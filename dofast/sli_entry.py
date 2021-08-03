@@ -61,6 +61,7 @@ def jsonify() -> dict:
     js = json.dumps(js)
     print(js)
 
+
 def nsq_sync():
     cli = Bucket()
     if len(sys.argv) > 1:
@@ -68,7 +69,7 @@ def nsq_sync():
             ' '.join(sys.argv[1:])))
         cf.info('Files zipped.')
         cli.upload('/tmp/sync.zip')
-        token = generate_token(cf.file.reads(SALT))
+        token = generate_token(cf.file.reads(SALT), expire=5)
         _uuid = cf.utils.uuid(),
         jsn.write({'uuid': _uuid}, '/tmp/syncfile.json')
         js = {
@@ -82,7 +83,7 @@ def nsq_sync():
             }
         }
         res = cf.net.post('http://a.ddot.cc:6363/nsq', json=js)
-        cf.info('NSQ sync', res.text)
+        cf.info('FileSync', res.text)
 
 
 def _sync():
@@ -157,10 +158,7 @@ def main():
                        ["l", "list"], ["del", "delete"], ['size']])
     sp.input('-dw', '--download', sub_args=[['p', 'proxy']])
     sp.input('-d', '--ddfile')
-    sp.input('-ip',
-             '--ip',
-             sub_args=[['p', 'port']],
-             default_value="localhost")
+    sp.input('-ip', '--ip', sub_args=[['p', 'port']], default_value="localhost")
     sp.input('-rc', '--roundcorner', sub_args=[['r', 'radius']])
     sp.input('-gu', '--githubupload')
     sp.input('-sm', '--smms')
@@ -186,9 +184,7 @@ def main():
         '-sync',
         '--sync',
         description='synchronize files. Usage: sli -sync file1 file2 file3')
-    sp.input('-vpsinit',
-             '--vpsinit',
-             description='VPS environment initiation.')
+    sp.input('-vpsinit', '--vpsinit', description='VPS environment initiation.')
     sp.input('-json',
              '--jsonify',
              sub_args=[['o', 'output']],
@@ -216,10 +212,11 @@ def main():
         'AutoProxy configuration. Usage:\n sli -ap google.com \n sli -ap -d google.com'
     )
 
-    sp.input('-coin',
-             sub_args=[['-q', '-quote']],
-             description=
-             'Coin Market API. Usage: \n sli -coin -q \n sli -coin -q btc')
+    sp.input(
+        '-coin',
+        sub_args=[['-q', '-quote']],
+        description='Coin Market API. Usage: \n sli -coin -q \n sli -coin -q btc'
+    )
 
     sp.input('-bitly', description='Bitly shorten url.')
     sp.input('-http',
@@ -465,8 +462,11 @@ def main():
 
     elif sp.roundcorner:
         from .utils import rounded_corners
-        image_path = sp.roundcorner.value
-        radius = int(sp.roundcorner.radius or 10)
+        image_path, radius = sys.argv[2], 10
+        if len(sys.argv) == 4:
+            radius = int(sys.argv[3])
+        elif len(sys.argv) == 5:
+            radius = int(sys.argv[4])
         rounded_corners(image_path, radius)
 
     elif sp.githubupload:
@@ -491,7 +491,7 @@ def main():
             Message().write(sp.msg.write)
         elif sp.msg.read:
             top_ = 1 if sp.msg.read == {'value': ''} else int(sp.msg.read)
-            Message().read(top=top_)  # show only 1 line
+            Message().read(top=top_)     # show only 1 line
         elif sp.msg.value != PLACEHOLDER:
             Message().write(sp.msg.value)
         else:
@@ -543,8 +543,7 @@ def main():
         display_message()
         sp.help()
         done, total = sp._arg_counter, 50
-        print('✶' * done + '﹆' * (total - done) +
-              "({}/{})".format(done, total))
+        print('✶' * done + '﹆' * (total - done) + "({}/{})".format(done, total))
 
 
 if __name__ == '__main__':
