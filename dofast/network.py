@@ -36,14 +36,14 @@ class cloud:
 
     @classmethod
     def encode_remote(cls, text: str, local_file: str) -> None:
-        cf.file.write(fast_text_encode(str(text)), local_file)
+        cf.io.write(fast_text_encode(str(text)), local_file)
         cls.cli.upload(local_file)
 
     @classmethod
     def decode_remote(cls, local_file: str) -> str:
-        if not cf.file.exists(local_file):
-            cls.download(cf.file.basename(local_file), local_file)
-        return fast_text_decode(cf.file.read(local_file, ''))
+        if not cf.io.exists(local_file):
+            cls.download(cf.io.basename(local_file), local_file)
+        return fast_text_decode(cf.io.read(local_file, ''))
 
     @classmethod
     def download(cls, remote_name: str, local_file: str):
@@ -110,20 +110,20 @@ class Bookmark(Bucket):
     def __init__(self):
         super(Bookmark, self).__init__()
         self._local = '/tmp/bookmark.json'
-        if not cf.file.exists(self._local):
+        if not cf.io.exists(self._local):
             self.download('bookmark.json', self._local)
 
         self.json = cf.json.read(
-            fast_text_decode(cf.file.read(self._local, '')))
+            fast_text_decode(cf.io.read(self._local, '')))
 
     def reload(self):
         ''' reload file whenever necessary '''
         self.download('bookmark.json', self._local)
         self.json = cf.json.read(
-            fast_text_decode(cf.file.read(self._local, '')))
+            fast_text_decode(cf.io.read(self._local, '')))
 
     def _update_remote(self):
-        cf.file.write(fast_text_encode(str(self.json)), self._local)
+        cf.io.write(fast_text_encode(str(self.json)), self._local)
         self.upload(self._local)
 
     def add(self, keyword: str, url: str) -> None:
@@ -260,11 +260,11 @@ class Twitter(twitter.Api):
         media_types = ('.png', '.jpeg', '.jpg', '.mp4', '.gif')
 
         for e in args:
-            if cf.file.exists(e):
+            if cf.io.exists(e):
                 if e.endswith(media_types):
                     media.append(e)
                 else:
-                    text += cf.file.read(e, '')
+                    text += cf.io.read(e, '')
             else:
                 text += e
         self.post_status(text, media)
@@ -365,17 +365,17 @@ class AutoProxy(Bucket):
 
     @classmethod
     def query_rules(cls) -> List[str]:
-        AutoProxy().download(cf.file.basename(cls.tmp), export_to=cls.tmp)
-        text = cf.file.read(cls.tmp)
+        AutoProxy().download(cf.io.basename(cls.tmp), export_to=cls.tmp)
+        text = cf.io.read(cls.tmp)
         return fast_text_decode(text).split('\n')
 
     @classmethod
     def sync2git(cls):
-        f = cf.file.basename(cls.pac)
-        cf.file.copy(cls.pac, f)
+        f = cf.io.basename(cls.pac)
+        cf.io.copy(cls.pac, f)
         githup_upload(f, shorten=False)
         cf.logger.info(f'{f} was synced to Github.')
-        cf.file.rm(f)
+        cf.io.rm(f)
 
     @classmethod
     def add(cls, url: str) -> None:
@@ -388,8 +388,8 @@ class AutoProxy(Bucket):
         rule_list.insert(63, url)
         str_rules = '\n'.join(rule_list)
         text_new = fast_text_encode(str_rules)
-        cf.file.write(text_new, cls.tmp)
-        cf.file.write(str_rules, cls.pac)
+        cf.io.write(text_new, cls.tmp)
+        cf.io.write(str_rules, cls.pac)
         AutoProxy().upload(cls.tmp)
         cf.logger.info('{} added to rule list SUCCESS'.format(url))
         cls.sync2git()
@@ -402,8 +402,8 @@ class AutoProxy(Bucket):
             rule_list.remove(url)
             str_rules = '\n'.join(rule_list)
             str_rules_encrypted = fast_text_encode(str_rules)
-            cf.file.write(str_rules_encrypted, cls.tmp)
-            cf.file.write(str_rules, cls.pac)
+            cf.io.write(str_rules_encrypted, cls.tmp)
+            cf.io.write(str_rules, cls.pac)
             AutoProxy().upload(cls.tmp)
             cf.logger.info('{} removed from rule list SUCCESS'.format(url))
             cls.sync2git()
@@ -517,17 +517,17 @@ def bitly(uri: str) -> None:
 
 class InputMethod(Bucket):
     def __init__(self):
-        _dir_project = cf.file.dirname()
+        _dir_project = cf.io.dirname()
         self._wubi = f'{_dir_project}/data/x86wubi.txt'
         self._pinyin = f'{_dir_project}/data/pinyin.txt'
         self._wubi_code = {}
         self._pinyin_code = {}
 
-        for line in cf.file.iter(self._pinyin):
+        for line in cf.io.iter(self._pinyin):
             zh, en, _ = line.split(' ')
             self._pinyin_code[zh] = en
 
-        for line in cf.file.iter(self._wubi):
+        for line in cf.io.iter(self._wubi):
             zh, en = line.split('\t')
             self._wubi_code[zh] = en
 
@@ -539,7 +539,7 @@ class InputMethod(Bucket):
         words = str_pinyin.split(' ')
         cnt = 0
         if len(words) == 1:  # single char
-            for e in cf.file.iter(self._pinyin):
+            for e in cf.io.iter(self._pinyin):
                 p = e.split(' ')
                 if len(p) > 0 and p[1] == words[0]:
                     code = self._wubi_code.get(p[0], 'None').ljust(4)

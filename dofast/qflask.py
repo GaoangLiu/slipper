@@ -49,7 +49,7 @@ def msg():
 @app.route('/nsq', methods=['GET', 'POST'])
 def nsq():
     msg = request.get_json()
-    key = cf.file.reads(SALT)
+    key = cf.io.reads(SALT)
     if not certify_token(key, msg.get('token')):
         return 'FAILED'
     topic = msg.get('topic')

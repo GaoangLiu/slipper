@@ -14,8 +14,8 @@ def _init_config() -> dict:
 
     _config_path = str(Path.home()) + "/.config/"
     _cf = _config_path + 'dofast.json'
-    if not cf.file.exists(_cf):
-        zip_json = f"{cf.file.dirname()}/dofast.json.zip"
+    if not cf.io.exists(_cf):
+        zip_json = f"{cf.io.dirname()}/dofast.json.zip"
         with zipfile.ZipFile(zip_json, 'r') as zip_ref:
             zip_ref.extractall(
                 path=_config_path,

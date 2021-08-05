@@ -42,7 +42,7 @@ class Bucket:
                 sys.stdout.write(str(ratio(acc) // 10))
                 sys.stdout.flush()
 
-        object_name = 'transfer/' + cf.file.basename(file_name)
+        object_name = 'transfer/' + cf.io.basename(file_name)
         self.bucket.put_object_from_file(object_name,
                                          file_name,
                                          progress_callback=progress_bar)
@@ -51,7 +51,7 @@ class Bucket:
 
     def _download(self, file_name: str, export_to: str = None) -> None:
         """Download a file from transfer/"""
-        f = export_to if export_to else cf.file.basename(file_name)
+        f = export_to if export_to else cf.io.basename(file_name)
         self.bucket.get_object_to_file(f"transfer/{file_name}", f)
         cf.logger.info(f"{file_name} Downloaded.")
 
@@ -63,13 +63,13 @@ class Bucket:
 
     def download_decode(self, remote_file_name) -> str:
         '''Download encrypted file, read content and return decoded string'''
-        self.download(cf.file.basename(remote_file_name), '/tmp/tmp')
-        return fast_text_decode(cf.file.read('/tmp/tmp', ''))
+        self.download(cf.io.basename(remote_file_name), '/tmp/tmp')
+        return fast_text_decode(cf.io.read('/tmp/tmp', ''))
 
     def upload_encode(self, local_file_name) -> None:
         '''Read local content, encode and upload it'''
-        _con = cf.file.read(local_file_name, 'r')
-        cf.file.write(fast_text_encode(_con), f'/tmp/{local_file_name}')
+        _con = cf.io.read(local_file_name, 'r')
+        cf.io.write(fast_text_encode(_con), f'/tmp/{local_file_name}')
         self.upload(f'/tmp/{local_file_name}')
 
     def delete(self, file_name: str) -> None:

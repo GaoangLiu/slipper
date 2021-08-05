@@ -69,7 +69,7 @@ def nsq_sync():
             ' '.join(sys.argv[1:])))
         cf.info('Files zipped.')
         cli.upload('/tmp/sync.zip')
-        token = generate_token(cf.file.reads(SALT), expire=5)
+        token = generate_token(cf.io.reads(SALT), expire=5)
         _uuid = cf.utils.uuid(),
         jsn.write({'uuid': _uuid}, '/tmp/syncfile.json')
         js = {
@@ -325,7 +325,7 @@ def main():
             AutoProxy.add(sp.autoproxy.add)
 
     elif sp.fileinfo:
-        info = cf.file.info(sp.fileinfo.value)
+        info = cf.io.info(sp.fileinfo.value)
         for key in ('bit_rate', 'channel_layout', 'channels',
                     'codec_tag_string', 'codec_long_name', 'codec_name',
                     'duration', 'filename', 'format_name', 'sample_rate',
@@ -342,7 +342,7 @@ def main():
             text, media = '', []
             key = io.read(SALT, '')
             for e in sys.argv[2:]:
-                if cf.file.exists(e):
+                if cf.io.exists(e):
                     if e.endswith(('.png', '.jpeg', '.jpg', '.mp4', '.gif')):
                         media.append(io.basename(e))
                         cf.net.post(f'http://{SERVER_HOST}:8899',
@@ -518,20 +518,20 @@ def main():
 
     elif sp.securitytext:
         text = sp.securitytext.value
-        if cf.file.exists(text):
-            text = cf.file.read(text, '')
+        if cf.io.exists(text):
+            text = cf.io.read(text, '')
         func = fast_text_decode if sp.securitytext.decode else fast_text_encode
         text_r = func(text)
         if sp.securitytext.output:
-            cf.file.write(text_r, sp.securitytext.output)
+            cf.io.write(text_r, sp.securitytext.output)
             print('Text exported to {}'.format(sp.securitytext.output))
         else:
             print(text_r)
 
     elif sp.vpsinit:
-        dirname: str = cf.file.dirname()
-        text: str = cf.file.read(f"{dirname}/data/vps_init.sh")
-        cf.file.write(text, 'config.sh')
+        dirname: str = cf.io.dirname()
+        text: str = cf.io.read(f"{dirname}/data/vps_init.sh")
+        cf.io.write(text, 'config.sh')
         print('SUCCESS: config.sh copied in current directory.')
 
     elif sp.lunarcalendar:
