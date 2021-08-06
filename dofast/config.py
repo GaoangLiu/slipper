@@ -7,8 +7,6 @@ import codefast as cf
 from .toolkits.endecode import decode_with_keyfile, encode_with_keyfile
 
 
-SERVER_HOST = 'a.ddot.cc'
-
 def _init_config() -> dict:
     """ init configureation file on installing library."""
 
@@ -21,11 +19,13 @@ def _init_config() -> dict:
                 path=_config_path,
                 pwd=bytes(getpass.getpass("type here your config password: "),
                           'utf-8'))
-    return cf.json.read(_cf)
+    return cf.js(_cf)
 
 
+SERVER_HOST = 'a.ddot.cc'
 js = _init_config()
 SALT = js['auth_file']
+
 
 def decode(keyword: str) -> str:
     _pass = decode_with_keyfile(SALT, js[keyword.lower()])
