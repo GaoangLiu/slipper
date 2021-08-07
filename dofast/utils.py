@@ -117,15 +117,17 @@ def pip_install(package_name: str):
         [sys.executable, "-m", "pip", "install", package_name])
 
 
-def rounded_corners(image_name: str, rad: int = 20):
+def rounded_corners(image_name: str, rad: int = -1):
     """Add rounded_corners to images"""
     from PIL import Image, ImageDraw
     im = Image.open(image_name)
+    w, h = im.size
+    if rad < 0:
+        rad = int(w * 0.02)
     circle = Image.new('L', (rad * 2, rad * 2), 0)
     draw = ImageDraw.Draw(circle)
     draw.ellipse((0, 0, rad * 2, rad * 2), fill=255)
     alpha = Image.new('L', im.size, "white")
-    w, h = im.size
     alpha.paste(circle.crop((0, 0, rad, rad)), (0, 0))
     alpha.paste(circle.crop((0, rad, rad, rad * 2)), (0, h - rad))
     alpha.paste(circle.crop((rad, 0, rad * 2, rad)), (w - rad, 0))

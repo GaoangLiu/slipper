@@ -462,7 +462,7 @@ def main():
 
     elif sp.roundcorner:
         from .utils import rounded_corners
-        image_path, radius = sys.argv[2], 10
+        image_path, radius = sys.argv[2], -1
         if len(sys.argv) == 4:
             radius = int(sys.argv[3])
         elif len(sys.argv) == 5:
